@@ -11,6 +11,7 @@
 		<description><?php echo $description; ?></description>
 		<pubDate><?php echo standard_date('DATE_RSS', strtotime($last_updated)); ?></pubDate>
 		<language><?php echo $this->fuel_blog->language(TRUE)?></language>
+		<latestFuelVersion><?php echo FUEL_VERSION; ?></latestFuelVersion>
 	    <docs>http://blogs.law.harvard.edu/tech/rss</docs>
 	
 	    <dc:rights>Copyright <?php echo gmdate('Y', strtotime($last_updated)); ?></dc:rights>

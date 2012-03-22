@@ -20,7 +20,7 @@ class Blog extends Blog_base_controller {
 		$view_by = 'page';
 		
 		// we empty out year variable if it is page because we won't be querying on year'
-		if (preg_match('#\d+#', $year) && !empty($year) && empty($slug))
+		if (preg_match('#\d{4}#', $year) && !empty($year) && empty($slug))
 		{
 			$view_by = 'date';
 		}
@@ -123,7 +123,11 @@ class Blog extends Blog_base_controller {
 	
 	function post($slug = null)
 	{
-		if (empty($slug)) show_404();
+		if (empty($slug))
+		{
+			redirect_404();
+		}
+		
 		$this->load->library('session');
 		$blog_config = $this->config->item('blog');
 

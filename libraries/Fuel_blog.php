@@ -553,7 +553,10 @@ class Fuel_blog extends Fuel_advanced_module {
 		if (!empty($day)) $this->CI->blog_posts_model->db()->where('DAY('.$tables['blog_posts'].'.post_date) = '.$day);
 		if (!empty($slug)) $this->CI->blog_posts_model->db()->where($tables['blog_posts'].'.slug = "'.$slug.'"');
 		$return_arr = (!empty($slug)) ? FALSE : TRUE;
-		$this->CI->blog_posts_model->db()->limit($limit);
+		if (!empty($limit))
+		{
+			$this->CI->blog_posts_model->db()->limit($limit);
+		}
 		$this->CI->blog_posts_model->db()->offset($offset);
 		$this->CI->blog_posts_model->db()->order_by($order_by);
 		$posts = $this->CI->blog_posts_model->get($return_arr)->result();
