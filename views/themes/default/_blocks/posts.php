@@ -18,9 +18,7 @@
 				<?=$post->excerpt_formatted?> 
 			</div>
 			<div class="post_meta">
-				<div class="post_categories">
-					Posted in: <?=$post->categories_linked ?> 
-				</div>
+				<?=$post->categories_linked ?> 
 			</div>
 		</div>
 		<div class="clear"></div>

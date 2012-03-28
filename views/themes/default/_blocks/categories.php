@@ -1,3 +1,4 @@
+<?php /*]
 <?php $posts_to_categories = $CI->fuel_blog->get_posts_to_categories(); ?>
 <?php if (!empty($posts_to_categories)) : ?>
 <div class="blog_block">
@@ -12,3 +13,5 @@
 	</ul>
 </div>
 <?php endif; ?>
+*/ ?>
+[CATEGORIES]

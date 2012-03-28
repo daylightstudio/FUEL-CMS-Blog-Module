@@ -12,6 +12,8 @@ class Blog_posts_model extends Base_module_model {
 	public $unique_fields = array('slug');
 	public $linked_fields = array('slug' => array('title' => 'url_title'));
 
+	public $has_many = array('categories' => array('module' => 'blog', 'model' => 'blog_categories'));
+
 	function __construct()
 	{
 		parent::__construct('blog_posts', BLOG_FOLDER); // table name
@@ -59,19 +61,12 @@ class Blog_posts_model extends Base_module_model {
 	
 	function form_fields($values = array())
 	{
-		$fields = parent::form_fields();
+		$fields = parent::form_fields($values);
 		$CI =& get_instance();
 		
 		$CI->load->module_model(BLOG_FOLDER, 'blog_users_model');
-		$CI->load->module_model(BLOG_FOLDER, 'blog_categories_model');
-		$CI->load->module_model(BLOG_FOLDER, 'blog_posts_to_categories_model');
 		
 		$blog_config = $CI->config->item('blog');
-		
-		$category_options = $CI->blog_categories_model->options_list('id', 'name', array('published' => 'yes'), 'name');
-		$category_values = (!empty($values['id'])) ? array_keys($CI->blog_posts_to_categories_model->find_all_array_assoc('category_id', array('post_id' => $values['id'], $this->_tables['blog_categories'].'.published' => 'yes'))) : array();
-		
-		$fields['categories'] = array('label' => 'Categories', 'type' => 'multi', 'options' => $category_options, 'class' => 'add_edit blog/categories', 'value' => $category_values, 'mode' => 'multi');
 		
 		$user_options = $CI->blog_users_model->options_list();
 		$user = $this->fuel->auth->user_data();
@@ -169,28 +164,13 @@ class Blog_posts_model extends Base_module_model {
 	
 	function on_after_save($values)
 	{
+		$values = parent::on_after_save($values);
 		$CI =& get_instance();
-		$CI->load->module_model(BLOG_FOLDER, 'blog_posts_to_categories_model');
 
 		// remove cache
 		$CI->fuel->blog->remove_cache();
 
-		$saved_data = $this->normalized_save_data;
-		
-		$post_id = $values['id'];
-		$categories = (!empty($saved_data['categories'])) ? $saved_data['categories'] : array(1); // 1 = Uncategorized
-
-		// first remove all the categories
-		$CI->blog_posts_to_categories_model->delete(array('post_id' => $post_id));
-		
-		// then readd them
-		foreach($categories as $val)
-		{
-			$post_category = $CI->blog_posts_to_categories_model->create();
-			$post_category->post_id = $post_id;
-			$post_category->category_id = $val;
-			$post_category->save();
-		}
+		return $values;
 	}
 
 	// cleanup posts to categories
@@ -209,9 +189,7 @@ class Blog_posts_model extends Base_module_model {
 	function _common_query()
 	{
 		$this->db->select($this->_tables['blog_posts'].'.*, '.$this->_tables['blog_users'].'.display_name, CONCAT('.$this->_tables['users'].'.first_name, " ", '.$this->_tables['users'].'.last_name) as author_name', FALSE);
-		$this->db->join($this->_tables['blog_posts_to_categories'], $this->_tables['blog_posts_to_categories'].'.post_id = '.$this->_tables['blog_posts'].'.id', 'left');
 		$this->db->join($this->_tables['blog_users'], $this->_tables['blog_users'].'.fuel_user_id = '.$this->_tables['blog_posts'].'.author_id', 'left');
-		$this->db->join($this->_tables['blog_categories'], $this->_tables['blog_categories'].'.id = '.$this->_tables['blog_posts_to_categories'].'.category_id', 'left');
 		$this->db->join($this->_tables['users'], $this->_tables['users'].'.id = '.$this->_tables['blog_posts'].'.author_id', 'left');
 		$this->db->group_by($this->_tables['blog_posts'].'.id');
 	}
@@ -345,27 +323,20 @@ class Blog_post_model extends Base_module_record {
 		return FALSE;
 	}
 	
-	function get_categories($order = 'name asc')
-	{
-		$this->_CI->load->module_model('blog', 'blog_posts_to_categories_model');
-		$where = array('post_id' => $this->id, $this->_tables['blog_categories'].'.published' => 'yes');
-		$categories = $this->_CI->blog_posts_to_categories_model->find_all_array_assoc('category_name', $where, $order);
-		return array_keys($categories);
-	}
-
 	function get_categories_linked($order = 'name asc', $join = ', ')
 	{
-		$this->_CI->load->module_model('blog', 'blog_posts_to_categories_model');
-		$where = array('post_id' => $this->id, $this->_tables['blog_categories'].'.published' => 'yes');
-		$posts_to_categories = $this->_CI->blog_posts_to_categories_model->find_all($where, $order);
-		
-		$categories_linked = array();
-		foreach($posts_to_categories as $p2c)
+		$categories = $this->categories;
+		if ( ! empty($categories))
 		{
-			$categories_linked[] = anchor($this->_CI->fuel->blog->url('categories/'.$p2c->category_slug), $p2c->category_name);
+			$categories_linked = array();
+			foreach ($this->categories as $category)
+			{
+				$categories_linked[] = anchor($this->_CI->fuel->blog->url($category->get_url(FALSE)), $category->name);
+			}
+			$return = '<div class="post_categories">Posted in: ' . implode($categories_linked, $join) . '</div>';
+			return $return;
 		}
-		$return = implode($categories_linked, $join);
-		return $return;
+		return NULL;
 	}
 	
 	function get_author()
