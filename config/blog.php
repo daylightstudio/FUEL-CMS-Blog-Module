@@ -89,3 +89,4 @@ $config['tables']['blog_comments'] = 'fuel_blog_comments';
 $config['tables']['blog_links'] = 'fuel_blog_links';
 $config['tables']['blog_posts_to_categories'] = 'fuel_blog_posts_to_categories';
 $config['tables']['blog_settings'] = 'fuel_blog_settings';
+$config['tables']['blog_relationships'] = 'fuel_relationships';

@@ -792,6 +792,12 @@ class Fuel_blog extends Fuel_advanced_module {
 		return $posts_to_categories;
 	}
 
+	function get_published_categories()
+	{
+		$this->CI->load->module_model(BLOG_FOLDER, 'blog_categories_model');
+		return $this->CI->blog_categories_model->get_published_categories();
+	}
+
 	// --------------------------------------------------------------------
 
 	/**

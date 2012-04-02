@@ -7,6 +7,8 @@ class Blog_categories_model extends Base_module_model {
 	public $record_class = 'Blog_category';
 	public $unique_fields = array('slug', 'name');
 	public $linked_fields = array('slug' => array('name' => 'url_title'));
+
+	public $belongs_to = array('posts' => array('module' => 'blog', 'model' => 'blog_posts'));
 	
 	function __construct()
 	{
@@ -59,10 +61,9 @@ class Blog_categories_model extends Base_module_model {
 		}
 	}
 
-	function form_fields()
+	function form_fields($values = array())
 	{
-		$fields = parent::form_fields();
-		$CI =& get_instance();
+		$fields = parent::form_fields($values);
 		return $fields;
 	}
 	
@@ -72,33 +73,46 @@ class Blog_categories_model extends Base_module_model {
 		$this->db->order_by('precedence, name asc');
 	}
 
+	function get_published_categories()
+	{
+		$published_categories = $this->get_related_keys(array(), $this->belongs_to['posts'], 'belongs_to', 'fuel_blog_categories');
+		$categories_query_params = array('where_in' => array('id' => $published_categories));
+		$categories_query = $this->query($categories_query_params);
+		return $categories_query->result();
+	}
 }
 
 class Blog_category_model extends Base_module_record {
-	
+
 	private $_tables;
-	
+	private $_category_posts;
+
 	function on_init()
 	{
 		$this->_tables = $this->_CI->config->item('tables');
 	}
 
+	private function _get_category_posts()
+	{
+		if (empty($this->_category_posts)) {
+			$this->_category_posts = $this->_parent_model->get_related_keys(array('id' => $this->id), $this->_parent_model->belongs_to['posts'], 'belongs_to', $this->_parent_model->table_name());
+		}
+		return $this->_category_posts;
+	}
+
 	function get_posts()
 	{
-		$this->_CI->load->module_model('blog', 'blog_posts_to_categories_model');
-		$where = array('category_id' => $this->id, $this->_tables['blog_posts'].'.published' => 'yes');
-		$posts = $this->_CI->blog_posts_to_categories_model->find_all($where);
-		return $posts;
+		$this->_CI->load->module_model('blog', 'blog_posts_model');
+		$category_posts_query_params = array('where_in' => array($this->_tables['blog_posts'].'.id' => $this->_get_category_posts()));
+		$posts = $this->_CI->blog_posts_model->query($category_posts_query_params);
+		return $posts->result();
 	}
 
 	function get_posts_count()
 	{
-		$this->_CI->load->module_model('blog', 'blog_posts_to_categories_model');
-		$where = array('category_id' => $this->id, $this->_tables['blog_posts'].'.published' => 'yes');
-		$cnt = $this->_CI->blog_posts_to_categories_model->record_count($where);
-		return $cnt;
+		return sizeof($this->_get_category_posts());
 	}
-	
+
 	function get_url($full_path = TRUE)
 	{
 		$url = 'categories/'.$this->slug;
@@ -108,6 +122,5 @@ class Blog_category_model extends Base_module_record {
 		}
 		return $url;
 	}
-	
+
 }
-?>

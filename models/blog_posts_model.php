@@ -189,8 +189,12 @@ class Blog_posts_model extends Base_module_model {
 	function _common_query()
 	{
 		$this->db->select($this->_tables['blog_posts'].'.*, '.$this->_tables['blog_users'].'.display_name, CONCAT('.$this->_tables['users'].'.first_name, " ", '.$this->_tables['users'].'.last_name) as author_name', FALSE);
+		$this->db->join($this->_tables['blog_relationships'], $this->_tables['blog_relationships'].'.candidate_key = '.$this->_tables['blog_posts'].'.id', 'left');
 		$this->db->join($this->_tables['blog_users'], $this->_tables['blog_users'].'.fuel_user_id = '.$this->_tables['blog_posts'].'.author_id', 'left');
 		$this->db->join($this->_tables['users'], $this->_tables['users'].'.id = '.$this->_tables['blog_posts'].'.author_id', 'left');
+		$this->db->join($this->_tables['blog_categories'], $this->_tables['blog_categories'].'.id = '.$this->_tables['blog_relationships'].'.foreign_key', 'left');
+		$this->db->where($this->_tables['blog_relationships'].'.candidate_table', $this->_tables['blog_posts']);
+		$this->db->where($this->_tables['blog_relationships'].'.foreign_table', $this->_tables['blog_categories']);
 		$this->db->group_by($this->_tables['blog_posts'].'.id');
 	}
 
