@@ -14,56 +14,44 @@ class Settings extends Fuel_base_controller {
 	
 	function index()
 	{
-		$this->load->module_model(BLOG_FOLDER, 'blog_settings_model');
+		$this->load->module_model(FUEL_FOLDER, 'settings_model');
 		$this->js_controller_params['method'] = 'add_edit';
 		
-		$field_values = $this->blog_settings_model->find_all_array_assoc('name');
-		
-		if (!empty($_POST['settings']))
+		if ( ! empty($_POST['settings']))
 		{
+			// clear out old settings
+			$this->settings_model->delete(array('module' => 'fuel_blog'));
 			// format data for saving
 			$save = array();
-			foreach($field_values as $field => $value)
+			$settings = $this->input->post('settings', TRUE);
+			foreach ($settings as $key => $value)
 			{
-				$settings = $this->input->post('settings', TRUE);
-				$val = (isset($settings[$field])) ? $settings[$field] : '';
-				$save[] = array('name' => $field, 'value' => trim($val));
+				$value = trim($value);
+				if (empty($value)) {
+					continue;
+				}
+				$save[] = array(
+					'module' => 'fuel_blog',
+					'key'    => $key,
+					'value'  => $value,
+					);
 			}
 			$this->fuel->blog->remove_cache();
-			$this->blog_settings_model->save($save);
+			$this->settings_model->save($save);
 			$this->session->set_flashdata('success', lang('data_saved'));
 			redirect($this->uri->uri_string());
-			
 		}
+		
+		$field_values = $this->settings_model->options_list('fuel_settings.key', 'fuel_settings.value', array('module' => 'fuel_blog'), 'key');
 		
 		$this->load->library('form_builder');
 		
-		$fields = array();
-		$fields['title'] = array();
-		$fields['description'] = array('size' => '80');
-		$fields['uri'] = array('value' => 'blog');
-		$fields['theme_path'] = array('value' => 'default');
-		$fields['theme_layout'] = array('value' => 'blog', 'size' => '20');
-		$fields['theme_module'] = array('value' => 'blog', 'size' => '20');
-		$fields['use_cache'] = array('type' => 'checkbox', 'value' => '1');
-		$fields['allow_comments'] = array('type' => 'checkbox', 'value' => '1');
-		$fields['monitor_comments'] = array('type' => 'checkbox', 'value' => '1');
-		$fields['use_captchas'] = array('type' => 'checkbox', 'value' => '1');
-		$fields['save_spam'] = array('type' => 'checkbox', 'value' => '1');
-		$fields['akismet_api_key'] = array('value' => '', 'size' => '80');
+		$blog_config = $this->config->item('blog');
+		$fields = $blog_config['settings'];
 		
-		$fields['multiple_comment_submission_time_limit'] = array('size' => '5', 'after_html' => lang('form_label_multiple_comment_submission_time_limit_after_html'));
-		$fields['comments_time_limit'] = array('size' => '5', 'after_html' => lang('form_label_comments_time_limit_after_html'));
-		$fields['cache_ttl'] = array('value' => 3600, 'size' => 5);
-		$fields['asset_upload_path'] = array('default' => 'images/blog/');
-		$fields['per_page'] = array('value' => 1, 'size' => 3);
-		$fields['page_title_separator'] = array('value' => '&laquo;', 'size' => 10);
-		
-
-
 	//	$this->form_builder->id = 'form';
 		$this->form_builder->label_layout = 'left';
-		$this->form_builder->form->validator = &$this->blog_settings_model->get_validation();
+		$this->form_builder->form->validator = &$this->settings_model->get_validation();
 		//$this->form_builder->submit_value = null;
 		$this->form_builder->use_form_tag = FALSE;
 		$this->form_builder->set_fields($fields);
