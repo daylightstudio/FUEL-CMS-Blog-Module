@@ -10,7 +10,6 @@ $config['nav']['blog'] = array(
 	'blog/comments' => lang('module_blog_comments'), 
 	'blog/links' => lang('module_blog_links'), 
 	'blog/users' => lang('module_blog_authors'), 
-	'blog/settings' => lang('module_blog_settings')
 );
 
 /*

@@ -76,8 +76,7 @@ class Fuel_blog extends Fuel_advanced_module {
 		
 		if ($this->CI->config->item('blog_use_db_table_settings'))
 		{
-			$this->CI->load->module_model(BLOG_FOLDER, 'blog_settings_model');
-			$this->_settings = $this->CI->blog_settings_model->find_all_array_assoc('name');
+			$this->_settings = $this->fuel->settings->get('blog');
 		}
 		else
 		{
