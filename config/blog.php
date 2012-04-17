@@ -10,7 +10,6 @@ $config['nav']['blog'] = array(
 	'blog/comments' => lang('module_blog_comments'), 
 	'blog/links' => lang('module_blog_links'), 
 	'blog/users' => lang('module_blog_authors'), 
-	'blog/settings' => lang('module_blog_settings')
 );
 
 /*
@@ -23,24 +22,25 @@ $config['nav']['blog'] = array(
 $config['blog_use_db_table_settings'] = TRUE;
 
 $config['blog'] = array();
-$config['blog']['title'] = '';
-$config['blog']['akismet_api_key'] = '';
-$config['blog']['uri'] = 'blog/';
-$config['blog']['theme_path'] = 'themes/default/';
-$config['blog']['use_cache'] = '';
-$config['blog']['cache_ttl'] = 3600;
-$config['blog']['per_page'] = 5;
-$config['blog']['description'] = '';
-$config['blog']['use_captchas'] = 0;
-$config['blog']['monitor_comments'] = 1;
-$config['blog']['theme_layout'] = 'blog';
-$config['blog']['save_spam'] = 1;
-$config['blog']['allow_comments'] = 1;
-$config['blog']['comments_time_limit'] = '';
-$config['blog']['theme_module'] = 'blog';
-$config['blog']['multiple_comment_submission_time_limit'] = 30;
-$config['blog']['asset_upload_path'] = 'images/blog/';
-$config['blog']['page_title_separator'] = '&laquo;';
+
+$config['blog']['settings']['title'] = array();
+$config['blog']['settings']['description'] = array('size' => '80');
+$config['blog']['settings']['uri'] = array('value' => 'blog');
+$config['blog']['settings']['theme_path'] = array('value' => 'default');
+$config['blog']['settings']['theme_layout'] = array('value' => 'blog', 'size' => '20');
+$config['blog']['settings']['theme_module'] = array('value' => 'blog', 'size' => '20');
+$config['blog']['settings']['use_cache'] = array('type' => 'checkbox', 'value' => '1');
+$config['blog']['settings']['allow_comments'] = array('type' => 'checkbox', 'value' => '1');
+$config['blog']['settings']['monitor_comments'] = array('type' => 'checkbox', 'value' => '1');
+$config['blog']['settings']['use_captchas'] = array('type' => 'checkbox', 'value' => '1');
+$config['blog']['settings']['save_spam'] = array('type' => 'checkbox', 'value' => '1');
+$config['blog']['settings']['akismet_api_key'] = array('value' => '', 'size' => '80');
+$config['blog']['settings']['multiple_comment_submission_time_limit'] = array('size' => '5', 'after_html' => lang('form_label_multiple_comment_submission_time_limit_after_html'));
+$config['blog']['settings']['comments_time_limit'] = array('size' => '5', 'after_html' => lang('form_label_comments_time_limit_after_html'));
+$config['blog']['settings']['cache_ttl'] = array('value' => 3600, 'size' => 5);
+$config['blog']['settings']['asset_upload_path'] = array('default' => 'images/blog/');
+$config['blog']['settings']['per_page'] = array('value' => 1, 'size' => 3);
+$config['blog']['settings']['page_title_separator'] = array('value' => '&laquo;', 'size' => 10);
 
 
 // the cache folder to hold blog cache files
