@@ -779,18 +779,33 @@ class Fuel_blog extends Fuel_advanced_module {
 	 * @param	string
 	 * @return	array
 	 */
-	function get_posts_to_categories($where = array(), $order_by = NULL, $limit = NULL, $offset = NULL, $return_method = NULL, $assoc_key = NULL)
-	{
-		$this->CI->load->module_model(BLOG_FOLDER, 'blog_posts_to_categories_model');
-		$this->CI->blog_posts_to_categories_model->readonly = TRUE;
-		$tables = $this->CI->config->item('tables');
-		$where[$tables['blog_categories'].'.published'] = 'yes';
-		$where[$tables['blog_posts'].'.published'] = 'yes';
-		$where = $this->_publish_status('blog_posts', $where);
-		$this->CI->blog_posts_to_categories_model->db()->group_by('category_id');
-		$posts_to_categories = $this->CI->blog_posts_to_categories_model->find_all($where, $order_by, $limit, $offset, $return_method, $assoc_key);
-		return $posts_to_categories;
-	}
+	// function get_posts_to_categories($where = array(), $order_by = NULL, $limit = NULL, $offset = NULL, $return_method = NULL, $assoc_key = NULL)
+	// {
+		// $this->CI->load->module_model(BLOG_FOLDER, 'blog_posts_to_categories_model');
+		// $this->CI->blog_posts_to_categories_model->readonly = TRUE;
+		// $tables = $this->CI->config->item('tables');
+		// $where[$tables['blog_categories'].'.published'] = 'yes';
+		// $where[$tables['blog_posts'].'.published'] = 'yes';
+		// $where = $this->_publish_status('blog_posts', $where);
+		// $this->CI->blog_posts_to_categories_model->db()->group_by('category_id');
+		// $posts_to_categories = $this->CI->blog_posts_to_categories_model->find_all($where, $order_by, $limit, $offset, $return_method, $assoc_key);
+		// 
+		// $CI->load->module_model(FUEL_FOLDER, 'relationships_model');
+		// $this->CI->relationships_model->readonly = TRUE;
+		// $tables = $this->CI->config->item('tables');
+		// $where['candidate_table.published'] = 'yes';
+		// $where['foreign_table.published'] = 'yes';
+		// $where = $this->_publish_status('blog_posts', $where);
+		// $this->CI->relationships_model->db()->group_by('foreign_id');
+		// $this->CI->relationships_model->db()->where($where);
+		// $this->CI->relationships_model->db()->order_by($order_by);
+		// $this->CI->relationships_model->db()->limit($limit);
+		// $this->CI->relationships_model->db()->offset($offset);
+		// $this->_tables['blog_posts'], $this->_tables['blog_categories']
+		// $posts_to_categories = $this->CI->relationships_model->find_by_candidate($this->_tables['blog_posts'], $this->_tables['blog_categories'], $return_method, $assoc_key);
+		// 
+		// return $posts_to_categories;
+	// }
 
 	function get_published_categories()
 	{

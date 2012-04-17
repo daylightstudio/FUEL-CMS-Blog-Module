@@ -34,8 +34,6 @@ class Blog_categories_model extends Base_module_model {
 	function on_before_delete($where)
 	{
 		$CI =& get_instance();
-		
-		$CI->load->module_model('blog', 'blog_posts_to_categories_model');
 		$CI->load->module_language('blog', 'blog');
 		if (is_array($where) && isset($where['id']))
 		{
@@ -45,19 +43,6 @@ class Blog_categories_model extends Base_module_model {
 				$CI->session->set_flashdata('error', lang('blog_error_delete_uncategorized'));
 				return;
 			}
-		}
-	}
-	
-	
-	// cleanup category to posts
-	function on_after_delete($where)
-	{
-		$CI =& get_instance();
-		$CI->load->module_model('blog', 'blog_posts_to_categories_model');
-		if (is_array($where) && isset($where['id']))
-		{
-			$where = array('category_id' => $where['id']);
-			$CI->blog_posts_to_categories_model->delete($where);
 		}
 	}
 
