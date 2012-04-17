@@ -5,7 +5,6 @@ class Blog_posts_to_categories_model extends MY_Model {
 	public $required = array();
 	public $record_class = 'Blog_post_to_category';
 	public $key_field = array('post_id', 'category_id');
-	private $_tables = array();
 	
 	function __construct()
 	{
