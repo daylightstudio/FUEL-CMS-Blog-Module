@@ -100,25 +100,6 @@ CREATE TABLE `fuel_blog_posts` (
 -- --------------------------------------------------------
 
 -- 
--- Table structure for table `fuel_blog_posts_to_categories`
--- 
-
-CREATE TABLE `fuel_blog_posts_to_categories` (
-  `post_id` int(10) unsigned NOT NULL,
-  `category_id` int(10) unsigned NOT NULL,
-  PRIMARY KEY  (`post_id`,`category_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- 
--- Dumping data for table `fuel_blog_posts_to_categories`
--- 
-
-INSERT INTO `fuel_blog_posts_to_categories` (`post_id`, `category_id`) VALUES 
-(1, 1);
-
--- --------------------------------------------------------
-
--- 
 -- Table structure for table `fuel_blog_settings`
 -- 
 

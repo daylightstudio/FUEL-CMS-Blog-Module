@@ -76,11 +76,14 @@ class Blog_comments_model extends Base_module_model {
 		if (!empty($values['id']))
 		{
 			$post = $CI->blog_posts_model->find_by_key($values['post_id']);
-			$post_title = $post->title;
-			
-			if (!$post->is_published())
+			if (isset($post->id))
 			{
-				add_error(lang('blog_post_is_not_published'));
+				$post_title = $post->title;
+
+				if (!$post->is_published())
+				{
+					add_error(lang('blog_post_is_not_published'));
+				}
 			}
 			
 			$fields['post_id'] = array('type' => 'hidden', 'value' => $post_title, 'displayonly' => TRUE);
@@ -108,7 +111,7 @@ class Blog_comments_model extends Base_module_model {
 			}
 			$fields['replies'] = array('displayonly' => TRUE, 'value' => implode('<br /><br />', $reply_arr));
 			
-			if (!empty($post) AND $post->author_id == $CI->fuel->auth->user_data('id') OR $CI->fuel->auth->is_super_admin())
+			if (isset($post->id) AND $post->author_id == $CI->fuel->auth->user_data('id') OR $CI->fuel->auth->is_super_admin())
 			{
 				$fields['reply'] = array('type' => 'textarea');
 				$notify_options = array('Commentor' => lang('blog_comment_notify_option2'), 'All' => lang('blog_comment_notify_option1'), 'None' => lang('blog_comment_notify_option3'));
@@ -233,7 +236,7 @@ class Blog_comment_model extends Base_module_record {
 	
 	function is_duplicate()
 	{
-		$where['UPPER('.$this->_parent_model->get_table('blog_comments').'.content)'] = strtoupper($this->content);
+		$where['UPPER('.$this->_parent_model->tables('blog_comments').'.content)'] = strtoupper($this->content);
 		$where['author_ip'] = $this->author_ip;
 		$cnt = $this->_parent_model->record_count($where);
 		return ($cnt > 0);

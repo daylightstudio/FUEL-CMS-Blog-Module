@@ -35,14 +35,14 @@ class Blog_posts_model extends Base_module_model {
 	{
 		$CI =& get_instance();
 		$CI->load->module_model(BLOG_FOLDER, 'blog_categories_model');
-		$CI->load->module_model(BLOG_FOLDER, 'blog_posts_to_categories_model');
+		$CI->load->module_model(FUEL_FOLDER, 'relationships_model');
 		$CI->load->helper('array');
 
 		$return = array();
 		
 		$where = ($just_published) ? $where = array('published' => 'yes') : array();
 		$categories = $CI->blog_categories_model->find_all($where, 'precedence asc');
-		$posts_to_categories = $CI->blog_posts_to_categories_model->find_all($where, 'title asc');
+		$posts_to_categories = $CI->relationships_model->find_by_candidate($this->_tables['blog_posts'], $this->_tables['blog_categories']);
 		if (empty($posts_to_categories)) return array();
 		
 		foreach($categories as $category)
@@ -52,8 +52,8 @@ class Blog_posts_model extends Base_module_model {
 		
 		foreach($posts_to_categories as $val)
 		{
-			$attributes = ($val->published == 'no') ? array('class' => 'unpublished', 'title' => 'unpublished') : NULL;
-			$return['p_'.$val->post_id.'_c'.$val->category_id] = array('label' => $val->title, 'parent_id' => $val->category_id, 'location' => fuel_url('blog/posts/edit/'.$val->post_id), 'attributes' => $attributes, 'precedence' => 100000);
+			$attributes = ($val->candidate_published == 'no') ? array('class' => 'unpublished', 'title' => 'unpublished') : NULL;
+			$return['p_'.$val->candidate_id.'_c'.$val->foreign_id] = array('label' => $val->candidate_title, 'parent_id' => $val->foreign_id, 'location' => fuel_url('blog/posts/edit/'.$val->candidate_id), 'attributes' => $attributes, 'precedence' => 100000);
 		}
 		$return = array_sorter($return, 'precedence', 'asc');
 		return $return;
@@ -172,19 +172,6 @@ class Blog_posts_model extends Base_module_model {
 
 		return $values;
 	}
-
-	// cleanup posts to categories
-	function on_after_delete($where)
-	{
-		$CI =& get_instance();
-		$CI->load->module_model('blog', 'blog_posts_to_categories_model');
-		if (is_array($where) && isset($where['id']))
-		{
-			$where = array('post_id' => $where['id']);
-			$CI->blog_posts_to_categories_model->delete($where);
-		}
-	}
-
 
 	function _common_query()
 	{
