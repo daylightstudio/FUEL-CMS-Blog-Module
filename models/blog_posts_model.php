@@ -12,7 +12,11 @@ class Blog_posts_model extends Base_module_model {
 	public $unique_fields = array('slug');
 	public $linked_fields = array('slug' => array('title' => 'url_title'));
 
-	public $has_many = array('categories' => array('module' => 'blog', 'model' => 'blog_categories'));
+	public $has_many = array(
+		'categories' => array(
+			'model' => array('blog' => 'blog_categories')
+			)
+		);
 
 	function __construct()
 	{
