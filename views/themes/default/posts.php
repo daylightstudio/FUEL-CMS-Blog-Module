@@ -1,3 +1,3 @@
-<h1><?=$this->fuel_blog->settings('title')?></h1>
+<h1><?=$this->fuel->blog->config('title')?></h1>
 
-<?=$this->fuel_blog->block('posts')?>
+<?=$this->fuel->blog->block('posts')?>

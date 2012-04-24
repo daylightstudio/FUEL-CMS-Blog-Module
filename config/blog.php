@@ -26,7 +26,7 @@ $config['blog'] = array();
 $config['blog']['settings']['title'] = array();
 $config['blog']['settings']['description'] = array('size' => '80');
 $config['blog']['settings']['uri'] = array('value' => 'blog');
-$config['blog']['settings']['theme_path'] = array('value' => 'default');
+$config['blog']['settings']['theme_path'] = array('value' => 'themes/default');
 $config['blog']['settings']['theme_layout'] = array('value' => 'blog', 'size' => '20');
 $config['blog']['settings']['theme_module'] = array('value' => 'blog', 'size' => '20');
 $config['blog']['settings']['use_cache'] = array('type' => 'checkbox', 'value' => '1');

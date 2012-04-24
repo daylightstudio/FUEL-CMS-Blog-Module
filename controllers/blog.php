@@ -15,7 +15,7 @@ class Blog extends Blog_base_controller {
 		$month = (int) $this->uri->rsegment(3);
 		$day = (int) $this->uri->rsegment(4);
 		$slug = $this->uri->rsegment(5);
-		$limit = (int) $this->fuel->blog->settings('per_page');
+		$limit = (int) $this->fuel->blog->config('per_page');
 		
 		$view_by = 'page';
 		
@@ -70,7 +70,7 @@ class Blog extends Blog_base_controller {
 			}
 			else
 			{
-				$limit = $this->fuel->blog->settings('per_page');
+				$limit = $this->fuel->blog->config('per_page');
 				$this->load->library('pagination');
 				$config['uri_segment'] = 3;
 				$offset = $this->uri->segment($config['uri_segment']);
@@ -129,7 +129,7 @@ class Blog extends Blog_base_controller {
 		}
 		
 		$this->load->library('session');
-		$blog_config = $this->config->item('blog');
+		$blog_config = $this->fuel->blog->config();
 
 		// run before_posts_by_date hook
 		$hook_params = array('slug' => $slug);
@@ -180,7 +180,7 @@ class Blog extends Blog_base_controller {
 			{
 				$this->load->library('form');
 				
-				if (is_true_val($this->fuel->blog->settings('use_captchas')))
+				if (is_true_val($this->fuel->blog->config('use_captchas')))
 				{
 					$captcha = $this->_render_captcha();
 					$vars['captcha'] = $captcha;
@@ -244,7 +244,7 @@ class Blog extends Blog_base_controller {
 	}
 	function _process_comment($post)
 	{
-		if (!is_true_val($this->fuel->blog->settings('allow_comments'))) return;
+		if (!is_true_val($this->fuel->blog->config('allow_comments'))) return;
 		
 		$notified = FALSE;
 		
@@ -302,13 +302,13 @@ class Blog extends Blog_base_controller {
 			$comment = $this->_filter_comment($comment);
 
 			// set published status
-			if (is_true_val($comment->is_spam) OR $this->fuel->blog->settings('monitor_comments'))
+			if (is_true_val($comment->is_spam) OR $this->fuel->blog->config('monitor_comments'))
 			{
 				$comment->published = 'no';
 			}
 			
 			// save comment if saveable and redirect
-			if (!is_true_val($comment->is_spam) OR (is_true_val($comment->is_spam) AND $this->fuel->blog->settings('save_spam')))
+			if (!is_true_val($comment->is_spam) OR (is_true_val($comment->is_spam) AND $this->fuel->blog->config('save_spam')))
 			{
 				if ($comment->save())
 				{
@@ -340,7 +340,7 @@ class Blog extends Blog_base_controller {
 		$valid = TRUE;
 		
 		// check captcha
-		if (is_true_val($this->fuel->blog->settings('use_captchas')))
+		if (is_true_val($this->fuel->blog->config('use_captchas')))
 		{
 			if (!$this->input->post('captcha'))
 			{
@@ -375,7 +375,7 @@ class Blog extends Blog_base_controller {
 	{
 		$valid = TRUE;
 		
-		$time_exp_secs = $this->fuel->blog->settings('multiple_comment_submission_time_limit');
+		$time_exp_secs = $this->fuel->blog->config('multiple_comment_submission_time_limit');
 		$last_comment_time = ($this->session->userdata('last_comment_time')) ? $this->session->userdata('last_comment_time') : 0;
 		$last_comment_ip = ($this->session->userdata('last_comment_ip')) ? $this->session->userdata('last_comment_ip') : 0;
 		if ($_SERVER['REMOTE_ADDR'] == $last_comment_ip AND !empty($time_exp_secs))
@@ -391,7 +391,7 @@ class Blog extends Blog_base_controller {
 	// process through akisment
 	function _process_akismet($comment)
 	{
-		if ($this->fuel->blog->settings('akismet_api_key'))
+		if ($this->fuel->blog->config('akismet_api_key'))
 		{
 			$this->load->module_library(BLOG_FOLDER, 'akismet');
 
@@ -403,7 +403,7 @@ class Blog extends Blog_base_controller {
 
 			$config = array(
 				'blog_url' => $this->fuel->blog->url(),
-				'api_key' => $this->fuel->blog->settings('akismet_api_key'),
+				'api_key' => $this->fuel->blog->config('akismet_api_key'),
 				'comment' => $akisment_comment
 			);
 
@@ -461,9 +461,9 @@ class Blog extends Blog_base_controller {
 			$config['wordwrap'] = TRUE;
 			$this->load->library('email', $config);
 
-			$this->email->from($this->config->item('from_email', 'fuel'), $this->config->item('site_name', 'fuel'));
+			$this->email->from($this->fuel->config('from_email'), $this->fuel->config('site_name'));
 			$this->email->to($post->author->email); 
-			$this->email->subject(lang('blog_comment_monitor_subject', $this->fuel->blog->settings('title')));
+			$this->email->subject(lang('blog_comment_monitor_subject', $this->fuel->blog->config('title')));
 
 			$msg = lang('blog_comment_monitor_msg');
 			$msg .= "\n".fuel_url('blog/comments/edit/'.$comment->id)."\n\n";

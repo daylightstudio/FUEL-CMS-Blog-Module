@@ -34,7 +34,7 @@ class Search extends Blog_base_controller {
 		$vars['page_title'] = lang('blog_search_page_title', '&ldquo;'.$q.'&rdquo;');
 		if (!empty($q))
 		{
-			$limit = $this->fuel->blog->settings('per_page');
+			$limit = $this->fuel->blog->config('per_page');
 			if ($use_get)
 			{
 				$this->config->set_item('enable_query_strings', TRUE);

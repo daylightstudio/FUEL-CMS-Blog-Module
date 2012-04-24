@@ -5,7 +5,7 @@
 	<ul>
 		<?php foreach ($categories as $category) : ?>
 		<li>
-			<?=fuel_edit($category->id, 'Edit Category: '.$category->name, 'blog/categories')?>
+			<?=fuel_edit($category)?>
 			<a href="<?=$category->url?>"><?=$category->name?></a> (<?=$category->posts_count?>)
 		</li>
 		<?php endforeach; ?>

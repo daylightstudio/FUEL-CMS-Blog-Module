@@ -76,7 +76,7 @@ class Blog_posts_model extends Base_module_model {
 		$fields['author_id'] = array('label' => 'Author', 'type' => 'select', 'options' => $user_options, 'first_option' => 'Select an author...', 'value' => $user_value, 'comment' => $author_comment);
 		if (!isset($values['allow_comments']))
 		{
-			$fields['allow_comments']['value'] = ($CI->fuel->blog->settings('allow_comments')) ? 'yes' : 'no';
+			$fields['allow_comments']['value'] = ($CI->fuel->blog->config('allow_comments')) ? 'yes' : 'no';
 		} 
 		
 		if (!empty($blog_config['formatting']) )
@@ -96,7 +96,7 @@ class Blog_posts_model extends Base_module_model {
 		$fields['excerpt']['style'] = 'width: 680px;';
 		$fields['published']['order'] = 10000;
 		
-		if (!is_true_val($CI->fuel->blog->settings('allow_comments')))
+		if (!is_true_val($CI->fuel->blog->config('allow_comments')))
 		{
 			unset($fields['allow_comments']);
 		}
@@ -107,13 +107,13 @@ class Blog_posts_model extends Base_module_model {
 		$fields['last_modified']['type'] = 'hidden'; // so it will auto add
 		$fields['slug']['order'] = 3; // for older versions where the schema order was different
 		
-		$fields['main_image']['folder'] = $CI->fuel->blog->settings('asset_upload_path');
+		$fields['main_image']['folder'] = $CI->fuel->blog->config('asset_upload_path');
 		$fields['main_image']['img_styles'] = 'float: left; width: 200px;';
 		
-		$fields['list_image']['folder'] = $CI->fuel->blog->settings('asset_upload_path');
+		$fields['list_image']['folder'] = $CI->fuel->blog->config('asset_upload_path');
 		$fields['list_image']['img_styles'] = 'float: left; width: 100px;';
 
-		$fields['thumbnail_image']['folder'] = $CI->fuel->blog->settings('asset_upload_path');
+		$fields['thumbnail_image']['folder'] = $CI->fuel->blog->config('asset_upload_path');
 		$fields['thumbnail_image']['img_styles'] = 'float: left; width: 60px;';
 
 		return $fields;
@@ -176,12 +176,14 @@ class Blog_posts_model extends Base_module_model {
 	function _common_query()
 	{
 		$this->db->select($this->_tables['blog_posts'].'.*, '.$this->_tables['blog_users'].'.display_name, CONCAT('.$this->_tables['users'].'.first_name, " ", '.$this->_tables['users'].'.last_name) as author_name', FALSE);
-		$this->db->join($this->_tables['blog_relationships'], $this->_tables['blog_relationships'].'.candidate_key = '.$this->_tables['blog_posts'].'.id', 'left');
+		
+		$rel_join = $this->_tables['blog_relationships'].'.candidate_key = '.$this->_tables['blog_posts'].'.id AND ';
+		$rel_join .= $this->_tables['blog_relationships'].'.candidate_table = "'.$this->_tables['blog_posts'].'" AND ';
+		$rel_join .= $this->_tables['blog_relationships'].'.foreign_table = "'.$this->_tables['blog_categories'].'"';
+		$this->db->join($this->_tables['blog_relationships'], $rel_join, 'left');
 		$this->db->join($this->_tables['blog_users'], $this->_tables['blog_users'].'.fuel_user_id = '.$this->_tables['blog_posts'].'.author_id', 'left');
 		$this->db->join($this->_tables['users'], $this->_tables['users'].'.id = '.$this->_tables['blog_posts'].'.author_id', 'left');
 		$this->db->join($this->_tables['blog_categories'], $this->_tables['blog_categories'].'.id = '.$this->_tables['blog_relationships'].'.foreign_key', 'left');
-		$this->db->where($this->_tables['blog_relationships'].'.candidate_table', $this->_tables['blog_posts']);
-		$this->db->where($this->_tables['blog_relationships'].'.foreign_table', $this->_tables['blog_categories']);
 		$this->db->group_by($this->_tables['blog_posts'].'.id');
 	}
 
@@ -346,7 +348,7 @@ class Blog_post_model extends Base_module_record {
 	{
 		$CI =& get_instance();
 		$img = $this->get_image($type);
-		$path = $CI->fuel->blog->settings('asset_upload_path').$img;
+		$path = $CI->fuel->blog->config('asset_upload_path').$img;
 		return assets_path($path);
 	}
 	
@@ -397,7 +399,7 @@ class Blog_post_model extends Base_module_record {
 	{
 		if (is_null($this->_fields['allow_comments']))
 		{
-			return is_true_val($this->_CI->fuel->blog->settings('allow_comments'));
+			return is_true_val($this->_CI->fuel->blog->config('allow_comments'));
 		}
 		else
 		{
@@ -406,7 +408,7 @@ class Blog_post_model extends Base_module_record {
 	}	
 	function is_within_comment_time_limit()
 	{
-		$time_limit = (int) $this->_CI->fuel->blog->settings('comments_time_limit') * (24 * 60 * 60);
+		$time_limit = (int) $this->_CI->fuel->blog->config('comments_time_limit') * (24 * 60 * 60);
 		if (!empty($time_limit))
 		{
 			$post_date = strtotime($this->post_date);

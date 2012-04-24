@@ -9,7 +9,7 @@
  *
  * @package		FUEL CMS
  * @author		David McReynolds @ Daylight Studio
- * @copyright	Copyright (c) 2011, Run for Daylight LLC.
+ * @copyright	Copyright (c) 2012, Run for Daylight LLC.
  * @license		http://www.getfuelcms.com/user_guide/general/license
  * @link		http://www.getfuelcms.com
  * @filesource
@@ -73,15 +73,15 @@ class Fuel_blog extends Fuel_advanced_module {
 				}
 			}
 		}
-		
-		if ($this->CI->config->item('blog_use_db_table_settings'))
-		{
-			$this->_settings = $this->fuel->settings->get('blog');
-		}
-		else
-		{
-			$this->_settings = $this->CI->config->item('blog');
-		}
+		// 
+		// if ($this->CI->config->item('blog_use_db_table_settings'))
+		// {
+		// 	$this->_settings = $this->fuel->settings->get('blog');
+		// }
+		// else
+		// {
+		// 	$this->_settings = $this->CI->config->item('blog');
+		// }
 		
 	}
 
@@ -95,7 +95,7 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	function title()
 	{
-		return $this->settings('title');
+		return $this->config('title');
 	}
 
 	// --------------------------------------------------------------------
@@ -108,7 +108,7 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	function description()
 	{
-		return $this->settings('description');
+		return $this->config('description');
 	}
 
 	// --------------------------------------------------------------------
@@ -171,7 +171,9 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	function url($uri = '')
 	{
-		return site_url($this->settings('uri').$uri);
+		$uri = trim($uri, '/');
+		$base_uri = trim($this->config('uri'), '/');
+		return site_url($base_uri.'/'.$uri);
 	}
 
 	// --------------------------------------------------------------------
@@ -292,7 +294,8 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	function theme_path()
 	{
-		return $this->settings('theme_path');
+		$theme_path = trim($this->config('theme_path'), '/').'/';
+		return $theme_path;
 	}
 
 	// --------------------------------------------------------------------
@@ -305,7 +308,7 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	function layout()
 	{
-		return '_layouts/'.$this->settings('theme_layout');
+		return '_layouts/'.$this->config('theme_layout');
 	}
 	
 	// --------------------------------------------------------------------
@@ -321,7 +324,7 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	function image_path($image, $variable = NULL, $is_server = FALSE)
 	{
-		$base_path = $this->CI->fuel_blog->settings('asset_upload_path');
+		$base_path = $this->fuel->blog->config('asset_upload_path');
 		$base_path = preg_replace('#(\{.+\})#U', $variable, $base_path);
 
 		if ($is_server)
@@ -344,28 +347,28 @@ class Fuel_blog extends Fuel_advanced_module {
 	 * @param	string
 	 * @return	array
 	 */
-	function settings($key = NULL)
-	{
-		if (isset($key))
-		{
-			if (isset($this->_settings[$key]))
-			{
-				if (is_numeric($this->_settings[$key]))
-				{
-					return (int) $this->_settings[$key];
-				}
-				else
-				{
-					return $this->_settings[$key];
-				}
-			}
-		}
-		else if ($key == 'all')
-		{
-			return $this->_settings;
-		}
-		return NULL;
-	}
+	// function settings($key = NULL)
+	// {
+	// 	if (isset($key))
+	// 	{
+	// 		if (isset($this->_settings[$key]))
+	// 		{
+	// 			if (is_numeric($this->_settings[$key]))
+	// 			{
+	// 				return (int) $this->_settings[$key];
+	// 			}
+	// 			else
+	// 			{
+	// 				return $this->_settings[$key];
+	// 			}
+	// 		}
+	// 	}
+	// 	else if ($key == 'all')
+	// 	{
+	// 		return $this->_settings;
+	// 	}
+	// 	return NULL;
+	// }
 	
 	// --------------------------------------------------------------------
 
@@ -395,7 +398,7 @@ class Fuel_blog extends Fuel_advanced_module {
 	function view($view, $vars = array(), $return = TRUE)
 	{
 		$view_folder = $this->theme_path();
-		$block = $this->CI->load->module_view($this->settings('theme_module'), $view_folder.$view, $vars, TRUE);
+		$block = $this->CI->load->module_view($this->config('theme_module'), $view_folder.$view, $vars, TRUE);
 		if ($return)
 		{
 			return $block;
@@ -1007,7 +1010,7 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	function use_cache()
 	{
-		$use_cache = (int) $this->settings('use_cache');
+		$use_cache = (int) $this->config('use_cache');
 		return !(empty($use_cache));
 	}
 
@@ -1024,7 +1027,7 @@ class Fuel_blog extends Fuel_advanced_module {
 	{
 		if ($this->use_cache())
 		{
-			$cache_options =  array('default_ttl' => $this->settings('cache_ttl'));
+			$cache_options =  array('default_ttl' => $this->config('cache_ttl'));
 			$this->CI->load->library('cache', $cache_options);
 			$cache_group = $this->CI->config->item('blog_cache_group');
 
@@ -1051,13 +1054,13 @@ class Fuel_blog extends Fuel_advanced_module {
 	{
 		if ($this->use_cache())
 		{
-			$cache_options =  array('default_ttl' => $this->settings('cache_ttl'));
+			$cache_options =  array('default_ttl' => $this->config('cache_ttl'));
 			$this->CI->load->library('cache', $cache_options);
 
 			$cache_group = $this->CI->config->item('blog_cache_group');
 
 			// save to cache
-			$this->CI->cache->save($cache_id, $output, $cache_group, $this->settings('cache_ttl'));
+			$this->CI->cache->save($cache_id, $output, $cache_group, $this->config('cache_ttl'));
 		}
 	}
 
@@ -1106,9 +1109,9 @@ class Fuel_blog extends Fuel_advanced_module {
 		$title_arr = array();
 		if (!isset($sep))
 		{
-			$sep = $this->settings('page_title_separator');
+			$sep = $this->config('page_title_separator');
 		}
-		if ($order == 'left') $title_arr[] = $this->settings('title');
+		if ($order == 'left') $title_arr[] = $this->config('title');
 		if (is_array($title))
 		{
 			foreach($title as $val)
@@ -1120,7 +1123,7 @@ class Fuel_blog extends Fuel_advanced_module {
 		{
 			array_push($title_arr, $title);
 		}
-		if ($order == 'right') $title_arr[] = $this->settings('title');
+		if ($order == 'right') $title_arr[] = $this->config('title');
 		return implode($sep, $title_arr);
 	}
 	

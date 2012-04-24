@@ -26,8 +26,7 @@ class Blog_base_controller extends CI_Controller {
 		if (empty($layout)) $layout = '_layouts/'.$this->fuel->blog->layout();
 
 		// get any global variables for the headers and footers
-		$uri_path = trim($this->fuel->blog->settings('uri'), '/');
-		
+		$uri_path = trim($this->fuel->blog->config('uri'), '/');
 		$_vars = $this->fuel->pagevars->retrieve($uri_path);
 		
 		if (is_array($_vars))
@@ -41,15 +40,14 @@ class Blog_base_controller extends CI_Controller {
 		
 		if (!empty($layout))
 		{
-			$vars['body'] = $this->load->module_view($this->fuel->blog->settings('theme_module'), $view_folder.$view, $vars, TRUE);
+			$vars['body'] = $this->load->module_view($this->fuel->blog->config('theme_module'), $view_folder.$view, $vars, TRUE);
 			$view = $this->fuel->blog->theme_path().$this->fuel->blog->layout();
 		}
 		else
 		{
 			$view = $view_folder.$view;
 		}
-
-		$output = $this->load->module_view($this->fuel->blog->settings('theme_module'), $view, $vars, TRUE);
+		$output = $this->load->module_view($this->fuel->blog->config('theme_module'), $view, $vars, TRUE);
 		$output = $page->fuelify($output);
 
 		if ($return)

@@ -3,7 +3,7 @@
 	<?php if (!empty($posts)) : ?>
 		<?php foreach($posts as $post) : ?>
 		<div class="post">
-			<?=fuel_edit($post->id, 'Edit Post: '.$post->title, 'blog/posts')?>
+			<?=fuel_edit($post)?>
 
 			<?=blog_block('post_unpublished', array('post' => $post))?>
 		

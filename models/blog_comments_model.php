@@ -187,7 +187,7 @@ class Blog_comments_model extends Base_module_model {
 				// send email
 				$CI->email->from($this->config->item('from_email', 'fuel'), $this->config->item('site_name', 'fuel'));
 				$CI->email->to($to); 
-				$msg = $CI->email->subject(lang('blog_comment_reply_subject', $this->fuel_blog->settings('title')));
+				$msg = $CI->email->subject(lang('blog_comment_reply_subject', $this->fuel->blog->config('title')));
 				$msg = lang('blog_comment_reply_msg', $CI->fuel->auth->user_data('email'), $post->title);
 				$msg .= "\n\n".$comment->content;
 				$msg .= "\n\n".$post->url."\n\n";

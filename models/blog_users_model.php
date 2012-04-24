@@ -45,7 +45,7 @@ class Blog_users_model extends Base_module_model {
 		$CI->load->module_model(FUEL_FOLDER, 'users_model');
 		$CI->load->module_library(BLOG_FOLDER, 'fuel_blog');
 		$options = $CI->users_model->options_list();
-		$upload_image_path = assets_server_path($CI->fuel_blog->settings('asset_upload_path'));
+		$upload_image_path = assets_server_path($CI->fuel->blog->settings('asset_upload_path'));
 		$fields['fuel_user_id'] = array('label' => 'User', 'type' => 'select', 'options' => $options);
 
 		return $fields;
@@ -62,7 +62,7 @@ class Blog_users_model extends Base_module_model {
 	
 	function _common_query()
 	{
-		$this->db->select('fuel_blog_users.*,  fuel_users.id, CONCAT(first_name, " ", last_name) as name, fuel_users.first_name, fuel_users.last_name, fuel_users.email, fuel_users.user_name, fuel_users.active', FALSE);
+		$this->db->select('fuel_blog_users.*,  fuel_users.id, CONCAT(first_name, " ", last_name) as name, fuel_users.first_name, fuel_users.last_name, fuel_users.email, fuel_users.user_name, fuel_users.active as users_active', FALSE);
 		$this->db->select('posts_count'); // for temp table to get posts count
 		$this->db->join('fuel_users', 'fuel_users.id = fuel_blog_users.fuel_user_id', 'left');
 		$this->db->join('fuel_blog_posts', 'fuel_blog_posts.author_id = fuel_users.id', 'left'); // left or inner????
@@ -112,9 +112,6 @@ class Blog_user_model extends Base_module_record {
 	
 	function get_avatar_image_path()
 	{
-		//$this->_CI->load->module_library(BLOG_FOLDER, 'fuel_blog');
-		//$image_path = $this->_CI->fuel_blog->settings('asset_upload_path');
-		//return assets_path($image_path.$this->avatar_image);
 		return img_path($this->avatar_image);
 	}
 

@@ -1,5 +1,5 @@
 <div class="post">
-	<?=fuel_edit($post->id, 'Edit Post', 'blog/posts')?>
+	<?=fuel_edit($post)?>
 	
 	<?=blog_block('post_unpublished', array('post' => $post))?>
 	
