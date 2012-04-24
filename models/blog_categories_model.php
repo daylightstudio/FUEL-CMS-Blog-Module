@@ -8,7 +8,11 @@ class Blog_categories_model extends Base_module_model {
 	public $unique_fields = array('slug', 'name');
 	public $linked_fields = array('slug' => array('name' => 'url_title'));
 
-	public $belongs_to = array('posts' => array('module' => 'blog', 'model' => 'blog_posts'));
+	public $belongs_to = array(
+		'posts' => array(
+			'model' => array('blog' => 'blog_posts')
+			)
+		);
 	
 	function __construct()
 	{
