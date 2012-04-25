@@ -65,9 +65,14 @@ class Blog_categories_model extends Base_module_model {
 	function get_published_categories()
 	{
 		$published_categories = $this->get_related_keys(array(), $this->belongs_to['posts'], 'belongs_to', 'fuel_blog_categories');
-		$categories_query_params = array('where_in' => array('id' => $published_categories));
-		$categories_query = $this->query($categories_query_params);
-		return $categories_query->result();
+		$categories_query_params = array();
+		if (!empty($published_categories))
+		{
+			$categories_query_params = array('where_in' => array('id' => $published_categories));
+			$categories_query = $this->query($categories_query_params);
+			return $categories_query->result();
+		}
+		return array();
 	}
 }
 
