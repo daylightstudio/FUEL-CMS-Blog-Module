@@ -1,1 +1,1 @@
-<?php $this->load->module_view(BLOG_FOLDER, $this->fuel->blog->config('theme_path').'posts'); ?>
+<?php $this->load->module_view(BLOG_FOLDER, $this->fuel->blog->theme_path().'posts'); ?>
