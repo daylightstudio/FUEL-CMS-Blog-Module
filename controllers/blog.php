@@ -46,7 +46,7 @@ class Blog extends Blog_base_controller {
 		else
 		{
 			$vars = $this->_common_vars();
-			
+
 			if ($view_by == 'slug')
 			{
 				return $this->post($slug);
@@ -65,7 +65,7 @@ class Blog extends Blog_base_controller {
 				
 				$vars = array_merge($vars, $hook_params);
 				$vars['page_title'] = $page_title_arr;
-				$vars['posts'] = $this->fuel->blog->get_posts_by_date($year, (int) $month, $day, $slug, $limit);
+				$vars['posts'] = $this->fuel->blog->get_posts_by_date($year, (int) $month, $day, $slug);
 				$vars['pagination'] = '';
 			}
 			else
