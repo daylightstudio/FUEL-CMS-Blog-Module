@@ -689,7 +689,8 @@ class Fuel_blog extends Fuel_advanced_module {
 	 * Returns the next post (if any) from a given date
 	 *
 	 * @access	public
-	 * @param	mixed	can be id or slug
+	 * @param	object	The current post
+	 * @param	string	The return type of the object (array or object)
 	 * @return	object
 	 */
 	function get_next_post($current_post, $return_method = NULL)
@@ -708,7 +709,8 @@ class Fuel_blog extends Fuel_advanced_module {
 	 * Returns the previous post (if any) from a given date
 	 *
 	 * @access	public
-	 * @param	mixed	can be id or slug
+	 * @param	object	The current post
+	 * @param	string	The return type of the object (array or object)
 	 * @return	object
 	 */
 	function get_prev_post($current_post, $return_method = NULL)
