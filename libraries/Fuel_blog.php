@@ -846,6 +846,7 @@ class Fuel_blog extends Fuel_advanced_module {
 		$i = 0;
 		foreach($terms as $t)
 		{
+			$t = $this->_CI->db->escape_str($t);
 			$where .= "(title LIKE '%".$t."%' OR content LIKE '%".$t."%' OR content_filtered LIKE '%".$t."%')";
 			if ($i < $cnt - 1) $where .= " AND ";
 			$i++;
@@ -1192,6 +1193,8 @@ class Fuel_blog extends Fuel_advanced_module {
 					$where[$tables[$t].'.post_date <= '] = datetime_now();
 				}
 			}
+
+			// commented out because it needs to be an array syntax for now
 			else
 			{
 			//	$where .= ' AND '.$tables[$t].'.published = "yes"';

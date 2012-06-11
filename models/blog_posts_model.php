@@ -11,6 +11,7 @@ class Blog_posts_model extends Base_module_model {
 	public $filters = array('title', 'content_filtered', 'fuel_users.first_name', 'fuel_users.last_name');
 	public $unique_fields = array('slug');
 	public $linked_fields = array('slug' => array('title' => 'url_title'));
+	public $display_unpublished_if_logged_in = TRUE; // determines whether to display unpublished content on the front end if you are logged in to the CMS
 
 	public $has_many = array(
 		'categories' => array(
@@ -179,6 +180,8 @@ class Blog_posts_model extends Base_module_model {
 
 	function _common_query()
 	{
+		parent::_common_query();
+		
 		$this->db->select($this->_tables['blog_posts'].'.*, '.$this->_tables['blog_users'].'.display_name, CONCAT('.$this->_tables['users'].'.first_name, " ", '.$this->_tables['users'].'.last_name) as author_name', FALSE);
 		
 		$rel_join = $this->_tables['blog_relationships'].'.candidate_key = '.$this->_tables['blog_posts'].'.id AND ';
