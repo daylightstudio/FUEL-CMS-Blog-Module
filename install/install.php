@@ -11,8 +11,6 @@ $config['description'] = 'The FUEL Blog Module can be used to create posts and a
 $config['compatibility'] = '1.0';
 $config['instructions'] = '';
 $config['permissions'] = 'blog';
-$config['migration_version'] = 1;
+$config['migration_version'] = 0;
 $config['install_sql'] = 'fuel_blog_install.sql';
-$config['uninstall_sql'] = '';
-?>
- /Applications/MAMP/bin/php/php5.3.6/bin/php index.php fuel/installer/install backupgit://github.com/daylightstudio/FUEL-CMS-Blog-Module.git blog
+$config['uninstall_sql'] = 'fuel_blog_uninstall.sql';
