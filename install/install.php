@@ -12,6 +12,7 @@ $config['compatibility'] = '1.0';
 $config['instructions'] = '';
 $config['permissions'] = 'blog';
 $config['migration_version'] = 1;
-$config['install_sql'] = 'fuel_blog.sql';
+$config['install_sql'] = 'fuel_blog_install.sql';
 $config['uninstall_sql'] = '';
 ?>
+ /Applications/MAMP/bin/php/php5.3.6/bin/php index.php fuel/installer/install backupgit://github.com/daylightstudio/FUEL-CMS-Blog-Module.git blog
