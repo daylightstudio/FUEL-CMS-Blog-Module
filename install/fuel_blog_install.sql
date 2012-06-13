@@ -23,7 +23,7 @@
 # Dump of table fuel_blog_categories
 # ------------------------------------------------------------
 
-CREATE TABLE `fuel_blog_categories` (
+CREATE TABLE IF NOT EXISTS `fuel_blog_categories` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `slug` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'If left blank, the slug will automatically be created for you.',
@@ -39,7 +39,7 @@ CREATE TABLE `fuel_blog_categories` (
 # Dump of table fuel_blog_comments
 # ------------------------------------------------------------
 
-CREATE TABLE `fuel_blog_comments` (
+CREATE TABLE IF NOT EXISTS `fuel_blog_comments` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `post_id` int(10) unsigned NOT NULL,
   `parent_id` int(10) unsigned NOT NULL,
@@ -61,7 +61,7 @@ CREATE TABLE `fuel_blog_comments` (
 # Dump of table fuel_blog_links
 # ------------------------------------------------------------
 
-CREATE TABLE `fuel_blog_links` (
+CREATE TABLE IF NOT EXISTS `fuel_blog_links` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `url` varchar(255) DEFAULT NULL,
@@ -77,7 +77,7 @@ CREATE TABLE `fuel_blog_links` (
 # Dump of table fuel_blog_posts
 # ------------------------------------------------------------
 
-CREATE TABLE `fuel_blog_posts` (
+CREATE TABLE IF NOT EXISTS `fuel_blog_posts` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `content` text COLLATE utf8_unicode_ci NOT NULL,
@@ -104,7 +104,7 @@ CREATE TABLE `fuel_blog_posts` (
 # Dump of table fuel_blog_users
 # ------------------------------------------------------------
 
-CREATE TABLE `fuel_blog_users` (
+CREATE TABLE IF NOT EXISTS `fuel_blog_users` (
   `fuel_user_id` int(10) unsigned NOT NULL,
   `display_name` varchar(50) NOT NULL,
   `website` varchar(100) NOT NULL,
