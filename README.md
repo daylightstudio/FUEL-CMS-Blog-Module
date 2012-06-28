@@ -20,8 +20,9 @@ Type in:
 
 2. Create a "blog" folder in fuel/modules/ and place the contents of the blog module folder in there.
 
-3. Then to install, open up a Terminal window, "cd" to your FUEL CMS installation then type type in:
-``php index.php fuel/installer/install blog``
+3. Import the fuel_blog_install.sql and fuel_blog_permissions_install.sql from the blog/install folder into your database
+
+4. Add "blog" to the the `$config['modules_allowed']` in fuel/application/config/MY_fuel.php
 
 ## UNINSTALL
 
