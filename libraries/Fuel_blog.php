@@ -846,7 +846,7 @@ class Fuel_blog extends Fuel_advanced_module {
 		$i = 0;
 		foreach($terms as $t)
 		{
-			$t = $this->_CI->db->escape_str($t);
+			$t = $this->CI->db->escape_str($t);
 			$where .= "(title LIKE '%".$t."%' OR content LIKE '%".$t."%' OR content_filtered LIKE '%".$t."%')";
 			if ($i < $cnt - 1) $where .= " AND ";
 			$i++;
