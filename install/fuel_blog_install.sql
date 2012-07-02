@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS `fuel_blog_comments` (
   `author_name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `author_email` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `author_website` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `author_ip` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+  `author_ip` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `is_spam` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
   `content` text COLLATE utf8_unicode_ci NOT NULL,
   `published` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'yes',
@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS `fuel_blog_posts` (
   `post_date` datetime NOT NULL,
   `date_added` datetime DEFAULT NULL,
   `last_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `published` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL,
+  `published` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'yes',
   PRIMARY KEY (`id`),
   UNIQUE KEY `permalink` (`slug`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
