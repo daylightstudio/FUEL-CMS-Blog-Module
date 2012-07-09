@@ -870,7 +870,7 @@ class Fuel_blog extends Fuel_advanced_module {
 	 * @param	string
 	 * @return	array
 	 */
-	function get_comments($where = array(), $order_by = 'post_date desc', $limit = NULL, $offset = NULL, $return_method = NULL, $assoc_key = NULL)
+	function get_comments($where = array(), $order_by = 'date_added desc', $limit = NULL, $offset = NULL, $return_method = NULL, $assoc_key = NULL)
 	{
 		$this->CI->load->module_model(BLOG_FOLDER, 'blog_comments_model');
 		$this->CI->blog_comments_model->readonly = TRUE;

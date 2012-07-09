@@ -121,6 +121,11 @@ class Blog_posts_model extends Base_module_model {
 		$fields['thumbnail_image']['folder'] = $CI->fuel->blog->config('asset_upload_path');
 		$fields['thumbnail_image']['img_styles'] = 'float: left; width: 60px;';
 
+		if (empty($fields['post_date']['value']))
+		{
+			$fields['post_date']['value'] = datetime_now();
+		}
+
 		return $fields;
 	}
 	
@@ -250,7 +255,7 @@ class Blog_post_model extends Base_module_record {
 		return ($this->published === 'yes');
 	}
 	
-	function get_comments($order = 'post_date asc', $limit = NULL)
+	function get_comments($order = 'date_added asc', $limit = NULL)
 	{
 		$this->_CI->load->module_model('blog', 'blog_comments_model');
 		$where = array('post_id' => $this->id, $this->_tables['blog_comments'].'.published' => 'yes');
@@ -259,7 +264,7 @@ class Blog_post_model extends Base_module_record {
 		return $comments;
 	}
 	
-	function get_comments_count($order = 'post_date asc', $limit = NULL)
+	function get_comments_count($order = 'date_added asc', $limit = NULL)
 	{
 		$this->_CI->load->module_model('blog', 'blog_comments_model');
 		$where = array('post_id' => $this->id, $this->_tables['blog_comments'].'.published' => 'yes');
