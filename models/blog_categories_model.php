@@ -97,7 +97,10 @@ class Blog_category_model extends Base_module_record {
 	function get_posts()
 	{
 		$this->_CI->load->module_model('blog', 'blog_posts_model');
-		$category_posts_query_params = array('where_in' => array($this->_tables['blog_posts'].'.id' => $this->_get_category_posts()));
+		$cat_posts = $this->_get_category_posts();
+		if (empty($cat_posts)) return array();
+		
+		$category_posts_query_params = array('where_in' => array($this->_tables['blog_posts'].'.id' => $cat_posts));
 		$posts = $this->_CI->blog_posts_model->query($category_posts_query_params);
 		return $posts->result();
 	}
