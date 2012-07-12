@@ -333,7 +333,7 @@ class Blog_post_model extends Base_module_record {
 			{
 				$categories_linked[] = anchor($this->_CI->fuel->blog->url($category->get_url(FALSE)), $category->name);
 			}
-			$return = '<div class="post_categories">Posted in: ' . implode($categories_linked, $join) . '</div>';
+			$return = implode($categories_linked, $join);
 			return $return;
 		}
 		return NULL;
