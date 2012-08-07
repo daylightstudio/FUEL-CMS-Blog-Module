@@ -341,6 +341,25 @@ class Fuel_blog extends Fuel_advanced_module {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Returns a boolean value whether it is the home page
+	 *
+	 * @access	public
+	 * @param	object	The current post
+	 * @param	string	The return type of the object (array or object)
+	 * @return	object
+	 */
+	function is_home()
+	{
+		if (uri_path(FALSE) == $this->config('uri'))
+		{
+			return TRUE;
+		}
+		return FALSE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Returns the setting(s) information
 	 *
 	 * @access	public
