@@ -111,7 +111,7 @@ class Blog extends Blog_base_controller {
 				$this->pagination->initialize($config); 
 				$vars['pagination'] = $this->pagination->create_links();
 			}
-			
+
 			$vars['is_home'] = $this->fuel->blog->is_home();
 
 			// show the index page if the page doesn't have any uri_segment(3)'
@@ -148,6 +148,7 @@ class Blog extends Blog_base_controller {
 			$vars['next'] = $this->fuel->blog->get_next_post($post);
 			$vars['prev'] = $this->fuel->blog->get_prev_post($post);
 			$vars['slug'] = $slug;
+			$vars['is_home'] = $this->fuel->blog->is_home();
 			
 			$antispam = md5(random_string('unique'));
 			
