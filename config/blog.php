@@ -39,7 +39,7 @@ $config['blog']['settings']['multiple_comment_submission_time_limit'] = array('s
 $config['blog']['settings']['comments_time_limit'] = array('size' => '5', 'after_html' => lang('form_label_comments_time_limit_after_html'));
 $config['blog']['settings']['cache_ttl'] = array('value' => 3600, 'size' => 5);
 $config['blog']['settings']['asset_upload_path'] = array('default' => 'images/blog/');
-$config['blog']['settings']['per_page'] = array('value' => 1, 'size' => 3);
+$config['blog']['settings']['per_page'] = array('value' => 10, 'size' => 3);
 $config['blog']['settings']['page_title_separator'] = array('value' => '&laquo;', 'size' => 10);
 
 
