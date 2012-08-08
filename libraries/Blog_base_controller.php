@@ -17,6 +17,7 @@ class Blog_base_controller extends CI_Controller {
 		$vars['blog'] =& $this->fuel->blog;
 		$vars['is_blog'] = TRUE;
 		$vars['page_title'] = '';
+		$vars['is_home'] = $this->fuel->blog->is_home();
 		//$this->load->vars($vars);
 		return $vars;
 	}
