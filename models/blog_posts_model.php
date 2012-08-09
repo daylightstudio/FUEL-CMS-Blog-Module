@@ -110,7 +110,7 @@ class Blog_posts_model extends Base_module_model {
 		$fields['date_added']['type'] = 'hidden'; // so it will auto add
 		//$fields['date_added']['type'] = 'datetime'; // so it will auto add
 		$fields['last_modified']['type'] = 'hidden'; // so it will auto add
-		$fields['slug']['order'] = 3; // for older versions where the schema order was different
+		$fields['slug']['order'] = 2.5; // for older versions where the schema order was different
 		
 		$fields['main_image']['folder'] = $CI->fuel->blog->config('asset_upload_path');
 		$fields['main_image']['img_styles'] = 'float: left; width: 200px;';
@@ -169,12 +169,22 @@ class Blog_posts_model extends Base_module_model {
 	{
 		$values['title'] = strip_tags($values['title']);
 		$values['content_filtered'] = strip_tags($values['content']);
+
 		return $values;
 	}
 	
 	function on_after_save($values)
 	{
+
+		// if no category is selected, then we set it to the Uncategorized
+		$saved_data = $this->normalized_save_data;
+		if (empty($saved_data['categories']))
+		{
+			$this->normalized_save_data['categories'] = array(1);
+		}
+
 		$values = parent::on_after_save($values);
+
 		$CI =& get_instance();
 
 		// remove cache
