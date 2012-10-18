@@ -64,7 +64,9 @@ class Blog_categories_model extends Base_module_model {
 
 	function get_published_categories()
 	{
-		$published_categories = $this->get_related_keys(array(), $this->belongs_to['posts'], 'belongs_to', 'fuel_blog_categories');
+		$CI =& get_instance();
+		$published_categories = $CI->fuel->blog->model('posts')->get_related_keys(array(), $CI->fuel->blog->model('posts')->has_many['categories'], 'has_many');
+		//$published_categories = $this->get_related_keys(array(), $this->belongs_to['posts'], 'belongs_to');
 		$categories_query_params = array();
 		if (!empty($published_categories))
 		{
