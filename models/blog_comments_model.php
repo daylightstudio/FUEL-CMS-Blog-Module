@@ -71,7 +71,7 @@ class Blog_comments_model extends Base_module_model {
 			return lang('blog_error_no_posts_to_comment');
 		}
 		
-		$fields['post_id'] = array('type' => 'select', 'options' => $post_options);
+		$fields['post_id'] = array('type' => 'select', 'options' => $post_options, 'label' => 'Post');
 
 		if (!empty($values['id']))
 		{

@@ -870,7 +870,8 @@ class Fuel_blog extends Fuel_advanced_module {
 			if ($i < $cnt - 1) $where .= " AND ";
 			$i++;
 		}
-		$where .= ") AND ".$tables['blog_posts'].".published = 'yes'";
+		$where .= ") AND ".$tables['blog_posts'].".published = 'yes' AND ";
+		$where .= $tables['blog_posts'].'.post_date <= "'.datetime_now().'"';
 		$posts = $this->CI->blog_posts_model->find_all($where, $order_by, $limit, $offset);
 		return $posts;
 	}
@@ -1204,7 +1205,8 @@ class Fuel_blog extends Fuel_advanced_module {
 		{
 			if (empty($where) OR is_array($where))
 			{
-				$where[$tables[$t].'.published'] = 'yes';
+				// taken care of in the model
+				//$where[$tables[$t].'.published'] = 'yes';
 
 				// don't show posts in the future'
 				if ($t == 'blog_posts')

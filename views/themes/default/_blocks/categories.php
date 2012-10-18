@@ -1,4 +1,4 @@
-<?php $categories = $CI->fuel_blog->get_published_categories(); ?>
+<?php $categories = $CI->fuel->blog->get_published_categories(); ?>
 <?php if ( ! empty($categories)) : ?>
 <div class="blog_block">
 	<h3>Categories</h3>

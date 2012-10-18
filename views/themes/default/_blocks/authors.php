@@ -1,4 +1,4 @@
-<?php $authors = $CI->fuel_blog->get_users()?>
+<?php $authors = $CI->fuel->blog->get_users()?>
 <?php if (!empty($authors)) : ?>
 <div class="blog_block">
 	<h3>Authors</h3>

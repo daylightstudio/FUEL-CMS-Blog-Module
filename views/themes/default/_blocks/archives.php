@@ -1,4 +1,4 @@
-<?php $archives_by_month = $CI->fuel_blog->get_post_archives(); ?>
+<?php $archives_by_month = $CI->fuel->blog->get_post_archives(); ?>
 <?php if (!empty($archives_by_month)) : ?>
 <div class="blog_block">
 	<h3>Archives</h3>
