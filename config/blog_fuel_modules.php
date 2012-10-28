@@ -94,7 +94,7 @@ $config['modules']['blog_users'] = array(
 	'model_name' => 'blog_users_model',
 	'model_location' => 'blog',
 	'table_headers' => array(
-		'fuel_user_id', 
+		'id', 
 		'name', 
 		'display_name', 
 		'active' 

@@ -356,7 +356,8 @@ class Blog_post_model extends Base_module_record {
 	
 	function get_author()
 	{
-		$author = $this->lazy_load('author_id', array(BLOG_FOLDER => 'blog_users_model'));
+		$this->_CI->load->module_model(BLOG_FOLDER, 'blog_users_model');
+		$author = $this->_CI->blog_users_model->find_one(array('fuel_blog_users.fuel_user_id' => $this->author_id));
 		return $author;
 	}
 

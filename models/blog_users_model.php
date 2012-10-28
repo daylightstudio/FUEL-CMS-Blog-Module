@@ -4,10 +4,9 @@ require_once(FUEL_PATH.'models/base_module_model.php');
 
 class Blog_users_model extends Base_module_model {
 
-	public $required = array('username', 'email');
+	public $unique_fields = array('fuel_user_id');
 	public $filter_fields = array('about');
-	protected $key_field = 'fuel_user_id';
-	
+
 	function __construct()
 	{
 		parent::__construct('fuel_blog_users', BLOG_FOLDER); // table name
@@ -17,7 +16,7 @@ class Blog_users_model extends Base_module_model {
 	// used for the FUEL admin
 	function list_items($limit = NULL, $offset = NULL, $col = 'name', $order = 'asc')
 	{
-		$this->db->select('fuel_user_id, CONCAT(first_name, " ", last_name) as name, display_name, fuel_blog_users.active', FALSE);
+		$this->db->select('fuel_blog_users.id, CONCAT(first_name, " ", last_name) as name, display_name, fuel_blog_users.active', FALSE);
 		$this->db->join('fuel_users', 'fuel_users.id = fuel_blog_users.fuel_user_id', 'left');
 		$data = parent::list_items($limit, $offset, $col, $order);
 		return $data;
@@ -38,19 +37,24 @@ class Blog_users_model extends Base_module_model {
 		return $return;
 	}
 	
-	function form_fields($values = array())
+	function form_fields($values = array(), $related_fields = array())
 	{
-		$fields = parent::form_fields();
+		$fields = parent::form_fields($values, $related_fields);
 		$CI =& get_instance();
 		$CI->load->module_model(FUEL_FOLDER, 'users_model');
 		$CI->load->module_library(BLOG_FOLDER, 'fuel_blog');
+		
+		//use only fuel users not already chosen
+		$where = (!empty($values['fuel_user_id'])) ? array('fuel_user_id !=' => $values['fuel_user_id']) : array();
+		$already_used = array_keys($this->options_list('fuel_user_id', 'display_name', $where));
+		$CI->users_model->db()->where_not_in('id', $already_used);
+
 		$options = $CI->users_model->options_list();
 		$upload_image_path = assets_server_path($CI->fuel->blog->settings('asset_upload_path'));
-		$fields['fuel_user_id'] = array('label' => 'User', 'type' => 'select', 'options' => $options);
-
+		$fields['fuel_user_id'] = array('label' => 'User', 'type' => 'select', 'options' => $options,  'module' => 'users');
 		return $fields;
 	}
-	
+
 	function on_before_clean($values = array())
 	{
 		if (!(int) $values['date_added'])
@@ -62,7 +66,7 @@ class Blog_users_model extends Base_module_model {
 	
 	function _common_query()
 	{
-		$this->db->select('fuel_blog_users.*, fuel_users.id, CONCAT(first_name, " ", last_name) as name, fuel_users.first_name, fuel_users.last_name, fuel_users.email, fuel_users.user_name, fuel_users.active as users_active', FALSE);
+		$this->db->select('fuel_blog_users.*, CONCAT(first_name, " ", last_name) as name, fuel_users.first_name, fuel_users.last_name, fuel_users.email, fuel_users.user_name, fuel_users.active as users_active', FALSE);
 		$this->db->select('posts_count'); // for temp table to get posts count
 		$this->db->join('fuel_users', 'fuel_users.id = fuel_blog_users.fuel_user_id', 'left');
 		$this->db->join('fuel_blog_posts', 'fuel_blog_posts.author_id = fuel_users.id', 'left'); // left or inner????
@@ -74,7 +78,7 @@ class Blog_users_model extends Base_module_model {
 
 class Blog_user_model extends Base_module_record {
 	
-	public $id;
+	public $user_id;
 	public $first_name;
 	public $last_name;
 	public $name;
@@ -87,7 +91,7 @@ class Blog_user_model extends Base_module_record {
 	
 	function get_url()
 	{
-		return $this->_CI->fuel_blog->url('authors/'.$this->id);
+		return $this->_CI->fuel_blog->url('authors/'.$this->fuel_user_id);
 	}
 
 	function get_website_link()
@@ -98,12 +102,12 @@ class Blog_user_model extends Base_module_record {
 	function get_posts()
 	{
 		$params['order_by'] ='post_date desc';
-		return $this->lazy_load(array('fuel_blog_posts.author_id' => $this->id, 'fuel_blog_posts.published' => 'yes'), array(BLOG_FOLDER => 'blog_posts_model'), TRUE, $params);
+		return $this->lazy_load(array('fuel_blog_posts.author_id' => $this->fuel_user_id, 'fuel_blog_posts.published' => 'yes'), array(BLOG_FOLDER => 'blog_posts_model'), TRUE, $params);
 	}
 
 	function get_posts_url($full_path = TRUE)
 	{
-		$url = 'authors/posts/'.$this->id;
+		$url = 'authors/posts/'.$this->fuel_user_id;
 		if ($full_path)
 		{
 			return $this->_CI->fuel_blog->url($url);

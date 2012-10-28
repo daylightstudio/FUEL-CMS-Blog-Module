@@ -107,7 +107,8 @@ CREATE TABLE IF NOT EXISTS `fuel_blog_posts` (
 # Dump of table fuel_blog_users
 # ------------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `fuel_blog_users` (
+CREATE TABLE `fuel_blog_users` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `fuel_user_id` int(10) unsigned NOT NULL,
   `display_name` varchar(50) NOT NULL,
   `website` varchar(100) NOT NULL,
@@ -115,9 +116,10 @@ CREATE TABLE IF NOT EXISTS `fuel_blog_users` (
   `avatar_image` varchar(255) NOT NULL,
   `twitter` varchar(255) NOT NULL,
   `facebook` varchar(255) NOT NULL,
+  `linkedin` varchar(255) NOT NULL DEFAULT '',
   `date_added` datetime DEFAULT NULL,
   `active` enum('yes','no') NOT NULL DEFAULT 'yes',
-  PRIMARY KEY (`fuel_user_id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 
