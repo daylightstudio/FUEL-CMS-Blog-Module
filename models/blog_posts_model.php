@@ -15,7 +15,10 @@ class Blog_posts_model extends Base_module_model {
 
 	public $has_many = array(
 		'categories' => array(
-			'model' => array('blog' => 'blog_categories')
+			'model' => array(BLOG_FOLDER => 'blog_categories')
+			),
+		'blocks' => array(
+			'model' => array(FUEL_FOLDER => 'blocks')
 			)
 		);
 

@@ -30,6 +30,7 @@
 class Fuel_blog extends Fuel_advanced_module {
 	
 	protected $_settings = NULL;
+	protected $_current_post = NULL;
 
 	/**
 	 * Constructor
@@ -475,6 +476,20 @@ class Fuel_blog extends Fuel_advanced_module {
 		return $this->block('sidemenu', array('blocks' => $blocks));
 	}
 	
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns the current post for the page. Only set when viewing a single post.
+	 *
+	 * @access	public
+	 * @return	object
+	 */
+	function current_post()
+	{
+		return $this->_current_post;
+	}
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -699,6 +714,7 @@ class Fuel_blog extends Fuel_advanced_module {
 			$where[$tables['blog_posts'].'.slug'] = $post;
 		}
 		$post = $this->CI->blog_posts_model->find_one($where, $order_by, $return_method);
+		$this->_current_post = $post;
 		return $post;
 	}
 
