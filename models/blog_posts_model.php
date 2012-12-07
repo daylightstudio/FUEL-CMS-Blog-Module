@@ -129,6 +129,8 @@ class Blog_posts_model extends Base_module_model {
 			$fields['post_date']['value'] = datetime_now();
 		}
 
+		$fields['blocks']['sorting'] = TRUE;
+
 		return $fields;
 	}
 	
