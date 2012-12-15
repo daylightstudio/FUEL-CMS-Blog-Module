@@ -4,6 +4,7 @@ require_once(FUEL_PATH.'models/base_module_model.php');
 
 class Blog_users_model extends Base_module_model {
 
+	public $required = array('fuel_user_id');
 	public $unique_fields = array('fuel_user_id');
 	public $filter_fields = array('about');
 
