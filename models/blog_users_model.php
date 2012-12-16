@@ -4,7 +4,6 @@ require_once(FUEL_PATH.'models/base_module_model.php');
 
 class Blog_users_model extends Base_module_model {
 
-	public $required = array('fuel_user_id');
 	public $unique_fields = array('fuel_user_id');
 	public $filter_fields = array('about');
 
@@ -42,15 +41,15 @@ class Blog_users_model extends Base_module_model {
 	{
 		$fields = parent::form_fields($values, $related_fields);
 		$CI =& get_instance();
-		$CI->load->module_model(FUEL_FOLDER, 'users_model');
+		$CI->load->module_model(FUEL_FOLDER, 'fuel_users_model');
 		$CI->load->module_library(BLOG_FOLDER, 'fuel_blog');
 		
 		//use only fuel users not already chosen
 		$where = (!empty($values['fuel_user_id'])) ? array('fuel_user_id !=' => $values['fuel_user_id']) : array();
 		$already_used = array_keys($this->options_list('fuel_user_id', 'display_name', $where));
-		$CI->users_model->db()->where_not_in('id', $already_used);
+		$CI->fuel_users_model->db()->where_not_in('id', $already_used);
 
-		$options = $CI->users_model->options_list();
+		$options = $CI->fuel_users_model->options_list();
 		$upload_image_path = assets_server_path($CI->fuel->blog->settings('asset_upload_path'));
 		$fields['fuel_user_id'] = array('label' => 'User', 'type' => 'select', 'options' => $options,  'module' => 'users');
 		return $fields;

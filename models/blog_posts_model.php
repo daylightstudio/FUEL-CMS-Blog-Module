@@ -31,10 +31,10 @@ class Blog_posts_model extends Base_module_model {
 	function list_items($limit = NULL, $offset = NULL, $col = 'post_date', $order = 'desc')
 	{
 		// set the filter again here just in case the table names are different
-		$this->filters = array('title', 'content_filtered', $this->_tables['users'].'.first_name', $this->_tables['users'].'.last_name');
+		$this->filters = array('title', 'content_filtered', $this->_tables['fuel_users'].'.first_name', $this->_tables['fuel_users'].'.last_name');
 		
-		$this->db->select($this->_tables['blog_posts'].'.id, title, CONCAT('.$this->_tables['users'].'.first_name, " ", '.$this->_tables['users'].'.last_name) AS author, '.$this->_tables['blog_posts'].'.post_date, '.$this->_tables['blog_posts'].'.published', FALSE);
-		$this->db->join($this->_tables['users'], $this->_tables['users'].'.id = '.$this->_tables['blog_posts'].'.author_id', 'left');
+		$this->db->select($this->_tables['blog_posts'].'.id, title, CONCAT('.$this->_tables['fuel_users'].'.first_name, " ", '.$this->_tables['fuel_users'].'.last_name) AS author, '.$this->_tables['blog_posts'].'.post_date, '.$this->_tables['blog_posts'].'.published', FALSE);
+		$this->db->join($this->_tables['fuel_users'], $this->_tables['fuel_users'].'.id = '.$this->_tables['blog_posts'].'.author_id', 'left');
 		$data = parent::list_items($limit, $offset, $col, $order);
 		return $data;
 	}
@@ -202,14 +202,14 @@ class Blog_posts_model extends Base_module_model {
 	{
 		parent::_common_query();
 		
-		$this->db->select($this->_tables['blog_posts'].'.*, '.$this->_tables['blog_users'].'.display_name, CONCAT('.$this->_tables['users'].'.first_name, " ", '.$this->_tables['users'].'.last_name) as author_name', FALSE);
+		$this->db->select($this->_tables['blog_posts'].'.*, '.$this->_tables['blog_users'].'.display_name, CONCAT('.$this->_tables['fuel_users'].'.first_name, " ", '.$this->_tables['fuel_users'].'.last_name) as author_name', FALSE);
 		
 		$rel_join = $this->_tables['blog_relationships'].'.candidate_key = '.$this->_tables['blog_posts'].'.id AND ';
 		$rel_join .= $this->_tables['blog_relationships'].'.candidate_table = "'.$this->_tables['blog_posts'].'" AND ';
 		$rel_join .= $this->_tables['blog_relationships'].'.foreign_table = "'.$this->_tables['blog_categories'].'"';
 		$this->db->join($this->_tables['blog_relationships'], $rel_join, 'left');
 		$this->db->join($this->_tables['blog_users'], $this->_tables['blog_users'].'.fuel_user_id = '.$this->_tables['blog_posts'].'.author_id', 'left');
-		$this->db->join($this->_tables['users'], $this->_tables['users'].'.id = '.$this->_tables['blog_posts'].'.author_id', 'left');
+		$this->db->join($this->_tables['fuel_users'], $this->_tables['fuel_users'].'.id = '.$this->_tables['blog_posts'].'.author_id', 'left');
 		$this->db->join($this->_tables['blog_categories'], $this->_tables['blog_categories'].'.id = '.$this->_tables['blog_relationships'].'.foreign_key', 'left');
 		$this->db->group_by($this->_tables['blog_posts'].'.id');
 	}
