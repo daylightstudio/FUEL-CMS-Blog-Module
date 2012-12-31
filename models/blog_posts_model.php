@@ -18,7 +18,7 @@ class Blog_posts_model extends Base_module_model {
 			'model' => array(BLOG_FOLDER => 'blog_categories')
 			),
 		'blocks' => array(
-			'model' => array(FUEL_FOLDER => 'blocks')
+			'model' => array(FUEL_FOLDER => 'fuel_blocks')
 			)
 		);
 

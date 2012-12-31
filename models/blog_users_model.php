@@ -47,7 +47,11 @@ class Blog_users_model extends Base_module_model {
 		//use only fuel users not already chosen
 		$where = (!empty($values['fuel_user_id'])) ? array('fuel_user_id !=' => $values['fuel_user_id']) : array();
 		$already_used = array_keys($this->options_list('fuel_user_id', 'display_name', $where));
-		$CI->fuel_users_model->db()->where_not_in('id', $already_used);
+		if (!empty($already_used))
+		{
+			$CI->fuel_users_model->db()->where_not_in('id', $already_used);	
+		}
+		
 
 		$options = $CI->fuel_users_model->options_list();
 		$upload_image_path = assets_server_path($CI->fuel->blog->settings('asset_upload_path'));

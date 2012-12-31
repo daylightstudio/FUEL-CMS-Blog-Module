@@ -7,7 +7,7 @@
 			$month_str = date('F Y', strtotime(str_replace('/', '-', $month).'-01'));
 			?>
 		<li>
-			<a href="<?=$this->fuel_blog->url($month)?>"><?=$month_str?></a> (<?=count($archives)?>)
+			<a href="<?=$this->fuel->blog->url($month)?>"><?=$month_str?></a> (<?=count($archives)?>)
 		</li>
 		<?php endforeach; ?>
 	</ul>
