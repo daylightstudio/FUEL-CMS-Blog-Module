@@ -268,8 +268,8 @@ class Blog extends Blog_base_controller {
 		}
 		
 		$this->load->module_model(BLOG_FOLDER, 'blog_users_model');
-		$user = $this->blog_users_model->find_one(array('email' => $this->input->post('author_email', TRUE)));
-
+		$user = $this->blog_users_model->find_one(array('fuel_users.email' => $this->input->post('author_email', TRUE)));
+		
 		// create comment
 		$this->load->module_model(BLOG_FOLDER, 'blog_comments_model');
 		$comment = $this->blog_comments_model->create();
