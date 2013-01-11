@@ -267,9 +267,8 @@ class Blog extends Blog_base_controller {
 			add_error(lang('blog_error_consecutive_comments'));
 		}
 		
-		$this->load->module_model(FUEL_FOLDER, 'users_model');
-		
-		$user = $this->users_model->find_one(array('email' => $this->input->post('author_email', TRUE)));
+		$this->load->module_model(BLOG_FOLDER, 'blog_users_model');
+		$user = $this->blog_users_model->find_one(array('email' => $this->input->post('author_email', TRUE)));
 
 		// create comment
 		$this->load->module_model(BLOG_FOLDER, 'blog_comments_model');
