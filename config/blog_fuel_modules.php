@@ -36,7 +36,7 @@ $config['modules']['blog_categories'] = array(
 		'published', 
 	),
 	'display_field' => 'name',
-	'preview_path' => 'blog/categories/{permalink}',
+	'preview_path' => 'blog/categories/{slug}',
 	'permission' => 'blog_categories',
 	'instructions' => lang('module_instructions_default', 'blog categories'),
 	'archivable' => TRUE,
