@@ -147,7 +147,7 @@ class Blog_posts_model extends Base_module_model {
 		$CI =& get_instance();
 		$id = (!empty($values['author_id'])) ? $values['author_id'] : $CI->fuel->auth->user_data('id');
 		$CI->load->module_model(BLOG_FOLDER, 'blog_users_model');
-		$author = $CI->blog_users_model->find_by_key($id);
+		$author = $CI->blog_users_model->find_one(array('fuel_user_id' => $id));
 		if (!isset($author->id))
 		{
 			$author = $CI->blog_users_model->create();
