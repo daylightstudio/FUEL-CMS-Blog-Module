@@ -17,6 +17,9 @@ class Blog_posts_model extends Base_module_model {
 		'categories' => array(
 			'model' => array(BLOG_FOLDER => 'blog_categories')
 			),
+		'related_posts' => array(
+			'model' => array(FUEL_FOLDER => 'blog_posts')
+			), 
 		'blocks' => array(
 			'model' => array(FUEL_FOLDER => 'fuel_blocks')
 			)
@@ -131,6 +134,12 @@ class Blog_posts_model extends Base_module_model {
 
 		$fields['blocks']['sorting'] = TRUE;
 
+
+		if (!empty($values['id']))
+		{
+			unset($fields['related_posts']['options'][$values['id']]);
+		}
+		
 		return $fields;
 	}
 	
@@ -405,7 +414,8 @@ class Blog_post_model extends Base_module_record {
 		{
 			return $this->_CI->fuel->blog->url($url);
 		}
-		return $url;
+		$base_uri = trim($this->_CI->fuel->blog->config('uri'), '/');
+		return $base_uri.'/'.$url;
 	}
 	
 	function get_rss_date()
