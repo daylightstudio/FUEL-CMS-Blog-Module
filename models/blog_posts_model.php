@@ -46,14 +46,14 @@ class Blog_posts_model extends Base_module_model {
 	{
 		$CI =& get_instance();
 		$CI->load->module_model(BLOG_FOLDER, 'blog_categories_model');
-		$CI->load->module_model(FUEL_FOLDER, 'relationships_model');
+		$CI->load->module_model(FUEL_FOLDER, 'fuel_relationships_model');
 		$CI->load->helper('array');
 
 		$return = array();
 		
 		$where = ($just_published) ? $where = array('published' => 'yes') : array();
 		$categories = $CI->blog_categories_model->find_all($where, 'precedence asc');
-		$posts_to_categories = $CI->relationships_model->find_by_candidate($this->_tables['blog_posts'], $this->_tables['blog_categories']);
+		$posts_to_categories = $CI->fuel_relationships_model->find_by_candidate($this->_tables['blog_posts'], $this->_tables['blog_categories']);
 		if (empty($posts_to_categories)) return array();
 		
 		foreach($categories as $category)
