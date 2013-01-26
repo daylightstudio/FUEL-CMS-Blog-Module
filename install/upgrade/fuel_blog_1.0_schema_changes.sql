@@ -8,3 +8,4 @@ ALTER TABLE `fuel_blog_posts` ADD `list_image` VARCHAR(100)  NOT NULL  DEFAULT '
 ALTER TABLE `fuel_blog_posts` ADD `post_date` DATETIME  NOT NULL  AFTER `allow_comments`;
 INSERT INTO `fuel_blog_settings` (`name`, `value`) VALUES ('page_title_separator', '&laquo;');
 ALTER TABLE `fuel_blog_comments` CHANGE `author_ip` `author_ip` VARCHAR(50)  NOT NULL  DEFAULT '';
+ALTER TABLE `fuel_blog_users` ADD `google` VARCHAR(255)  NOT NULL  DEFAULT ''  AFTER `linkedin`;
