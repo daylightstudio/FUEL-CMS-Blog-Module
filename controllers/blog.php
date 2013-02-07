@@ -29,6 +29,11 @@ class Blog extends Blog_base_controller {
 		{
 			$view_by = 'slug';
 			$slug = (int) $this->uri->rsegment(3);
+			$post = $this->fuel->blog->get_post($slug);
+			if (isset($post->id))
+			{
+				redirect($post->url);
+			}
 		}
 		else if (!empty($slug))
 		{
