@@ -65,10 +65,12 @@ class Blog_comments_model extends Base_module_model {
 		$post_title = '';
 
 		$post_options = $CI->blog_posts_model->options_list('id', 'title', array(), 'post_date desc');
-		
 		if (empty($post_options))
 		{
-			return lang('blog_error_no_posts_to_comment');
+			$fields = array();
+			$fields['error'] = array('type' => 'copy', 'value' => lang('blog_error_no_posts_to_comment'));
+			$fields['__FORM_BUILDER__'] = array('submit_value' => '', 'other_actions' => '');
+			return $fields;
 		}
 		
 		$fields['post_id'] = array('type' => 'select', 'options' => $post_options, 'label' => 'Post');
@@ -136,7 +138,6 @@ class Blog_comments_model extends Base_module_model {
 			$fields['author_id']['value'] = $CI->fuel->auth->user_data('id');
 		}
 		$fields['author_id'] = array('type' => 'hidden');
-
 		return $fields;
 	}
 	
