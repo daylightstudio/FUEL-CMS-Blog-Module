@@ -1,7 +1,27 @@
-INSERT INTO `fuel_permissions` (`id`, `name`, `description`, `active`)
+INSERT INTO `fuel_permissions` (`id`, `description`, `name`, `active`)
 VALUES
-	(NULL, 'blog/posts', 'Blog Posts', 'yes'),
-	(NULL, 'blog/categories', 'Blog Categories', 'yes'),
-	(NULL, 'blog/comments', 'Blog Comments', 'yes'),
-	(NULL, 'blog/links', 'Blog Links', 'yes'),
-	(NULL, 'blog/users', 'Blog Authors', 'yes');
+	(NULL, 'Blog Categories', 'blog_categories', 'yes'),
+	(NULL, 'Blog Categories: Create', 'blog_categories/create', 'yes'),
+	(NULL, 'Blog Categories: Delete', 'blog_categories/delete', 'yes'),
+	(NULL, 'Blog Categories: Edit', 'blog_categories/edit', 'yes'),
+	(NULL, 'Blog Categories: Publish', 'blog_categories/publish', 'yes'),
+	(NULL, 'Blog Comments', 'blog_comments', 'yes'),
+	(NULL, 'Blog Comments: Create', 'blog_comments/create', 'yes'),
+	(NULL, 'Blog Comments: Delete', 'blog_comments/delete', 'yes'),
+	(NULL, 'Blog Comments: Edit', 'blog_comments/edit', 'yes'),
+	(NULL, 'Blog Comments: Publish', 'blog_comments/publish', 'yes'),
+	(NULL, 'Blog Links', 'blog_links', 'yes'),
+	(NULL, 'Blog Links: Create', 'blog_links/create', 'yes'),
+	(NULL, 'Blog Links: Delete', 'blog_links/delete', 'yes'),
+	(NULL, 'Blog Links: Edit', 'blog_links/edit', 'yes'),
+	(NULL, 'Blog Links: Publish', 'blog_links/publish', 'yes'),
+	(NULL, 'Blog Posts', 'blog_posts', 'yes'),
+	(NULL, 'Blog Posts: Create', 'blog_posts/create', 'yes'),
+	(NULL, 'Blog Posts: Delete', 'blog_posts/delete', 'yes'),
+	(NULL, 'Blog Posts: Edit', 'blog_posts/edit', 'yes'),
+	(NULL, 'Blog Posts: Publish', 'blog_posts/publish', 'yes'),
+	(NULL, 'Blog Users', 'blog_users', 'yes'),
+	(NULL, 'Blog Users: Create', 'blog_users/create', 'yes'),
+	(NULL, 'Blog Users: Delete', 'blog_users/delete', 'yes'),
+	(NULL, 'Blog Users: Edit', 'blog_users/edit', 'yes'),
+	(NULL, 'Blog Users: Publish', 'blog_users/publish', 'yes');
