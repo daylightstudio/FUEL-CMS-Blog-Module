@@ -69,7 +69,7 @@ class Blog_comments_model extends Base_module_model {
 		{
 			$fields = array();
 			$fields['error'] = array('type' => 'copy', 'value' => lang('blog_error_no_posts_to_comment'));
-			$fields['__FORM_BUILDER__'] = array('submit_value' => '', 'other_actions' => '');
+			$fields['__FORM_BUILDER__'] = array('submit_value' => '');
 			return $fields;
 		}
 		
