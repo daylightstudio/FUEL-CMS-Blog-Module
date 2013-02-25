@@ -24,7 +24,7 @@ class Blog_base_controller extends CI_Controller {
 	
 	function _render($view, $vars = array(), $return = FALSE, $layout = '')
 	{
-		if (empty($layout)) $layout = '_layouts/'.$this->fuel->blog->layout();
+		if (empty($layout)) $layout = $this->fuel->blog->layout();
 
 		// get any global variables for the headers and footers
 		$uri_path = trim($this->fuel->blog->config('uri'), '/');

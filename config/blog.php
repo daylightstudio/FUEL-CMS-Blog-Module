@@ -21,8 +21,28 @@ $config['nav']['blog'] = array(
 // deterines whether to use this configuration below or the database for controlling the blogs behavior
 $config['blog_use_db_table_settings'] = TRUE;
 
+// set as defaults 
 $config['blog'] = array();
+$config['blog']['title'] = '';
+$config['blog']['description'] = '';
+$config['blog']['uri'] = 'blog';
+$config['blog']['theme_path'] = 'themes/default';
+$config['blog']['theme_layout'] = 'blog';
+$config['blog']['theme_module'] = 'blog';
+$config['blog']['use_cache'] = FALSE;
+$config['blog']['allow_comments'] = FALSE;
+$config['blog']['monitor_comments'] = TRUE;
+$config['blog']['use_captchas'] = FALSE;
+$config['blog']['save_spam'] = FALSE;
+$config['blog']['akismet_api_key'] = '';
+$config['blog']['multiple_comment_submission_time_limit'] = '';
+$config['blog']['comments_time_limit'] = '';
+$config['blog']['cache_ttl'] = 3600;
+$config['blog']['asset_upload_path'] = 'images/blog/';
+$config['blog']['per_page'] = 10;
+$config['blog']['page_title_separator'] = '&laquo;';
 
+// used for Settings area
 $config['blog']['settings']['title'] = array();
 $config['blog']['settings']['description'] = array('size' => '80');
 $config['blog']['settings']['uri'] = array('value' => 'blog');
