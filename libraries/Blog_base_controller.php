@@ -48,6 +48,7 @@ class Blog_base_controller extends CI_Controller {
 		{
 			$view = $view_folder.$view;
 		}
+		$vars = array_merge($vars, $this->load->get_vars());
 		$output = $this->load->module_view($this->fuel->blog->config('theme_module'), $view, $vars, TRUE);
 		$output = $page->fuelify($output);
 
