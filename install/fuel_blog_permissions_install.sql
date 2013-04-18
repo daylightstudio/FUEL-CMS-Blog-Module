@@ -24,5 +24,5 @@ VALUES
 	(NULL, 'Blog Users: Create', 'blog_users/create', 'yes'),
 	(NULL, 'Blog Users: Delete', 'blog_users/delete', 'yes'),
 	(NULL, 'Blog Users: Edit', 'blog_users/edit', 'yes'),
-	(NULL, 'Blog Users: Publish', 'blog_users/publish', 'yes');
+	(NULL, 'Blog Users: Publish', 'blog_users/publish', 'yes'),
 	(NULL, 'Blog Settings', 'blog/settings', 'yes');
