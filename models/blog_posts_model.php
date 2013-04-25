@@ -31,14 +31,14 @@ class Blog_posts_model extends Base_module_model {
 	}
 	
 	// used for the FUEL admin
-	function list_items($limit = NULL, $offset = NULL, $col = 'post_date', $order = 'desc')
+	function list_items($limit = NULL, $offset = NULL, $col = 'post_date', $order = 'desc', $just_count = FALSE)
 	{
 		// set the filter again here just in case the table names are different
 		$this->filters = array('title', 'content_filtered', $this->_tables['fuel_users'].'.first_name', $this->_tables['fuel_users'].'.last_name');
 		
 		$this->db->select($this->_tables['blog_posts'].'.id, title, CONCAT('.$this->_tables['fuel_users'].'.first_name, " ", '.$this->_tables['fuel_users'].'.last_name) AS author, '.$this->_tables['blog_posts'].'.post_date, '.$this->_tables['blog_posts'].'.published', FALSE);
 		$this->db->join($this->_tables['fuel_users'], $this->_tables['fuel_users'].'.id = '.$this->_tables['blog_posts'].'.author_id', 'left');
-		$data = parent::list_items($limit, $offset, $col, $order);
+		$data = parent::list_items($limit, $offset, $col, $order, $just_count);
 		return $data;
 	}
 	

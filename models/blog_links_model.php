@@ -12,10 +12,10 @@ class Blog_links_model extends Base_module_model {
 	}
 
 	// used for the FUEL admin
-	function list_items($limit = NULL, $offset = NULL, $col = 'name', $order = 'asc')
+	function list_items($limit = NULL, $offset = NULL, $col = 'name', $order = 'asc', $just_count = FALSE)
 	{
 		$this->db->select('id, name, url, published');
-		$data = parent::list_items($limit, $offset, $col, $order);
+		$data = parent::list_items($limit, $offset, $col, $order, $just_count);
 		return $data;
 	}
 

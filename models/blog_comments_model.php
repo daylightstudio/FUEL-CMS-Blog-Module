@@ -18,15 +18,18 @@ class Blog_comments_model extends Base_module_model {
 	}
 
 	// used for the FUEL admin
-	function list_items($limit = NULL, $offset = NULL, $col = 'date_added', $order = 'desc')
+	function list_items($limit = NULL, $offset = NULL, $col = 'date_added', $order = 'desc', $just_count = FALSE)
 	{
 		if ($col == 'date_added') $col = $this->_tables['blog_comments'].'.date_added';
 		$this->db->select($this->_tables['blog_comments'].'.id, title AS post_title, '.$this->_tables['blog_comments'].'.content AS comment, author_name AS comment_author_name, '.$this->_tables['blog_comments'].'.is_spam, '.$this->_tables['blog_comments'].'.date_added as date_submitted, '.$this->_tables['blog_comments'].'.published', FALSE);
 		$this->db->join($this->_tables['blog_posts'], $this->_tables['blog_comments'].'.post_id = '.$this->_tables['blog_posts'].'.id', 'inner');
-		$data = parent::list_items($limit, $offset, $col, $order);
-		foreach($data as $key => $val)
+		$data = parent::list_items($limit, $offset, $col, $order, $just_count);
+		if (empty($just_count))
 		{
-			$data[$key]['date_submitted'] = english_date($data[$key]['date_submitted'], TRUE);
+			foreach($data as $key => $val)
+			{
+				$data[$key]['date_submitted'] = english_date($data[$key]['date_submitted'], TRUE);
+			}
 		}
 		return $data;
 	}
