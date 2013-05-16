@@ -39,7 +39,7 @@
 function blog_url($uri)
 {
 	$CI =& get_instance();
-	return $CI->fuel_blog->url($uri);
+	return $CI->fuel->blog->url($uri);
 }
 
 // --------------------------------------------------------------------
@@ -56,7 +56,7 @@ function blog_url($uri)
 function blog_block($view, $vars = array(), $return = TRUE)
 {
 	$CI =& get_instance();
-	$view_folder = $CI->fuel_blog->theme_path();
+	$view_folder = $CI->fuel->blog->theme_path();
 	$block = $CI->load->module_view(BLOG_FOLDER, $view_folder.'_blocks/'.$view, $vars, TRUE);
 	if ($return)
 	{
