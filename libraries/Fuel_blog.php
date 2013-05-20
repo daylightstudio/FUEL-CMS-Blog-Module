@@ -1213,7 +1213,7 @@ class Fuel_blog extends Fuel_advanced_module {
 	protected function _publish_status($t = 'blog_posts', $where = array())
 	{
 		$this->CI->load->module_helper(FUEL_FOLDER, 'fuel');
-		$tables = $this->CI->config->item('tables');
+		$tables = Base_module_model::$tables;
 		
 		if (!is_fuelified())
 		{
