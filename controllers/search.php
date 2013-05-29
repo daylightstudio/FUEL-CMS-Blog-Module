@@ -18,13 +18,13 @@ class Search extends Blog_base_controller {
 		
 		if (empty($q))
 		{
-			$q = $this->input->post('q');
+			$q = $this->input->post('q', TRUE);
 		}
 		
 		if (empty($q))
 		{
 			$use_get = TRUE;
-			$q = $this->input->get('q');
+			$q = $this->input->get('q', TRUE);
 		}
 		
 		// initiate this here first
