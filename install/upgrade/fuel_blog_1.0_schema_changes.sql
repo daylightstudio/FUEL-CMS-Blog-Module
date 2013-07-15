@@ -9,3 +9,18 @@ ALTER TABLE `fuel_blog_posts` ADD `post_date` DATETIME  NOT NULL  AFTER `allow_c
 INSERT INTO `fuel_blog_settings` (`name`, `value`) VALUES ('page_title_separator', '&laquo;');
 ALTER TABLE `fuel_blog_comments` CHANGE `author_ip` `author_ip` VARCHAR(50)  NOT NULL  DEFAULT '';
 ALTER TABLE `fuel_blog_users` ADD `google` VARCHAR(255)  NOT NULL  DEFAULT ''  AFTER `linkedin`;
+
+# Migrate Fuel Blog Categories to Fuel Relationships
+
+INSERT INTO `fuel_relationships` (`candidate_table`, `candidate_key`, `foreign_table`, `foreign_key`) 
+(SELECT 'fuel_blog_posts', `post_id`, 'fuel_blog_categories', `category_id` FROM `fuel_blog_posts_to_categories`);
+
+DROP TABLE `fuel_blog_posts_to_categories`;
+
+
+# Migrate Fuel Blog Settings to Fuel Settings
+
+INSERT INTO `fuel_settings` (`module`, `key`, `value`) 
+(SELECT 'blog', `name`, `value` FROM `fuel_blog_settings`);
+
+DROP TABLE `fuel_blog_settings`;
