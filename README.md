@@ -35,7 +35,7 @@ To uninstall the module which will remove any permissions and database informati
 
 
 ## DOCUMENTATION
-To access the documentation, you can visit it [here](http://www.getfuelcms.com/user_guide/modules/blog).
+To access the documentation, you can visit it [here](http://docs.getfuelcms.com/modules/blog).
 
 ## TEAM
 * David McReynolds, Daylight Studio, Main Developer
