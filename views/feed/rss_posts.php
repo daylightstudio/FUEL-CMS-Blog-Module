@@ -8,7 +8,7 @@
 	<channel>
 		<title><?php echo $title; ?></title>
 		<link><?php echo $link; ?></link>
-		<description><?php echo $description; ?></description>
+		<description><![CDATA[<?php echo $description; ?>]]></description>
 		<pubDate><?php echo standard_date('DATE_RSS', strtotime($last_updated)); ?></pubDate>
 		<language><?php echo $this->fuel_blog->language(TRUE)?></language>
 		<latestFuelVersion><?php echo FUEL_VERSION; ?></latestFuelVersion>
