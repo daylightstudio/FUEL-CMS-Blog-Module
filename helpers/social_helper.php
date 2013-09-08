@@ -19,7 +19,7 @@
 /**
  * Social Helper
  *
- * @package		Blog CMS
+ * @package		Blog
  * @subpackage	Helpers
  * @category	Helpers
  * @author		David McReynolds @ Daylight Studio

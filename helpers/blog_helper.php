@@ -19,11 +19,11 @@
 /**
  * Blog Helper
  *
- * @package		Blog CMS
+ * @package		Blog
  * @subpackage	Helpers
  * @category	Helpers
  * @author		David McReynolds @ Daylight Studio
- * @link		http://www.getfuelcms.com/user_guide/modules/blog/social_helper
+ * @link		http://www.getfuelcms.com/user_guide/modules/blog/blog_helper
  */
 
 

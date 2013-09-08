@@ -16,7 +16,7 @@ Type in:
 
 ### MANUAL
 1. Download the zip file from GitHub:
-[https://github.com/daylightstudio/FUEL-CMS-Blog-Module](https://github.com/daylightstudio/FUEL-CMS-blog-Module)
+[https://github.com/daylightstudio/FUEL-CMS-Blog-Module](https://github.com/daylightstudio/FUEL-CMS-Blog-Module)
 
 2. Create a "blog" folder in fuel/modules/ and place the contents of the blog module folder in there.
 
