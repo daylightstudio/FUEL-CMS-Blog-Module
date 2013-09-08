@@ -22,6 +22,7 @@
 				<title><?php echo xml_convert($post->title); ?></title>
 				<link><?php echo $post->url; ?></link>
 				<guid><?php echo $post->url; ?></guid>
+				<pubDate><?php echo $post->rss_date; ?></pubDate>
 				<description><![CDATA[
 				<?php echo $post->excerpt_formatted; ?>
 		      	]]>
