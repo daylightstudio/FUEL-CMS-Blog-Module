@@ -6,7 +6,7 @@ There are a couple ways to install the module. If you are using GIT you can use 
 to create a submodule:
 
 ### USING GIT
-1. Open up a Terminal window, "cd" to your FUEL CMS installation then type type in: 
+1. Open up a Terminal window, "cd" to your FUEL CMS installation then type in: 
 Type in:
 ``php index.php fuel/installer/add_git_submodule git://github.com/daylightstudio/FUEL-CMS-Blog-Module.git blog``
 
