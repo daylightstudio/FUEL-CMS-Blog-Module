@@ -80,15 +80,15 @@ class Blog_categories_model extends Base_module_model {
 
 class Blog_category_model extends Base_module_record {
 
-	private $_tables;
-	private $_category_posts;
+	protected $_tables;
+	protected $_category_posts;
 
 	function on_init()
 	{
 		$this->_tables = $this->_CI->config->item('tables');
 	}
 
-	private function _get_category_posts()
+	protected function _get_category_posts()
 	{
 		if (empty($this->_category_posts)) {
 			$this->_category_posts = $this->_parent_model->get_related_keys(array('id' => $this->id), $this->_parent_model->belongs_to['posts'], 'belongs_to', $this->_parent_model->table_name());
@@ -109,7 +109,10 @@ class Blog_category_model extends Base_module_record {
 
 	function get_posts_count()
 	{
-		return sizeof($this->_get_category_posts());
+		//return sizeof($this->_get_category_posts());
+		$blog_posts_model = $this->_get_relationship('posts', TRUE, 'belongs_to');
+		$count = $blog_posts_model->record_count(array('published' => 'yes'));
+		return $count;
 	}
 
 	function get_url($full_path = TRUE)
