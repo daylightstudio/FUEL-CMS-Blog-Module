@@ -77,7 +77,7 @@ class Blog_posts_model extends Base_module_model {
 		
 		$CI->load->module_model(BLOG_FOLDER, 'blog_users_model');
 		
-		$blog_config = $CI->config->item('blog');
+		$blog_config = $CI->fuel->blog->config();
 		
 		$user_options = $CI->blog_users_model->options_list();
 		$user = $this->fuel->auth->user_data();
@@ -89,13 +89,18 @@ class Blog_posts_model extends Base_module_model {
 		{
 			$fields['allow_comments']['value'] = ($CI->fuel->blog->config('allow_comments')) ? 'yes' : 'no';
 		} 
-		
 		if (!empty($blog_config['formatting']) )
 		{
+
 			$blog_config['formatting'] = (array) $blog_config['formatting'];
 			if (count($blog_config['formatting']) == 1)
 			{
 				$fields['formatting'] = array('type' => 'hidden', 'options' => current($blog_config['formatting']), 'default' => $fields['formatting']['default']);
+				if (strtolower($blog_config['formatting'][0]) == 'markdown')
+				{
+					$fields['content']['markdown'] = TRUE;
+					$fields['excerpt']['markdown'] = TRUE;
+				}
 			}
 			else
 			{
@@ -207,6 +212,17 @@ class Blog_posts_model extends Base_module_model {
 		return $values;
 	}
 
+	function ajax_options()
+	{
+		$options = $this->options_list();
+		$str = '';
+		foreach($options as $key => $val)
+		{
+			$str .= "<option value=\"".$key."\" label=\"".$val."\">".$val."</option>\n";
+		}
+		return $str;
+	}
+	
 	function _common_query()
 	{
 		parent::_common_query();
