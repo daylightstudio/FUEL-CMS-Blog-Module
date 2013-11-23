@@ -349,7 +349,7 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	function is_home()
 	{
-		if (uri_path(FALSE) == $this->config('uri'))
+		if (uri_path(FALSE) == trim($this->config('uri'), '/'))
 		{
 			return TRUE;
 		}
