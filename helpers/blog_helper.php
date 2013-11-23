@@ -36,7 +36,7 @@
  * @param	string
  * @return	string
  */
-function blog_url($uri)
+function blog_url($uri = '')
 {
 	$CI =& get_instance();
 	return $CI->fuel->blog->url($uri);
