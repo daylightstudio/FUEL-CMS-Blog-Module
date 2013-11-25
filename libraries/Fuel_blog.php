@@ -689,13 +689,14 @@ class Fuel_blog extends Fuel_advanced_module {
 	 * Returns posts grouped by the year/month
 	 *
 	 * @access	public
+	 * @param	array
 	 * @param	int
 	 * @param	int
 	 * @return	array
 	 */
-	function get_post_archives($limit = NULL, $offset = NULL)
+	function get_post_archives($where = array(), $limit = NULL, $offset = NULL)
 	{
-		$posts = $this->get_posts(array(), 'post_date desc');
+		$posts = $this->get_posts($where, 'post_date desc');
 		$return = array();
 		foreach($posts as $post)
 		{

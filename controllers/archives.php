@@ -7,7 +7,7 @@ class Archives extends Blog_base_controller {
 		parent::__construct();
 	}
 	
-	function index()
+	function _remap($category = NULL)
 	{
 		$cache_id = fuel_cache_id();
 		$vars = $this->_common_vars();
@@ -17,7 +17,13 @@ class Archives extends Blog_base_controller {
 		}
 		else
 		{
-			$vars['archives_by_month'] = $this->fuel->blog->get_post_archives();
+			$where = array();
+			if (!empty($category))
+			{
+				$tables = $this->config->item('tables');
+				$where[$tables['blog_categories'].'.slug'] = $category;
+			}
+			$vars['archives_by_month'] = $this->fuel->blog->get_post_archives($where);
 			$vars['page_title'] = lang('blog_archives_page_title');
 			$output = $this->_render('archives', $vars, TRUE);
 			$this->fuel->blog->save_cache($cache_id, $output);
