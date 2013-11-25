@@ -18,7 +18,7 @@ class Archives extends Blog_base_controller {
 		else
 		{
 			$where = array();
-			if (!empty($category))
+			if (!empty($category) AND $category != 'index')
 			{
 				$tables = $this->config->item('tables');
 				$where[$tables['blog_categories'].'.slug'] = $category;
