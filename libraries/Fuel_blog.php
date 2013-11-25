@@ -565,6 +565,32 @@ class Fuel_blog extends Fuel_advanced_module {
 	 * Returns posts by providing a given date
 	 *
 	 * @access	public
+	 * @param	string
+	 * @param	int
+	 * @param	int
+	 * @param	int
+	 * @param	string
+	 * @param	int
+	 * @param	int
+	 * @param	string
+	 * @param	string
+	 * @return	array
+	 */
+	function get_category_posts_by_date($category, $year = NULL, $month = NULL, $day = NULL, $limit = NULL, $offset = NULL, $order_by = 'sticky, post_date desc', $return_method = NULL, $assoc_key = NULL)
+	{
+		$this->CI->load->module_model(BLOG_FOLDER, 'blog_posts_model');
+		$tables = $this->CI->config->item('tables');
+		$this->CI->blog_posts_model->db()->where($tables['blog_categories'].'.slug', $category);
+		$posts = $this->get_posts_by_date($year, $month, $day, NULL, $limit, $offset, $order_by, $return_method);
+		return $posts;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns posts by providing a given date
+	 *
+	 * @access	public
 	 * @param	int
 	 * @param	int
 	 * @param	int

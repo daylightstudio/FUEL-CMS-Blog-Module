@@ -35,6 +35,11 @@ class Categories extends Blog_base_controller {
 			}
 			else if (!empty($category) AND $category != 'index')
 			{
+
+				$year = (int) $this->uri->rsegment(3);
+				$month = (int) $this->uri->rsegment(4);
+				$day = (int) $this->uri->rsegment(5);
+
 				$category_obj = $this->fuel->blog->get_category($category);
 				if (!isset($category_obj->id)) show_404();
 
@@ -43,7 +48,7 @@ class Categories extends Blog_base_controller {
 				$this->fuel->blog->run_hook('before_posts_by_category', $hook_params);
 				
 				$vars = array_merge($vars, $hook_params);
-				$vars['posts'] = $this->fuel->blog->get_category_posts($category);
+				$vars['posts'] = $this->fuel->blog->get_category_posts_by_date($category, $year, $month, $day);
 				$vars['page_title'] = $this->fuel->blog->page_title(array($category_obj->name, lang('blog_categories_page_title')));
 				$output = $this->_render('posts', $vars, TRUE);
 			}
