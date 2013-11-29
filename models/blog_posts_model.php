@@ -228,7 +228,7 @@ class Blog_posts_model extends Base_module_model {
 		parent::_common_query();
 		
 		$this->db->select($this->_tables['blog_posts'].'.*, '.$this->_tables['blog_users'].'.display_name, CONCAT('.$this->_tables['fuel_users'].'.first_name, " ", '.$this->_tables['fuel_users'].'.last_name) as author_name', FALSE);
-		
+		$this->db->select('YEAR('.$this->_tables['blog_posts'].'.post_date) as year, DATE_FORMAT('.$this->_tables['blog_posts'].'.post_date, "%m") as month, DATE_FORMAT('.$this->_tables['blog_posts'].'.post_date, "%d") as day,', FALSE);
 		$rel_join = $this->_tables['blog_relationships'].'.candidate_key = '.$this->_tables['blog_posts'].'.id AND ';
 		$rel_join .= $this->_tables['blog_relationships'].'.candidate_table = "'.$this->_tables['blog_posts'].'" AND ';
 		$rel_join .= $this->_tables['blog_relationships'].'.foreign_table = "'.$this->_tables['blog_categories'].'"';

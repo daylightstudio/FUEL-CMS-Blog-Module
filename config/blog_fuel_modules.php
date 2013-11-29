@@ -12,7 +12,7 @@ $config['modules']['blog_posts'] = array(
 		'published', 
 	),
 	'display_field' => 'title',
-	'preview_path' => 'blog/id/{id}',
+	'preview_path' => 'blog/{year}/{month}/{day}/{slug}',
 	'permission' => 'blog_posts',
 	'instructions' => lang('module_instructions_default', 'blog posts'),
 	'archivable' => TRUE,
