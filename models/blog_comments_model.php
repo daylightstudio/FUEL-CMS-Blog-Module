@@ -143,7 +143,7 @@ class Blog_comments_model extends Base_module_model {
 		$fields['author_id'] = array('type' => 'hidden');
 		return $fields;
 	}
-	
+
 	// need to notify commentor if author or admin comment
 	function on_after_save($values)
 	{
@@ -151,6 +151,7 @@ class Blog_comments_model extends Base_module_model {
 		$posted = $this->normalized_save_data;
 		$CI =& get_instance();
 		$CI->load->module_model(BLOG_FOLDER, 'blog_posts_model');
+		$CI->load->module_model(BLOG_FOLDER, 'blog_users_model');
 		$post = $CI->blog_posts_model->find_by_key($posted['post_id']);
 		// must be logged into FUEL, must be the author, must be in the admin pages, must have reply posted and be published
 		if ($CI->fuel->auth->is_logged_in() AND ($post->author_id == $CI->fuel->auth->user_data('id') 
@@ -161,13 +162,15 @@ class Blog_comments_model extends Base_module_model {
 			$comment->post_id = $post->id;
 			$comment->parent_id = $values['id'];
 			$comment->author_id = $CI->fuel->auth->user_data('id');
-			$comment->author_name = $CI->fuel->auth->user_data('first_name').' '.$CI->fuel->auth->user_data('last_name');
-			$comment->author_email = $CI->fuel->auth->user_data('email');
+
+			$user = $CI->blog_users_model->find_one(array('fuel_user_id' => $CI->fuel->auth->user_data('id')));
+			$display_name = ($user->has_display_name()) ? $user->display_name : $user->first_name.' '.$user->last_name;
+			$comment->author_name = $display_name;
+			$comment->author_email = $user->email;
 			$comment->author_website = '';
 			$comment->author_ip = $_SERVER['REMOTE_ADDR'];
 			$comment->content = trim($this->input->post('reply', TRUE));
 			$comment->date_added = NULL; // will automatically be added
-			
 			if (!empty($posted['reply_notify']) AND strtolower($posted['reply_notify']) != 'none' AND $comment->validate())
 			{
 				// create comment object
