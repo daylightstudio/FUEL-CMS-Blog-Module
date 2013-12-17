@@ -107,7 +107,8 @@ class Blog_posts_model extends Base_module_model {
 				$fields['formatting'] = array('type' => 'select', 'options' => $blog_config['formatting'], 'default' => $fields['formatting']['default']);
 			}
 		}
-		
+		$fields['title']['style'] = 'width: 500px;';
+		$fields['slug']['style'] = 'width: 500px;';
 		$fields['content']['style'] = 'width: 680px; height: 400px';
 		$fields['excerpt']['style'] = 'width: 680px;';
 		$fields['published']['order'] = 10000;
