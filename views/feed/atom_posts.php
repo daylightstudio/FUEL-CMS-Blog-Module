@@ -22,7 +22,7 @@
 			<name><?php echo $post->author_name; ?></name>
 		</author>
 		<content type="html" xml:lang="<?php echo $this->fuel_blog->language(TRUE)?>" xml:base="<?php echo $link; ?>/article">
-			<![CDATA[<?php echo $post->excerpt_formatted; ?>]]> 
+			<![CDATA[<?php echo strip_javascript($post->excerpt_formatted); ?>]]> 
 		</content>
 		<updated><?php echo standard_date('DATE_ATOM', strtotime($post->last_modified)); ?></updated>
 	</entry> 

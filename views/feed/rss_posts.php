@@ -24,7 +24,7 @@
 				<guid><?php echo $post->url; ?></guid>
 				<pubDate><?php echo $post->rss_date; ?></pubDate>
 				<description><![CDATA[
-				<?php echo $post->excerpt_formatted; ?>
+				<?php echo strip_javascript($post->excerpt_formatted); ?>
 		      	]]>
 		      	</description>
 		     </item>
