@@ -1050,13 +1050,7 @@ class Fuel_blog extends Fuel_advanced_module {
 	 * Returns whether you are logged into FUEL or not
 	 *
 	 * @access	public
-	 * @param	mixed
-	 * @param	string
-	 * @param	int
-	 * @param	int
-	 * @param	string
-	 * @param	string
-	 * @return	array
+	 * @return	boolean
 	 */
 	function is_logged_in()
 	{
