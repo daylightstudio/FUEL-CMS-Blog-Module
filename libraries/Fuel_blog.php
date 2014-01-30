@@ -755,7 +755,8 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	function get_next_post($current_post, $return_method = NULL)
 	{
-		$posts = $this->get_posts(array('post_date >=' => $current_post->post_date, 'id !=' => $current_post->id), 'post_date asc, id asc', 1, NULL, $return_method);
+		$tables = $this->CI->config->item('tables');
+		$posts = $this->get_posts(array('post_date >=' => $current_post->post_date, "{$tables['blog_posts']}.id !=" => $current_post->id), 'post_date asc, id asc', 1, NULL, $return_method);
 		if (!empty($posts))
 		{
 			return $posts[0];
@@ -775,7 +776,8 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	function get_prev_post($current_post, $return_method = NULL)
 	{
-		$posts = $this->get_posts(array('post_date <=' => $current_post->post_date, 'id !=' => $current_post->id), 'post_date desc, id desc', 1, NULL, $return_method);
+		$tables = $this->CI->config->item('tables');
+		$posts = $this->get_posts(array('post_date <=' => $current_post->post_date, "{$tables['blog_posts']}.id !=" => $current_post->id), 'post_date desc, id desc', 1, NULL, $return_method);
 		if (!empty($posts))
 		{
 			return $posts[0];
