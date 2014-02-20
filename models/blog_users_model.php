@@ -46,6 +46,7 @@ class Blog_users_model extends Base_module_model {
 		$CI->load->module_model(FUEL_FOLDER, 'fuel_users_model');
 		$CI->load->module_library(BLOG_FOLDER, 'fuel_blog');
 		
+		$fields['avatar_image']['folder'] = $CI->fuel->blog->config('asset_upload_path');
 		//use only fuel users not already chosen
 		$where = (!empty($values['fuel_user_id'])) ? array('fuel_user_id !=' => $values['fuel_user_id']) : array();
 		$already_used = array_keys($this->options_list('fuel_user_id', 'display_name', $where));
@@ -120,10 +121,11 @@ class Blog_user_model extends Base_module_record {
 		}
 		return $url;
 	}
-	
+
 	function get_avatar_image_path()
 	{
-		return img_path($this->avatar_image);
+		$path = $this->_CI->fuel->blog->config('asset_upload_path').$this->avatar_image;
+		return assets_path($path);
 	}
 
 	function get_avatar_img_tag($attrs = array())
