@@ -1,7 +1,7 @@
 <?=fuel_edit($author->id, 'Edit Author: '.$author->name, 'blog/users')?>
 <h1><?=$author->name?></h1>
 <?php if (!empty($author->avatar_image)) : ?>
-<?=$author->get_avatar_img_tag(array('class' => 'img_right'))?>
+<?=$author->get_avatar_img_tag(array('class' => 'img_right', 'alt' => $author->name))?>
 <?php endif; ?>
 <?=$author->about_formatted?>
 
