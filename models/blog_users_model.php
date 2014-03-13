@@ -26,7 +26,8 @@ class Blog_users_model extends Base_module_model {
 	{
 		if (empty($key) OR $key == 'id')
 		{
-			$key = $this->table_name.'.fuel_user_id';
+			//$key = $this->table_name.'.fuel_user_id';
+			$key = $this->table_name.'.id';
 		}
 		if (empty($key) OR $val == 'display_name')
 		{
