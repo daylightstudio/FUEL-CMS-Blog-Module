@@ -909,7 +909,7 @@ class Fuel_blog extends Fuel_advanced_module {
 		foreach($terms as $t)
 		{
 			$t = $this->CI->db->escape_str($t);
-			$where .= "(title LIKE '%".$t."%' OR content LIKE '%".$t."%' OR content_filtered LIKE '%".$t."%')";
+			$where .= "(".$tables['blog_posts'].".title LIKE '%".$t."%' OR ".$tables['blog_posts'].".content LIKE '%".$t."%' OR ".$tables['blog_posts'].".content_filtered LIKE '%".$t."%')";
 			if ($i < $cnt - 1) $where .= " AND ";
 			$i++;
 		}
