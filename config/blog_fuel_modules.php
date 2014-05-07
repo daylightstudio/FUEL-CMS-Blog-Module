@@ -4,13 +4,6 @@ $config['modules']['blog_posts'] = array(
 	'module_uri' => 'blog/posts',
 	'model_name' => 'blog_posts_model',
 	'model_location' => 'blog',
-	'table_headers' => array(
-		'id', 
-		'title', 
-		'author', 
-		'post_date', 
-		'published', 
-	),
 	'display_field' => 'title',
 	'preview_path' => 'blog/{year}/{month}/{day}/{slug}',
 	'permission' => 'blog_posts',

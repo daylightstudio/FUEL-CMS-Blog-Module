@@ -29,7 +29,7 @@ class Blog_users_model extends Base_module_model {
 			//$key = $this->table_name.'.fuel_user_id';
 			$key = $this->table_name.'.id';
 		}
-		if (empty($key) OR $val == 'display_name')
+		if (empty($key) OR empty($val) OR $val == 'display_name')
 		{
 			$val = 'IF(display_name = "", fuel_users.email, display_name) AS name';
 			$order = 'display_name';

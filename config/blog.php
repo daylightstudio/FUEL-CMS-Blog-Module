@@ -41,6 +41,8 @@ $config['blog']['cache_ttl'] = 3600;
 $config['blog']['asset_upload_path'] = 'images/blog/';
 $config['blog']['per_page'] = 10;
 $config['blog']['page_title_separator'] = '&laquo;';
+$config['blog']['multiple_authors'] = FALSE;
+
 
 // used for Settings area
 $config['blog']['settings']['title'] = array();
@@ -61,6 +63,7 @@ $config['blog']['settings']['cache_ttl'] = array('value' => 3600, 'size' => 5);
 $config['blog']['settings']['asset_upload_path'] = array('default' => 'images/blog/');
 $config['blog']['settings']['per_page'] = array('value' => 10, 'size' => 3);
 $config['blog']['settings']['page_title_separator'] = array('value' => '&laquo;', 'size' => 10);
+$config['blog']['settings']['multiple_authors'] = array('type' => 'checkbox', 'value' => '1');
 
 
 // the cache folder to hold blog cache files

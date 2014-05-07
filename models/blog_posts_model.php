@@ -28,6 +28,14 @@ class Blog_posts_model extends Base_module_model {
 	function __construct()
 	{
 		parent::__construct('blog_posts', BLOG_FOLDER); // table name
+		$CI =& get_instance();
+
+		if ($CI->fuel->blog->config('multiple_authors'))
+		{
+			$authors = array('authors' => array('model' => array(BLOG_FOLDER => 'blog_users')));
+			$this->has_many = array_merge($authors, $this->has_many);
+		}
+
 	}
 	
 	// used for the FUEL admin
@@ -35,8 +43,13 @@ class Blog_posts_model extends Base_module_model {
 	{
 		// set the filter again here just in case the table names are different
 		$this->filters = array('title', 'content_filtered', $this->_tables['fuel_users'].'.first_name', $this->_tables['fuel_users'].'.last_name');
-		
-		$this->db->select($this->_tables['blog_posts'].'.id, title, CONCAT('.$this->_tables['fuel_users'].'.first_name, " ", '.$this->_tables['fuel_users'].'.last_name) AS author, '.$this->_tables['blog_posts'].'.post_date, '.$this->_tables['blog_posts'].'.published', FALSE);
+		$CI =& get_instance();
+		if ($CI->fuel->blog->config('multiple_authors'))
+		{
+			$this->db->select($this->_tables['blog_posts'].'.id, title, '.$this->_tables['blog_posts'].'.post_date, '.$this->_tables['blog_posts'].'.published', FALSE);
+		} else {
+			$this->db->select($this->_tables['blog_posts'].'.id, title, CONCAT('.$this->_tables['fuel_users'].'.first_name, " ", '.$this->_tables['fuel_users'].'.last_name) AS author, '.$this->_tables['blog_posts'].'.post_date, '.$this->_tables['blog_posts'].'.published', FALSE);
+		}
 		$this->db->join($this->_tables['fuel_users'], $this->_tables['fuel_users'].'.id = '.$this->_tables['blog_posts'].'.author_id', 'left');
 		$data = parent::list_items($limit, $offset, $col, $order, $just_count);
 		return $data;
@@ -144,6 +157,11 @@ class Blog_posts_model extends Base_module_model {
 		if (!empty($values['id']))
 		{
 			unset($fields['related_posts']['options'][$values['id']]);
+		}
+
+		if ($CI->fuel->blog->config('multiple_authors'))
+		{
+			unset($fields['author_id']);
 		}
 		
 		return $fields;
@@ -387,9 +405,27 @@ class Blog_post_model extends Base_module_record {
 	
 	function get_author()
 	{
-		$this->_CI->load->module_model(BLOG_FOLDER, 'blog_users_model');
-		$author = $this->_CI->blog_users_model->find_one(array('fuel_blog_users.fuel_user_id' => $this->author_id));
+		static $author;
+		if (!isset($author))
+		{
+			if ($this->_CI->fuel->blog->config('multiple_authors'))
+			{
+				$authors = $this->get_authors();
+				$author = current($authors);
+			}
+			else
+			{
+				$this->_CI->load->module_model(BLOG_FOLDER, 'blog_users_model');
+				$author = $this->_CI->blog_users_model->find_one(array('fuel_blog_users.fuel_user_id' => $this->author_id));
+			}
+		}
 		return $author;
+	}
+
+	function has_author()
+	{
+		$author = $this->get_author();
+		return !empty($author);
 	}
 
 	function get_image($type = 'main')
