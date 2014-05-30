@@ -47,10 +47,14 @@ class Blog_posts_model extends Base_module_model {
 		if ($CI->fuel->blog->config('multiple_authors'))
 		{
 			$this->db->select($this->_tables['blog_posts'].'.id, title, '.$this->_tables['blog_posts'].'.post_date, '.$this->_tables['blog_posts'].'.published', FALSE);
-		} else {
-			$this->db->select($this->_tables['blog_posts'].'.id, title, CONCAT('.$this->_tables['fuel_users'].'.first_name, " ", '.$this->_tables['fuel_users'].'.last_name) AS author, '.$this->_tables['blog_posts'].'.post_date, '.$this->_tables['blog_posts'].'.published', FALSE);
+		}
+		else
+		{
+			$this->db->select($this->_tables['blog_posts'].'.id, '.$this->_tables['blog_posts'].'.title, IF('.$this->_tables['fuel_users'].'.first_name IS NULL, display_name, CONCAT('.$this->_tables['fuel_users'].'.first_name, " ", '.$this->_tables['fuel_users'].'.last_name)) AS author, '.$this->_tables['blog_posts'].'.post_date, '.$this->_tables['blog_posts'].'.published', FALSE);
 		}
 		$this->db->join($this->_tables['fuel_users'], $this->_tables['fuel_users'].'.id = '.$this->_tables['blog_posts'].'.author_id', 'left');
+		$this->db->join($this->_tables['blog_users'], $this->_tables['blog_users'].'.id = '.$this->_tables['blog_posts'].'.author_id', 'left');
+
 		$data = parent::list_items($limit, $offset, $col, $order, $just_count);
 		return $data;
 	}
