@@ -181,14 +181,12 @@ class Blog_comments_model extends Base_module_model {
 
 				if (strtolower($posted['reply_notify']) == 'all')
 				{
-					$comments = $CI->blog_comments_model->find_all_array_assoc('author_email', array('published' => 'yes'));
+					$comments = $CI->blog_comments_model->find_all_array_assoc('author_email', array('published' => 'yes', 'post_id' => $comment->post_id));
 					$to = array_keys($comments);
 				}
 				else
 				{
 					$to = $values['author_email'];
-					$comments = $CI->blog_comments_model->find_all_array_assoc('author_email', array('published' => 'yes'));
-					$to = array_keys($comments);
 				}
 
 				// send email
