@@ -1,27 +1,24 @@
-
 # Dump of table fuel_blog_categories
 # ------------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `fuel_blog_categories` (
+CREATE TABLE `fuel_blog_categories` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `slug` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'If left blank, the slug will automatically be created for you.',
   `precedence` int(11) unsigned DEFAULT '0',
+  `language` varchar(30) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'english',
   `published` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'yes',
   PRIMARY KEY (`id`),
   UNIQUE KEY `permalink` (`slug`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-INSERT INTO `fuel_blog_categories` (`id`, `name`, `slug`, `precedence`, `published`)
-VALUES
-  (1, 'Uncategorized', 'uncategorized', 0, 'yes');
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
 
 # Dump of table fuel_blog_comments
 # ------------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `fuel_blog_comments` (
+CREATE TABLE `fuel_blog_comments` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `post_id` int(10) unsigned NOT NULL,
   `parent_id` int(10) unsigned NOT NULL,
@@ -36,32 +33,34 @@ CREATE TABLE IF NOT EXISTS `fuel_blog_comments` (
   `date_added` datetime NOT NULL,
   `last_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
 
 # Dump of table fuel_blog_links
 # ------------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `fuel_blog_links` (
+CREATE TABLE `fuel_blog_links` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `url` varchar(255) DEFAULT NULL,
   `target` enum('blank','self','parent') DEFAULT 'blank',
   `description` varchar(100) DEFAULT NULL,
   `precedence` int(11) NOT NULL DEFAULT '0',
+  `language` varchar(30) NOT NULL DEFAULT 'english',
   `published` enum('yes','no') DEFAULT 'yes',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 
 
 # Dump of table fuel_blog_posts
 # ------------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `fuel_blog_posts` (
+CREATE TABLE `fuel_blog_posts` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `language` varchar(30) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'english',
   `content` text COLLATE utf8_unicode_ci NOT NULL,
   `content_filtered` text COLLATE utf8_unicode_ci NOT NULL,
   `formatting` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -74,12 +73,15 @@ CREATE TABLE IF NOT EXISTS `fuel_blog_posts` (
   `sticky` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
   `allow_comments` enum('yes','no') COLLATE utf8_unicode_ci DEFAULT 'no',
   `post_date` datetime NOT NULL,
+  `page_title` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `meta_description` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `meta_keywords` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `date_added` datetime DEFAULT NULL,
   `last_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `published` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'yes',
   PRIMARY KEY (`id`),
   UNIQUE KEY `permalink` (`slug`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
 
@@ -93,11 +95,8 @@ CREATE TABLE `fuel_blog_users` (
   `website` varchar(100) NOT NULL,
   `about` text NOT NULL,
   `avatar_image` varchar(255) NOT NULL DEFAULT '',
-  `twitter` varchar(255) NOT NULL DEFAULT '',
-  `facebook` varchar(255) NOT NULL DEFAULT '',
-  `linkedin` varchar(255) NOT NULL DEFAULT '',
-  `google` varchar(255) NOT NULL DEFAULT '',
+  `social_media_links` text NOT NULL,
   `date_added` datetime DEFAULT NULL,
   `active` enum('yes','no') NOT NULL DEFAULT 'yes',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
