@@ -1,7 +1,7 @@
 <?php $categories = $CI->fuel->blog->get_published_categories(); ?>
 <?php if ( ! empty($categories)) : ?>
 <div class="blog_block">
-	<h3>Categories</h3>
+	<h3><?=lang('blog_categories')?></h3>
 	<ul>
 		<?php foreach ($categories as $category) : 
 		$cat_cnt = $category->posts_count;

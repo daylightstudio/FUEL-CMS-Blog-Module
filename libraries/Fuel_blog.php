@@ -123,7 +123,19 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	function language($code = FALSE)
 	{
-		$language = $this->CI->config->item('language');
+		// static $language;
+		// static $language_code;
+
+		// set the value to TRUE
+		if ($this->fuel->language->has_multiple())
+		{
+			$language = $this->fuel->language->detect();
+		}
+		else
+		{
+			$language = $this->CI->config->item('language');	
+		}
+		
 		if ($code)
 		{
 			$this->CI->config->module_load(BLOG_FOLDER, 'language_codes');
@@ -174,6 +186,7 @@ class Fuel_blog extends Fuel_advanced_module {
 	{
 		$uri = trim($uri, '/');
 		$base_uri = trim($this->config('uri'), '/');
+		
 		return site_url($base_uri.'/'.$uri);
 	}
 
@@ -659,6 +672,14 @@ class Fuel_blog extends Fuel_advanced_module {
 	{
 		$this->CI->load->module_model(BLOG_FOLDER, 'blog_posts_model');
 		$where = $this->_publish_status('blog_posts', $where);
+
+		if ($this->fuel->language->has_multiple())
+		{
+			$tables = $this->CI->config->item('tables');
+			$language = $this->language();
+			$this->CI->blog_posts_model->db()->where($tables['blog_posts'].'.language', $language);
+		}
+
 		$count = $this->CI->blog_posts_model->record_count($where);
 		return $count;
 	}
@@ -873,10 +894,10 @@ class Fuel_blog extends Fuel_advanced_module {
 		// return $posts_to_categories;
 	// }
 
-	function get_published_categories()
+	function get_published_categories($language = NULL)
 	{
 		$this->CI->load->module_model(BLOG_FOLDER, 'blog_categories_model');
-		return $this->CI->blog_categories_model->get_published_categories();
+		return $this->CI->blog_categories_model->get_published_categories($language);
 	}
 
 	// --------------------------------------------------------------------
@@ -1240,6 +1261,7 @@ class Fuel_blog extends Fuel_advanced_module {
 		
 		if (!is_fuelified())
 		{
+
 			if (empty($where) OR is_array($where))
 			{
 				// taken care of in the model

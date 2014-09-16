@@ -9,8 +9,11 @@ class Categories extends Blog_base_controller {
 		$this->load->module_helper('blog', 'blog');
 	}
 	
-	function _remap($category = NULL)
+	function _remap($method = NULL)
 	{
+		// get the category this way in case there is a language parameter
+		$category = uri_segment(3, FALSE, TRUE, TRUE);
+
 		$cache_id = fuel_cache_id();
 		if ($cache = $this->fuel->blog->get_cache($cache_id))
 		{
@@ -22,10 +25,10 @@ class Categories extends Blog_base_controller {
 			$vars['pagination'] = '';
 			
 			// check if RSS feed
-			if ($this->uri->rsegment(3) == 'feed')
+			if (uri_segment(3, FALSE, TRUE, TRUE) == 'feed')
 			{
 				
-				$type = ($this->uri->rsegment(4) == 'atom') ? 'atom' : 'rss';
+				$type = (uri_segment(4, FALSE, TRUE, TRUE) == 'atom') ? 'atom' : 'rss';
 				
 				// set the header type
 				$this->fuel->blog->feed_header();
@@ -36,9 +39,9 @@ class Categories extends Blog_base_controller {
 			else if (!empty($category) AND $category != 'index')
 			{
 
-				$year = (int) $this->uri->rsegment(3);
-				$month = (int) $this->uri->rsegment(4);
-				$day = (int) $this->uri->rsegment(5);
+				$year = (int) uri_segment(4, FALSE, TRUE, TRUE);
+				$month = (int) uri_segment(5, FALSE, TRUE, TRUE);
+				$day = (int) uri_segment(6, FALSE, TRUE, TRUE);
 
 				$category_obj = $this->fuel->blog->get_category($category);
 				if (!isset($category_obj->id)) show_404();
@@ -49,6 +52,7 @@ class Categories extends Blog_base_controller {
 				
 				$vars = array_merge($vars, $hook_params);
 				$vars['posts'] = $this->fuel->blog->get_category_posts_by_date($category, $year, $month, $day);
+
 				$vars['page_title'] = $this->fuel->blog->page_title(array($category_obj->name, lang('blog_categories_page_title')));
 				$output = $this->_render('category', $vars, TRUE);
 			}

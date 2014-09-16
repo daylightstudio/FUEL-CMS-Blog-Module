@@ -10,13 +10,13 @@ class Blog extends Blog_base_controller {
 	
 	function _remap()
 	{
-		
-		$year = ($this->uri->rsegment(2) != 'index') ? (int) $this->uri->rsegment(2) : NULL;
-		$month = (int) $this->uri->rsegment(3);
-		$day = (int) $this->uri->rsegment(4);
-		$slug = $this->uri->rsegment(5);
+		$year = (uri_segment(2, FALSE, TRUE, TRUE) != 'index') ? (int) uri_segment(2, FALSE, TRUE, TRUE) : NULL;
+		$month = (int) uri_segment(3, FALSE, TRUE, TRUE);
+		$day = (int) uri_segment(4, FALSE, TRUE, TRUE);
+		$slug = uri_segment(5, FALSE, TRUE, TRUE);
+
 		$limit = (int) $this->fuel->blog->config('per_page');
-		
+
 		$view_by = 'page';
 		
 		// we empty out year variable if it is page because we won't be querying on year'
@@ -25,10 +25,10 @@ class Blog extends Blog_base_controller {
 			$view_by = 'date';
 		}
 		// if the first segment is id then treat the second segment as the id
-		else if ($this->uri->rsegment(2) === 'id' && $this->uri->rsegment(3))
+		else if (uri_segment(2, FALSE, TRUE, TRUE) === 'id' && uri_segment(3, FALSE, TRUE, TRUE))
 		{
 			$view_by = 'slug';
-			$slug = (int) $this->uri->rsegment(3);
+			$slug = (int) uri_segment(3, FALSE, TRUE, TRUE);
 			$post = $this->fuel->blog->get_post($slug);
 			if (isset($post->id))
 			{
@@ -72,22 +72,25 @@ class Blog extends Blog_base_controller {
 				$vars['page_title'] = $page_title_arr;
 				$vars['posts'] = $this->fuel->blog->get_posts_by_date($year, (int) $month, $day, $slug);
 				$vars['pagination'] = '';
+				$vars['year'] = $year;
+				$vars['month'] = $month;
+				$vars['day'] = $day;
 			}
 			else
 			{
 				$limit = $this->fuel->blog->config('per_page');
 				$this->load->library('pagination');
-				$config['uri_segment'] = 3;
-				$offset = $this->uri->segment($config['uri_segment']);
-				$this->config->set_item('enable_query_strings', FALSE);
+
 				$config = $this->fuel->blog->config('pagination');
+				$config['uri_segment'] = count(explode('/', uri_path(FALSE, 0 , FALSE)));
+				$offset = uri_segment(3, FALSE, TRUE);
+
+				$this->config->set_item('enable_query_strings', FALSE);
 				$config['base_url'] = $this->fuel->blog->url('page/');
-				//$config['total_rows'] = $this->fuel->blog->get_posts_count();
 				$config['page_query_string'] = FALSE;
 				$config['per_page'] = $limit;
 				$config['num_links'] = 2;
 
-				//$this->pagination->initialize($config); 
 				
 				if (!empty($offset))
 				{
@@ -109,7 +112,6 @@ class Blog extends Blog_base_controller {
 				// run hook again to get the proper count
 				$hook_params['type'] = 'count';
 				$this->fuel->blog->run_hook('before_posts_by_page', $hook_params);
-				//$config['total_rows'] = count($this->fuel->blog->get_posts_by_page());
 				$config['total_rows'] = $this->fuel->blog->get_posts_count();
 				
 				// create pagination
@@ -118,7 +120,7 @@ class Blog extends Blog_base_controller {
 			}
 
 			// show the index page if the page doesn't have any uri_segment(3)'
-			$view = ($this->uri->rsegment(2) == 'index' OR ($this->uri->rsegment(2) == 'page' AND !$this->uri->segment(3))) ? 'index' : 'posts';
+			$view = (uri_segment(2, FALSE, TRUE, TRUE) == 'index' OR (uri_segment(2, FALSE, TRUE, TRUE) == 'page' AND !uri_segment(3, FALSE, TRUE, TRUE))) ? 'index' : 'posts';
 			$output = $this->_render($view, $vars, TRUE);
 			$this->fuel->blog->save_cache($cache_id, $output);
 		}
@@ -147,7 +149,9 @@ class Blog extends Blog_base_controller {
 			$vars = $this->_common_vars();
 			$vars['post'] = $post;
 			$vars['user'] = $this->fuel->blog->logged_in_user();
-			$vars['page_title'] = $post->title;
+			$vars['page_title'] = $post->page_title;
+			if ($post->has_meta_description()) $vars['meta_description'] = $post->meta_description;
+			if ($post->has_meta_keywords()) $vars['meta_keywords'] = $post->meta_keywords;
 			$vars['next'] = $this->fuel->blog->get_next_post($post);
 			$vars['prev'] = $this->fuel->blog->get_prev_post($post);
 			$vars['slug'] = $slug;
@@ -174,6 +178,7 @@ class Blog extends Blog_base_controller {
 				{
 					add_error(lang('blog_error_blank_comment'));
 				}
+
 			}
 			
 			$cache_id = fuel_cache_id();
@@ -227,6 +232,7 @@ class Blog extends Blog_base_controller {
 					$this->form_builder->set_validator($this->blog_comments_model->get_validation());
 					$vars['comment_form'] = $this->form_builder->render();
 					$vars['fields'] = $fields;
+
 				}
 				
 				$output = $this->_render('post', $vars, TRUE);
@@ -245,7 +251,7 @@ class Blog extends Blog_base_controller {
 		}
 		else
 		{
-			show_404();
+			redirect_404();
 		}
 	}
 	function _process_comment($post)

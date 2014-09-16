@@ -6,6 +6,7 @@ class Blog_users_model extends Base_module_model {
 
 	public $unique_fields = array('fuel_user_id');
 	public $filter_fields = array('about');
+	public $serialized_fields = array('social_media_links');
 
 	function __construct()
 	{
@@ -60,6 +61,15 @@ class Blog_users_model extends Base_module_model {
 		$options = $CI->fuel_users_model->options_list();
 		$upload_image_path = assets_server_path($CI->fuel->blog->settings('asset_upload_path'));
 		$fields['fuel_user_id'] = array('label' => 'User', 'type' => 'select', 'options' => $options,  'module' => 'users');
+
+		$socialfields = $this->fuel->blog->config('social_media');
+		$fields['social_media_links'] = array('ignore_representative' => TRUE, 
+			'type' => 'template', 
+			'repeatable' => TRUE, 
+			'fields' => array(
+				'link' => array(),
+				'type' => array('type' => 'select', 'options' => $socialfields),
+		));
 		return $fields;
 	}
 

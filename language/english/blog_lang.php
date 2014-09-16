@@ -129,3 +129,32 @@ $lang['form_label_cache_ttl'] = 'Cache Time to Live';
 $lang['form_label_asset_upload_path'] = 'Asset Upload Path';
 $lang['form_label_per_page'] = 'Per Page';
 $lang['form_label_page_title_separator'] = 'Page Title Separator';
+
+
+/*
+|--------------------------------------------------------------------------
+| Front-end
+|--------------------------------------------------------------------------
+*/
+$lang['blog_blog'] = 'Block';
+$lang['blog_archives'] = 'Archives';
+$lang['blog_categories'] = 'Categories';
+$lang['blog_category_posts'] = '%1s Posts';
+$lang['blog_post_date_format'] = 'F d, Y';
+$lang['blog_post_date_format'] = 'F d, Y';
+$lang['blog_post_published'] = 'Published';
+$lang['blog_post_published_by'] = 'by';
+$lang['blog_post_read_more'] = 'Read More';
+$lang['blog_search'] = '%1s Search Result(s) Returned for “%2s”';
+$lang['blog_pagination_all'] = 'Back to All Posts';
+$lang['blog_pagination_next'] = 'Next';
+$lang['blog_pagination_prev'] = 'Previous';
+$lang['blog_comment_heading'] = 'Comment';
+$lang['blog_leave_comment_heading'] = 'Leave a Comment';
+$lang['blog_comments_off'] = 'Comments have been turned off for this post.';
+$lang['blog_comment_thanks'] = 'Thanks for the comment';
+$lang['blog_comments_monitored'] = 'Comments for this posting are being monitored and will be published upon the author\'s approval.';
+$lang['blog_share'] = 'Share this post';
+$lang['blog_related_posts'] = 'Related Posts';
+$lang['blog_links'] = 'Featured Links';
+$lang['blog_about_author'] = 'About Author';

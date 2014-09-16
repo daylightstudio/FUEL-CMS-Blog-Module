@@ -8,7 +8,7 @@ class Authors extends Blog_base_controller {
 		parent::__construct();
 	}
 	
-	function _remap($id = NULL)
+	function _remap($method = NULL)
 	{
 		$cache_id = fuel_cache_id();
 		if ($cache = $this->fuel->blog->get_cache($cache_id))
@@ -18,9 +18,13 @@ class Authors extends Blog_base_controller {
 		else
 		{
 			$vars = $this->_common_vars();
+
+			// get the category this way in case there is a language parameter
+			$id = uri_segment(3, FALSE, TRUE, TRUE);
+
 			if ($id == 'posts')
 			{
-				$author_id = (int) $this->uri->rsegment(3);
+				$author_id = (int) uri_segment(3, FALSE, TRUE, TRUE);
 				
 				$author = $this->fuel->blog->get_user($author_id);
 				if (empty($author)) show_404();

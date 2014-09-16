@@ -7,8 +7,12 @@ class Archives extends Blog_base_controller {
 		parent::__construct();
 	}
 	
-	function _remap($category = NULL)
+	function _remap($method = NULL)
 	{
+
+		// get the category this way in case there is a language parameter
+		$slug = uri_segment(3, FALSE, TRUE, TRUE);
+
 		$cache_id = fuel_cache_id();
 		$vars = $this->_common_vars();
 		if ($cache = $this->fuel->blog->get_cache($cache_id))
@@ -18,7 +22,7 @@ class Archives extends Blog_base_controller {
 		else
 		{
 			$where = array();
-			if (!empty($category) AND $category != 'index')
+			if (!empty($slug) AND $slug != 'index')
 			{
 				$tables = $this->config->item('tables');
 				$where[$tables['blog_categories'].'.slug'] = $category;

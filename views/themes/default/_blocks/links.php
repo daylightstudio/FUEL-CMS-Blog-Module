@@ -1,7 +1,7 @@
 <?php $links = $CI->fuel_blog->get_links()?>
 <?php if (!empty($links)) : ?>
 <div class="blog_block">
-	<h3>Links</h3>
+	<h3><?=lang('blog_links')?></h3>
 	<ul>
 		<?php foreach($links as $link) : ?>
 		<li>

@@ -1,4 +1,4 @@
 <div class="blog_block">
-	<h3>About</h3>
+	<h3><?=lang('blog_about_author')?></h3>
 	<p><?=$this->fuel->blog->config('description')?></p>
 </div>

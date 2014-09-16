@@ -9,7 +9,6 @@ class Blog_base_controller extends CI_Controller {
 			show_404();
 		}
 		$this->load->module_helper(BLOG_FOLDER, 'blog');
-		$this->load->module_helper(BLOG_FOLDER, 'social');
 	}
 	
 	function _common_vars()
@@ -38,9 +37,20 @@ class Blog_base_controller extends CI_Controller {
 		$vars['CI'] =& get_instance();
 
 		$page = $this->fuel->pages->create();
+
+		$view_path = ($this->fuel->blog->config('theme_module') != 'app' OR $this->fuel->blog->config('theme_module') != 'application') ? 
+								APPPATH.'views/'.$view_folder.$view.'.php' 
+								: MODULES_PATH.$this->fuel->blog->config('theme_module').'/views/'.$view_folder.$view;
+
+		// check that a view file exists and if not, redirect it
+		if (!file_exists($view_path))
+		{
+			redirect_404();
+		}
 		
 		if (!empty($layout))
 		{
+
 			$vars['body'] = $this->load->module_view($this->fuel->blog->config('theme_module'), $view_folder.$view, $vars, TRUE);
 			$view = $this->fuel->blog->theme_path().$this->fuel->blog->layout();
 		}
@@ -48,7 +58,9 @@ class Blog_base_controller extends CI_Controller {
 		{
 			$view = $view_folder.$view;
 		}
+
 		$vars = array_merge($vars, $this->load->get_vars());
+
 		$output = $this->load->module_view($this->fuel->blog->config('theme_module'), $view, $vars, TRUE);
 		$output = $page->fuelify($output);
 

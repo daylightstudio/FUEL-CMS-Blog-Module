@@ -1,4 +1,4 @@
-<h3>Thanks for the comment.</h3>
+<h3><?=lang('blog_comment_thanks')?></h3>
 <?php if ($this->fuel->blog->config('monitor_comments')){ ?>
-	<p class="success">Comments for this posting are being monitored and will be published upon the author's approval.</p>
+	<p class="success"><?=lang('blog_comments_monitored')?></p>
 <?php } ?>

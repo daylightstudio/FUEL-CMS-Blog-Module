@@ -23,7 +23,16 @@ class Blog_categories_model extends Base_module_model {
 	function list_items($limit = NULL, $offset = NULL, $col = 'name', $order = 'asc', $just_count = FALSE)
 	{
 		$this->db->where(array('id !=' => 1)); // Uncategorized category
-		$this->db->select('id, name, precedence, published');
+
+		if ($this->fuel->language->has_multiple())
+		{
+			$this->db->select('id, name, precedence, language, published');
+		}
+		else
+		{
+			$this->db->select('id, name, precedence, published');
+		}
+		
 		$data = parent::list_items($limit, $offset, $col, $order, $just_count);
 		return $data;
 	}
@@ -53,6 +62,10 @@ class Blog_categories_model extends Base_module_model {
 	function form_fields($values = array())
 	{
 		$fields = parent::form_fields($values);
+
+		// set language field
+		$fields['language'] = array('type' => 'select', 'options' => $this->fuel->language->options(), 'value' => $this->fuel->language->default_option(), 'hide_if_one' => TRUE);
+
 		return $fields;
 	}
 	
@@ -62,15 +75,20 @@ class Blog_categories_model extends Base_module_model {
 		$this->db->order_by('precedence, name asc');
 	}
 
-	function get_published_categories()
+	function get_published_categories($language = NULL)
 	{
 		$CI =& get_instance();
 		$published_categories = $CI->fuel->blog->model('posts')->get_related_keys(array(), $CI->fuel->blog->model('posts')->has_many['categories'], 'has_many');
+
 		//$published_categories = $this->get_related_keys(array(), $this->belongs_to['posts'], 'belongs_to');
 		$categories_query_params = array();
 		if (!empty($published_categories))
 		{
-			$categories_query_params = array('where_in' => array('id' => $published_categories));
+			$categories_query_params = array('where_in' => array('id' => $published_categories), 'where' => array('published' => 'yes'));
+			if (!empty($language))
+			{
+				$categories_query_params['where']['language'] = $language;
+			}
 			$categories_query = $this->query($categories_query_params);
 			return $categories_query->result();
 		}
@@ -111,7 +129,9 @@ class Blog_category_model extends Base_module_record {
 	{
 		//return sizeof($this->_get_category_posts());
 		$blog_posts_model = $this->_get_relationship('posts', TRUE, 'belongs_to');
-		$count = $blog_posts_model->record_count(array('published' => 'yes'));
+
+		$where = array('published' => 'yes');
+		$count = $blog_posts_model->record_count($where);
 		return $count;
 	}
 
