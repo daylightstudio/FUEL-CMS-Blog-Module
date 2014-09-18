@@ -12,7 +12,9 @@ CREATE TABLE `fuel_blog_categories` (
   UNIQUE KEY `permalink` (`slug`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
+INSERT INTO `fuel_blog_categories` (`id`, `name`, `slug`, `precedence`, `published`)
+VALUES
+  (1, 'Uncategorized', 'uncategorized', 0, 'yes');
 
 
 # Dump of table fuel_blog_comments
