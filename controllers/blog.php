@@ -61,7 +61,7 @@ class Blog extends Blog_base_controller {
 				$page_title_arr = array();
 				$posts_date = mktime(0, 0, 0, $month, $day, $year);
 				if (!empty($day)) $page_title_arr[] = $day;
-				if (!empty($month)) $page_title_arr[] = date('M', strtotime($posts_date));
+				if (!empty($month)) $page_title_arr[] = date('M', $posts_date);
 				if (!empty($year)) $page_title_arr[] = $year;
 				
 				// run before_posts_by_date hook
