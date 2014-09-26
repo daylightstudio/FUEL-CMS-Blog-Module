@@ -53,7 +53,7 @@ class Categories extends Blog_base_controller {
 				$vars = array_merge($vars, $hook_params);
 				$vars['posts'] = $this->fuel->blog->get_category_posts_by_date($category, $year, $month, $day);
 
-				$vars['page_title'] = $this->fuel->blog->page_title(array($category_obj->name, lang('blog_categories_page_title')));
+				$vars['page_title'] = array($category_obj->name, lang('blog_categories_page_title'));
 				$output = $this->_render('category', $vars, TRUE);
 			}
 			else
