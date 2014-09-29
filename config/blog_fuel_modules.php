@@ -22,12 +22,12 @@ $config['modules']['blog_categories'] = array(
 	'module_uri' => 'blog/categories',
 	'model_name' => 'blog_categories_model',
 	'model_location' => 'blog',
-	'table_headers' => array(
-		'id', 
-		'name', 
-		'precedence', 
-		'published', 
-	),
+	// 'table_headers' => array(
+	// 	'id', 
+	// 	'name', 
+	// 	'precedence', 
+	// 	'published', 
+	// ),
 	'display_field' => 'name',
 	'preview_path' => 'blog/categories/{slug}',
 	'permission' => 'blog_categories',
