@@ -56,7 +56,14 @@ class Blog_link_model extends Base_module_record {
 	function get_link()
 	{
 		$url = $this->url;
-		$url = prep_url($url);
+		if (preg_match('#^www\..+#', $url) OR (preg_match('#(\.com|\.net)/?$#', $url) AND !is_http_path($url))) 
+		{
+			$url = prep_url($url);	
+		}
+		else
+		{
+			$url = site_url($url);	
+		}
 		$label = (!empty($this->name)) ? $this->name : $this->url;
 		$attrs = (!empty($this->target)) ? 'target="_'.$this->target.'"' : '';
 		return anchor($url, $label, $attrs);
