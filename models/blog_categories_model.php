@@ -5,7 +5,7 @@ class Blog_categories_model extends Base_module_model {
 
 	public $required = array('name');
 	public $record_class = 'Blog_category';
-	public $unique_fields = array('slug', 'name');
+	public $unique_fields = array(array('slug', 'language'), array('name', 'language'));
 	public $linked_fields = array('slug' => array('name' => 'url_title'));
 
 	public $belongs_to = array(

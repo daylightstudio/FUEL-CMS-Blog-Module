@@ -9,8 +9,8 @@ CREATE TABLE `fuel_blog_categories` (
   `language` varchar(30) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'english',
   `published` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'yes',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `permalink` (`slug`),
-  UNIQUE KEY `name` (`name`)
+  UNIQUE KEY `name` (`name`,`language`),
+  UNIQUE KEY `slug` (`slug`,`language`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 INSERT INTO `fuel_blog_categories` (`id`, `name`, `slug`, `precedence`, `published`)
 VALUES

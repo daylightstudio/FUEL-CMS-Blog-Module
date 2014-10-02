@@ -7,6 +7,12 @@ ALTER TABLE `fuel_blog_posts` ADD `meta_keywords` VARCHAR(255)  NOT NULL  DEFAUL
 
 ALTER TABLE `fuel_blog_users` CHANGE `twitter` `social_media_links` TEXT  CHARACTER SET utf8  COLLATE utf8_general_ci  NOT NULL;
 
+ALTER TABLE `fuel_blog_categories` DROP INDEX `permalink`;
+ALTER TABLE `fuel_blog_categories` DROP INDEX `name`;
+ALTER TABLE `fuel_blog_categories` ADD UNIQUE INDEX (`name`, `language`);
+ALTER TABLE `fuel_blog_categories` ADD UNIQUE INDEX (`slug`, `language`);
+
+
 # Uncomment these if you don't want those fields in the Admin anymore since they've been rolled into the social_media_links field
 #ALTER TABLE `fuel_blog_users` DROP `facebook`;
 #ALTER TABLE `fuel_blog_users` DROP `linkedin`;
