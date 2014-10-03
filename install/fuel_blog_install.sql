@@ -12,9 +12,9 @@ CREATE TABLE `fuel_blog_categories` (
   UNIQUE KEY `name` (`name`,`language`),
   UNIQUE KEY `slug` (`slug`,`language`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-INSERT INTO `fuel_blog_categories` (`id`, `name`, `slug`, `precedence`, `published`)
+INSERT INTO `fuel_blog_categories` (`id`, `name`, `slug`, `precedence`, `language`, `published`)
 VALUES
-  (1, 'Uncategorized', 'uncategorized', 0, 'yes');
+  (1, 'Uncategorized', 'uncategorized', 0, '', 'yes');
 
 
 # Dump of table fuel_blog_comments
