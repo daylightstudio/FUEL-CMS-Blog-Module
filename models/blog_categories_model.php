@@ -9,10 +9,9 @@ class Blog_categories_model extends Base_module_model {
 	public $linked_fields = array('slug' => array('name' => 'url_title'));
 
 	public $belongs_to = array(
-		'posts' => array(
-			'model' => array('blog' => 'blog_posts')
-			)
-		);
+		'posts' => array('model' => array(BLOG_FOLDER => 'blog_posts_model'), 'where' => 'language = "{language}"')
+	);
+
 	
 	function __construct()
 	{
@@ -93,6 +92,26 @@ class Blog_categories_model extends Base_module_model {
 			return $categories_query->result();
 		}
 		return array();
+	}
+
+	public function ajax_options($where = array())
+	{
+		if (!empty($where['language']))
+		{
+			$this->db->where($where);
+			$this->db->or_where('language = ""');
+			$options = $this->options_list();
+		}
+		else
+		{
+			$options = $this->options_list(NULL, NULL, $where);
+		}
+		$str = '';
+		foreach($options as $key => $val)
+		{
+			$str .= "<option value=\"".$key."\" label=\"".$val."\">".$val."</option>\n";
+		}
+		return $str;
 	}
 }
 
