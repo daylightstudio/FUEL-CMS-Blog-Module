@@ -9,9 +9,8 @@ class Blog_categories_model extends Base_module_model {
 	public $linked_fields = array('slug' => array('name' => 'url_title'));
 
 	public $belongs_to = array(
-		'posts' => array('model' => array(BLOG_FOLDER => 'blog_posts_model'), 'where' => 'language = "{language}"')
+		'posts' => array('model' => array(BLOG_FOLDER => 'blog_posts_model'), 'where' => 'language = "{language}" OR language = ""')
 	);
-
 	
 	function __construct()
 	{
@@ -83,10 +82,10 @@ class Blog_categories_model extends Base_module_model {
 		$categories_query_params = array();
 		if (!empty($published_categories))
 		{
-			$categories_query_params = array('where_in' => array('id' => $published_categories), 'where' => array('published' => 'yes'));
+			$categories_query_params = array('where_in' => array('id' => $published_categories), 'where' => 'published = "yes"');
 			if (!empty($language))
 			{
-				$categories_query_params['where']['language'] = $language;
+				$categories_query_params['where'] .= ' AND language="'.$language.'" OR language=""';
 			}
 			$categories_query = $this->query($categories_query_params);
 			return $categories_query->result();
@@ -127,7 +126,8 @@ class Blog_category_model extends Base_module_record {
 
 	protected function _get_category_posts()
 	{
-		if (empty($this->_category_posts)) {
+		if (empty($this->_category_posts))
+		{
 			$this->_category_posts = $this->_parent_model->get_related_keys(array('id' => $this->id), $this->_parent_model->belongs_to['posts'], 'belongs_to', $this->_parent_model->table_name());
 		}
 		return $this->_category_posts;
@@ -148,7 +148,6 @@ class Blog_category_model extends Base_module_record {
 	{
 		//return sizeof($this->_get_category_posts());
 		$blog_posts_model = $this->_get_relationship('posts', TRUE, 'belongs_to');
-
 		$where = array('published' => 'yes');
 		$count = $blog_posts_model->record_count($where);
 		return $count;
