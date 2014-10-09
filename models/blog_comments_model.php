@@ -24,13 +24,6 @@ class Blog_comments_model extends Base_module_model {
 		$this->db->select($this->_tables['blog_comments'].'.id, title AS post_title, '.$this->_tables['blog_comments'].'.content AS comment, author_name AS comment_author_name, '.$this->_tables['blog_comments'].'.is_spam, '.$this->_tables['blog_comments'].'.date_added as date_submitted, '.$this->_tables['blog_comments'].'.published', FALSE);
 		$this->db->join($this->_tables['blog_posts'], $this->_tables['blog_comments'].'.post_id = '.$this->_tables['blog_posts'].'.id', 'inner');
 		$data = parent::list_items($limit, $offset, $col, $order, $just_count);
-		if (empty($just_count))
-		{
-			foreach($data as $key => $val)
-			{
-				$data[$key]['date_submitted'] = english_date($data[$key]['date_submitted'], TRUE);
-			}
-		}
 		return $data;
 	}
 	
@@ -102,7 +95,7 @@ class Blog_comments_model extends Base_module_model {
 			$fields['post_title']['displayonly'] = TRUE;
 			$fields['author_website']['displayonly'] = TRUE;
 			$fields['ip_host']['displayonly'] = TRUE;
-			$fields['date_submitted'] = array('displayonly' => TRUE, 'value' => english_date($values['date_added'], TRUE));
+			$fields['date_submitted'] = array('displayonly' => TRUE, 'value' => $values['date_added']);
 			
 			$ip_host = (!empty($values['author_ip'])) ? gethostbyaddr($values['author_ip']).' ('.$values['author_ip'].')' : '';
 			$fields['ip_host'] = array('value' => $ip_host, 'order' => 5, 'displayonly' => TRUE);
