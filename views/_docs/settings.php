@@ -1,8 +1,8 @@
 <h1>Settings</h1>
-<p>the <dfn>blog.php</dfn> config file determines whether your blog settings are controled by the admin interface or through the configuration setting</p>
+<p>The <dfn>blog.php</dfn> config file determines whether your blog settings are controlled by the admin interface or through the configuration settings.</p>
 
 <h2>Setting Options</h2>
-<p>Below are the fields to fill out for an author:</p>
+<p>Below are the fields you can control in the CMS:</p>
 <ul>
 	<li><strong>Title</strong> - The display name of the blog</li>
 	<li><strong>Description</strong> - The descirption of the blog</li>
@@ -21,4 +21,7 @@
 	<li><strong>Comment submission time limit</strong> - The time limit between a user can make comment posts</li>
 	<li><strong>Asset upload path</strong> - The asset folder path to upload images</li>
 	<li><strong>Per page</strong> - The number of post excerpts to show on a page</li>
+	<li><strong>Page title separator</strong> - The separater to use between parts of the page title. The default is &laquo;</li>
+	<li><strong>Multiple authors</strong> - Determines whether multiple authors can be used with posts</li>
+	<li><strong>Social media</strong> - Determins which social media sites a blog author can associate with their profile</li>
 </ul>

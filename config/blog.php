@@ -44,10 +44,16 @@ $config['blog']['page_title_separator'] = '&laquo;';
 $config['blog']['multiple_authors'] = FALSE;
 $config['blog']['social_media'] = array('twitter' => 'Twitter', 'linkedin' => 'LinkedIn', 'rdio' => 'Rdio', 'googleplus' => 'Google+', 'instagram' => 'Instagram', 'pinterest' => 'Pinterest', 'flickr' => 'Flickr');
 $config['blog']['image_sizes'] = array(
-	'main' => array('width' => 515, 'resize_method' => 'resize_and_crop', 'resize_and_crop' => TRUE), 
-	'list' => array('width' => 300, 'height' => 175, 'resize_method' => 'resize_and_crop', 'resize_and_crop' => TRUE), 
+	'main'      => array('width' => 515, 'resize_method' => 'resize_and_crop', 'resize_and_crop' => TRUE), 
+	'list'      => array('width' => 300, 'height' => 175, 'resize_method' => 'resize_and_crop', 'resize_and_crop' => TRUE), 
 	'thumbnail' => array('width' => 100, 'height' => 100, 'resize_method' => 'resize_and_crop', 'resize_and_crop' => TRUE),  
-	'avatar' => array('width' => 100, 'height' => 95, 'resize_method' => 'resize_and_crop', 'resize_and_crop' => TRUE)
+	'avatar'    => array('width' => 100, 'height' => 95, 'resize_method' => 'resize_and_crop', 'resize_and_crop' => TRUE)
+);
+$config['blog']['stopforumspam'] = array(
+	'ip_threshold_flag'      => 5,
+	'email_threshold_flag'   => 20,
+	'ip_threshold_ignore'    => 20,
+	'email_threshold_ignore' => 50,
 );
 
 // used for Settings area

@@ -24,6 +24,13 @@ class Blog_comments_model extends Base_module_model {
 		$this->db->select($this->_tables['blog_comments'].'.id, title AS post_title, '.$this->_tables['blog_comments'].'.content AS comment, author_name AS comment_author_name, '.$this->_tables['blog_comments'].'.is_spam, '.$this->_tables['blog_comments'].'.date_added as date_submitted, '.$this->_tables['blog_comments'].'.published', FALSE);
 		$this->db->join($this->_tables['blog_posts'], $this->_tables['blog_comments'].'.post_id = '.$this->_tables['blog_posts'].'.id', 'inner');
 		$data = parent::list_items($limit, $offset, $col, $order, $just_count);
+		if (empty($just_count))
+		{
+			foreach($data as $key => $val)
+			{
+				$data[$key]['date_submitted'] = english_date($data[$key]['date_submitted'], TRUE);
+			}
+		}
 		return $data;
 	}
 	
@@ -95,7 +102,7 @@ class Blog_comments_model extends Base_module_model {
 			$fields['post_title']['displayonly'] = TRUE;
 			$fields['author_website']['displayonly'] = TRUE;
 			$fields['ip_host']['displayonly'] = TRUE;
-			$fields['date_submitted'] = array('displayonly' => TRUE, 'value' => $values['date_added']);
+			$fields['date_submitted'] = array('displayonly' => TRUE, 'value' => english_date($values['date_added'], TRUE));
 			
 			$ip_host = (!empty($values['author_ip'])) ? gethostbyaddr($values['author_ip']).' ('.$values['author_ip'].')' : '';
 			$fields['ip_host'] = array('value' => $ip_host, 'order' => 5, 'displayonly' => TRUE);
@@ -219,6 +226,7 @@ class Blog_comment_model extends Base_module_record {
 
 	public $title;
 	public $slug;
+	public $spam_checked = FALSE;
 
 	// not using filtered fields because we don't want any PHP function translation'
 	function get_content_formatted()
@@ -268,6 +276,43 @@ class Blog_comment_model extends Base_module_record {
 	{
 		return date($format, strtotime($this->date_added));
 	}	
+
+	function is_spam()
+	{
+		if (!$this->spam_checked)
+		{
+			$this->check_is_spam();
+		}
+		return is_true_val($this->_fields['is_spam']);
+	}
+
+	function check_is_spam()
+	{
+		$this->is_spam = ($this->_CI->fuel->blog->is_spam($this)) ? 'yes' : 'no';
+		$this->spam_checked = TRUE;
+		return $this->is_spam;
+	}
+
+	function is_savable()
+	{
+		if (!isset($this->_CI->stopforumspam))
+		{
+			$this->_CI->load->module_library(BLOG_FOLDER, 'stopforumspam');
+		}
+
+		// if this has not been spam checked, we do so
+		if (!$this->spam_checked)
+		{
+			$this->check_is_spam();
+		}
+
+		if ($this->_CI->stopforumspam->is_ignorable())
+		{
+			return FALSE;
+		}
+
+		return !$this->is_spam() OR ($this->is_spam() AND $this->_CI->fuel->blog->config('save_spam'));
+	}
 	
 }
 ?>

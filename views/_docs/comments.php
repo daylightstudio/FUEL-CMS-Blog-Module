@@ -72,4 +72,11 @@ Comments are powered by a <dfn>blog_comments_model</dfn> and have a grandparent 
 Takes a <a href="http://www.php.net/date">date</a> format. Default is 'M d, Y'.
 </p>
 
+<h2>is_spam()</h2>
+<p>Returns a boolean value if the comment should be considered as SPAM.</p>
 
+<h2>check_is_spam()</h2>
+<p>Performs a spam check on the comment using stopforumspam or AKISMET (if a key is provided in the settings).</p>
+
+<h2>is_savable()</h2>
+<p>Returns a boolean value depending on if the comment can be saved based on the SPAM settings.</p>

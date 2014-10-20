@@ -39,7 +39,14 @@ Posts are powered by a <dfn>blog_posts_model</dfn> and have a grandparent class 
 
 <br />
 
-<h1>The Post Model Methods</h1>
+<h1>The Post Model Properties and Methods</h1>
+<p>The post model has the following relationship properties:</p>
+<ul>
+	<li>categories</li>
+	<li>related_posts</li>
+	<li>blocks</li>
+</ul>
+
 <p>The post model has the following specific methods:</p>
 
 <h2>get_content_formatted(<var>strip_images</var>)</h2>
@@ -66,11 +73,18 @@ Returns the number of comments for the post
 Default order is <dfn>date added</dfn> in ascending order.
 </p>
 
+<h2>get_comments_formatted(<var>'[block]'</var>, <var>[parent_id]</var>, <var>[container_class]</var>)</h2>
+<p>
+Creates the HTML for the comments of the post using the comments block and properly nesting comments if their is a hierarchical structure.
+</p>
+
 <h2>get_categories(<var>'[order]'</var>)</h2>
 <p>
 Returns an array of category objects associated with the post
 Default ordering is by <dfn>name</dfn> in ascending order.
 </p>
+
+belongs_to_category
 
 <h2>get_categories_linked(<var>'[order]'</var>, <var>'[join]'</var>)</h2>
 <p>
@@ -106,16 +120,16 @@ Takes a <a href="http://www.php.net/date">date</a> format. Default is 'M d, Y'.
 <h2>is_within_comment_time_limit()</h2>
 <p>Returns a boolean as to whether the current time is within the time limits specified by the post to comment.</p>
 
-<h2>get_social_bookmarking_links()</h2>
-<p>Gets a string of bookmarking links.</p>
+<h2>get_prev_post()</h2>
+<p>Returns the previous post based on date.</p>
 
-<h2>get_facebook_recommend()</h2>
-<p>Returns a Facebook Recommend button.</p>
+<h2>get_prev_post_url()</h2>
+<p>Returns the previous post URL based on date.</p>
 
-<h2>get_digg()</h2>
-<p>Returns a digg button.</p>
+<h2>get_next_post()</h2>
+<p>Returns the next post based on date.</p>
 
-<h2>get_tweetme()</h2>
-<p>Returns a TweetMe button.</p>
+<h2>get_next_post_url()</h2>
+<p>Returns the next post URL based on date.</p>
 
 

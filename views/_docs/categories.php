@@ -24,7 +24,7 @@ the categories menu item. Categories are powered by a <dfn>blog_categories_model
 
 <br />
 <h1>The Category Model Methods</h1>
-<p>The category object model has the following specific methods:</p>
+<p>The category object model has the following methods:</p>
 
 <h2>get_posts()</h2>
 <p>Returns an array of posts associated with a category.</p>

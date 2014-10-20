@@ -1,4 +1,4 @@
-<h1>Other Configurations</h1>
+2<h1>Other Configurations</h1>
 <p>The blog config file has additional configuration parameters to control the blog. You can </p>
 <ul>
 	<li><strong>blog_use_db_table_settings</strong> - determines whether to use the blog settings  or the configuration file  to configure the blog</li>
@@ -23,6 +23,9 @@
 			<li><strong>theme_module</strong></li>
 			<li><strong>multiple_comment_submission_time_limit</strong></li>
 			<li><strong>asset_upload_path</strong></li>
+			<li><strong>page_title_separator</strong></li>
+			<li><strong>multiple_authors</strong></li>
+			<li><strong>social_media</strong></li>
 		</ul>
 	</li>
 </ul>
@@ -31,15 +34,24 @@
 <p>The config file also contains several programmer specific configurations:</p>
 <ul>
 	<li><strong>formatting</strong> - the formatting options allowed for blog posts. Options are Automatic (which uses CodeIgniter's <a href="http://codeigniter.com/user_guide/helpers/typography_helper.html" target="_blank">auto_typography</a> function), <a href="<?=user_guide_url('helpers/markdown')?>">Markdown</a>  or None</li>
-	<li><strong>captcha</strong> - contains an array of configuration to configure captchas (if they are enabled in the settings)
+	<li><strong>captcha</strong> - contains an array of configuration to configure captchas (if they are enabled in the settings):
 		<ul>
 			<li><strong>img_width</strong> - 120</li>
 			<li><strong>img_height</strong> - 26</li>
 			<li><strong>expiration</strong> - 600 (10 minutes)</li>
-			<li><strong>bg_color</strong> => #4b4b4b</li>
-			<li><strong>char_color</strong> => #ffffff,#cccccc,#ffffff,#999999,#ffffff,#cccccc</li>
-			<li><strong>line_color</strong> => #ff9900,#414141,#ea631d,#aaaaaa,#f0a049,#ff9900</li>
+			<li><strong>bg_color</strong>- #4b4b4b</li>
+			<li><strong>char_color</strong> - #ffffff,#cccccc,#ffffff,#999999,#ffffff,#cccccc</li>
+			<li><strong>line_color</strong> - #ff9900,#414141,#ea631d,#aaaaaa,#f0a049,#ff9900</li>
 		</ul>
 	</li>
 	<li><strong>comment_form</strong> - configuration parameters used for the <a href="<?=user_guide_url('libraries/form_builder')?>">Form_builder Class</a> which is used for creating the form</li>
+	<li><strong>pagination</strong> - pagination class configuration parameters</li>
+	<li><strong>stopforumspam</strong> - settings used for the stopforumspam API which include:
+		<ul>
+			<li><strong>ip_threshold_flag</strong> - 5</li>
+			<li><strong>ip_threshold_flag</strong> - 20</li>
+			<li><strong>ip_threshold_ignore</strong> - 20</li>
+			<li><strong>email_threshold_ignore</strong> - 50</li>
+		</ul>
+	</li>
 </ul>
