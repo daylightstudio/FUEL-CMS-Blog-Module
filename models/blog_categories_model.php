@@ -148,9 +148,13 @@ class Blog_category_model extends Base_module_record {
 	{
 		//return sizeof($this->_get_category_posts());
 		$blog_posts_model = $this->_get_relationship('posts', TRUE, 'belongs_to');
-		$where = array('published' => 'yes');
-		$count = $blog_posts_model->record_count($where);
-		return $count;
+		if (!empty($blog_posts_model))
+		{
+			$where = array('published' => 'yes');
+			$count = $blog_posts_model->record_count($where);
+			return $count;
+		}
+		return 0;
 	}
 
 	function get_url($full_path = TRUE)
