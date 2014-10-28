@@ -22,24 +22,25 @@
 	<h3><?=lang('blog_comment_heading')?></h3>
 	<div class="comments" id="comments">
 
+		<?=$post->comments_formatted?>
+
+		<?php /* Another example without the nesting... ?>
 		<?php foreach($post->comments as $comment) : ?>
 
 			<div class="<?=($comment->is_child()) ? 'comment child' : 'comment'?>">
 
-				<a name="comment<?=$comment->id?>"></a>
-				<div class="comment_content">
-					<?php if ($comment->is_by_post_author()) :?>
-					<?=$comment->post->author->get_avatar_img_tag(array('class' => 'img_left'))?>
-					<?php endif; ?>
+				<div class="comment_content" id="comment<?=$comment->id?>">
 					<?=$comment->content_formatted?>
 				</div>
-
 
 				<div class="comment_meta">
 					<cite><?=$comment->author_and_link?>, <?=$comment->get_date_formatted('h:iA / M d, Y')?></cite>
 				</div>
 			</div>
 		<?php endforeach; ?>
+
+		<?php */ ?>
+
 	</div>
 <?php endif; ?>
 
