@@ -383,9 +383,8 @@ class Blog_post_model extends Base_module_record {
 			$content = strip_image_tags($this->content);
 		}
 		
-		// must parse first to prevent quotes being turned into encoded characters
-		$content = $this->_parse($content);
 		$content = $this->_format($content);
+		$content = $this->_parse($content);
 		return $content;
 	}
 
@@ -410,9 +409,9 @@ class Blog_post_model extends Base_module_record {
 		{
 			$excerpt .= ' '.anchor($this->url, $readmore, 'class="readmore"');
 		}
-		// must parse first to prevent quotes being turned into encoded characters
-		$excerpt = $this->_parse($excerpt);
+
 		$excerpt = $this->_format($excerpt);
+		$excerpt = $this->_parse($excerpt);
 		return $excerpt;
 	}
 	
