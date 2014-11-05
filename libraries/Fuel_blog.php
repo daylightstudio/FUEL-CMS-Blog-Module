@@ -1376,6 +1376,131 @@ class Fuel_blog extends Fuel_advanced_module {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Returns either an array of fields for the comment form or the HTML
+	 *
+	 * @access	public
+	 * @param	object
+	 * @param	object
+	 * @param	mixed
+	 * @return	mixed
+	 */
+	public function comment_form($post, $parent_comment = NULL, $values = array(), $form_params = array())
+	{
+		$this->CI->load->library('session');
+		$this->CI->load->library('form');
+		$blog_config = $this->fuel->blog->config();
+
+		if (is_true_val($this->config('use_captchas')))
+		{
+			$captcha = $this->captcha();
+			$vars['captcha'] = $captcha;
+		}
+
+		$antispam = md5(random_string('unique'));
+		$this->CI->session->set_userdata('antispam', $antispam);
+
+		$form = '';
+		if ($post->allow_comments)
+		{
+			$this->CI->load->module_model(BLOG_FOLDER, 'blog_comments_model');
+
+			if (empty($form_builder_params))
+			{
+				$form_params = $blog_config['comment_form'];
+			}
+
+			$this->CI->load->library('form_builder', $form_params);
+			
+			$fields['author_name'] = array('label' => 'Name', 'required' => TRUE);
+			$fields['author_email'] = array('label' => 'Email', 'required' => TRUE);
+			$fields['author_website'] = array('label' => 'Website');
+			$fields['new_comment'] = array('label' => 'Comment', 'type' => 'textarea', 'required' => TRUE);
+			$fields['post_id'] = array('type' => 'hidden', 'value' => $post->id);
+			$fields['antispam'] = array('type' => 'hidden', 'value' => $antispam);
+			
+			if (isset($parent_comment->id))
+			{
+				$fields['parent_id'] = array('type' => 'hidden', 'value' => $parent_comment->id); 	
+			}
+
+			if (!empty($vars['captcha']))
+			{
+				$fields['captcha'] = array('required' => TRUE, 'label' => lang('form_label_security_text'), 'value' => '', 'after_html' => ' <span class="captcha">'.$vars['captcha']['image'].'</span><br /><span class="captcha_text">'.lang('blog_captcha_text').'</span>');
+			}
+			
+			// now merge with config... can't do array_merge_recursive'
+			foreach($blog_config['comment_form']['fields'] as $key => $field)
+			{
+				if (isset($fields[$key])) $fields[$key] = array_merge($fields[$key], $field);
+			}
+
+			if (!isset($blog_config['comment_form']['label_layout'])) $this->CI->form_builder->label_layout = 'left';
+			if (!isset($blog_config['comment_form']['submit_value'])) $this->CI->form_builder->submit_value = 'Submit Comment';
+			if (!isset($blog_config['comment_form']['use_form_tag'])) $this->CI->form_builder->use_form_tag = TRUE;
+			if (!isset($blog_config['comment_form']['display_errors'])) $this->CI->form_builder->display_errors = TRUE;
+			$this->CI->form_builder->form_attrs = 'method="post" action="'.site_url($this->CI->uri->uri_string()).'#comments_form"';
+			$this->CI->form_builder->set_fields($fields);
+			$this->CI->form_builder->set_field_values($values);
+			$this->CI->form_builder->set_validator($this->CI->blog_comments_model->get_validation());
+		
+
+			// setup comment fields as a variable to be used in a view file 
+			$this->CI->load->vars(array('comment_fields' => $fields));
+
+			if ($form_params !== FALSE)
+			{
+				$this->CI->form_builder->set_fields($fields);
+				$this->CI->form_builder->set_field_values($values);
+				$this->CI->form_builder->set_validator($this->CI->blog_comments_model->get_validation());
+				$form = $this->CI->form_builder->render();
+				return $form;
+			}
+			else
+			{
+				return $fields;
+			}
+
+		}
+		return $form;
+	}
+
+	public function captcha()
+	{
+		$this->CI->load->library('session');
+		$this->CI->load->library('captcha');
+
+		$assets_folders = $this->CI->config->item('assets_folders');
+		$blog_folder = MODULES_PATH.BLOG_FOLDER.'/';
+		$captcha_path = $blog_folder.'assets/captchas/';
+		$word = strtoupper(random_string('alnum', 5));
+		
+		$captcha_options = array(
+						'word'		 => $word,
+						'img_path'	 => $captcha_path, // system path to the image
+						'img_url'	 => captcha_path('', BLOG_FOLDER), // web path to the image
+						'font_path'	 => $blog_folder.'fonts/',
+					);
+		$captcha_options = array_merge($captcha_options, $this->config('captcha'));
+		if (!empty($_POST['captcha']) AND $this->CI->session->userdata('comment_captcha') == $this->CI->input->post('captcha'))
+		{
+			$captcha_options['word'] = $this->input->post('captcha');
+		}
+		$captcha = $this->CI->captcha->get_captcha_image($captcha_options);
+		$captcha_md5 = $this->get_encryption($captcha['word']);
+		$this->CI->session->set_userdata('comment_captcha', $captcha_md5);
+		
+		return $captcha;
+	}
+	
+	public function get_encryption($word)
+	{
+		$captcha_md5 = md5(strtoupper($word).$this->CI->config->item('encryption_key'));
+		return $captcha_md5;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Runs a specific blog hook
 	 *
 	 * @access	public
