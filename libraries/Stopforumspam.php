@@ -45,7 +45,7 @@ class Stopforumspam extends Fuel_base_library {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->_config = $this->fuel->blog->config('stopforumspam');
+		$this->_config = $this->fuel->forms->config('stopforumspam');
 	}
 
 	/**
@@ -122,7 +122,7 @@ class Stopforumspam extends Fuel_base_library {
 
 				$is_spam = FALSE;
 
-				if (isset($result['error']))
+				if (isset($this->_result['error']))
 				{
 					$this->_add_error($result['error']);
 				}
@@ -138,6 +138,7 @@ class Stopforumspam extends Fuel_base_library {
 						$is_spam = TRUE;
 					}
 				}
+				
 				return $is_spam;
 			}
 		}
@@ -210,6 +211,8 @@ class Stopforumspam extends Fuel_base_library {
 	 */
 	public function result($key = NULL, $default = 0)
 	{
+		if (is_null($this->_result)) return NULL;
+
 		if (isset($key))
 		{
 			return array_dot($key, $this->_result, $default);
@@ -237,7 +240,7 @@ class Stopforumspam extends Fuel_base_library {
 	 * @access	public
 	 * @return	boolean
 	 */
-	public function set_config()
+	public function set_config($config)
 	{
 		$this->_config = array_merge($this->_config, $config);
 		return $this;
