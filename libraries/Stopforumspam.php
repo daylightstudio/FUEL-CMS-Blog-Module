@@ -45,7 +45,7 @@ class Stopforumspam extends Fuel_base_library {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->_config = $this->fuel->forms->config('stopforumspam');
+		$this->_config = $this->fuel->blog->config('stopforumspam');
 	}
 
 	/**
@@ -138,7 +138,6 @@ class Stopforumspam extends Fuel_base_library {
 						$is_spam = TRUE;
 					}
 				}
-				
 				return $is_spam;
 			}
 		}
@@ -240,7 +239,7 @@ class Stopforumspam extends Fuel_base_library {
 	 * @access	public
 	 * @return	boolean
 	 */
-	public function set_config($config)
+	public function set_config()
 	{
 		$this->_config = array_merge($this->_config, $config);
 		return $this;
