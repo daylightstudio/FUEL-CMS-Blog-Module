@@ -1526,7 +1526,7 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	protected function _tables($table = NULL)
 	{
-		//$tables = $this->_tables();
+		//$tables = $this->CI->config->item('tables');
 		$tables = Base_module_model::$tables;
 		if (isset($table))
 		{
