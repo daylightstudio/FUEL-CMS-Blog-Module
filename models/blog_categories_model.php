@@ -65,7 +65,7 @@ class Blog_categories_model extends Base_module_model {
 	function get_published_categories()
 	{
 		$CI =& get_instance();
-		$published_categories = $CI->fuel->blog->model('posts')->get_related_keys(array(), $CI->fuel->blog->model('posts')->has_many['categories'], 'has_many');
+		$published_categories = $CI->fuel->blog->model('posts')->get_related_keys('categories', array(), $CI->fuel->blog->model('posts')->has_many['categories'], 'has_many');
 		//$published_categories = $this->get_related_keys(array(), $this->belongs_to['posts'], 'belongs_to');
 		$categories_query_params = array();
 		if (!empty($published_categories))
@@ -91,7 +91,7 @@ class Blog_category_model extends Base_module_record {
 	protected function _get_category_posts()
 	{
 		if (empty($this->_category_posts)) {
-			$this->_category_posts = $this->_parent_model->get_related_keys(array('id' => $this->id), $this->_parent_model->belongs_to['posts'], 'belongs_to', $this->_parent_model->table_name());
+			$this->_category_posts = $this->_parent_model->get_related_keys('posts', array('id' => $this->id), $this->_parent_model->belongs_to['posts'], 'belongs_to', $this->_parent_model->table_name());
 		}
 		return $this->_category_posts;
 	}
