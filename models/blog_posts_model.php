@@ -8,6 +8,7 @@ class Blog_posts_model extends Base_module_model {
 	public $category = null;
 	public $required = array('title', 'content');
 	public $hidden_fields = array('content_filtered');
+	public $filter_join = 'and';
 	public $filters = array('title', 'content_filtered', 'fuel_users.first_name', 'fuel_users.last_name');
 	public $unique_fields = array('slug');
 	public $linked_fields = array('slug' => array('title' => 'url_title'));
@@ -40,14 +41,15 @@ class Blog_posts_model extends Base_module_model {
 		}
 
 		$this->has_many['tags']['where'] = $this->_tables['fuel_categories'].'.context = "blog"';
+
+		// set the filter again here just in case the table names are different
+		$this->filters = array('title', 'content_filtered', $this->_tables['fuel_users'].'.first_name', $this->_tables['fuel_users'].'.last_name');
+
 	}
 	
 	// used for the FUEL admin
 	function list_items($limit = NULL, $offset = NULL, $col = 'post_date', $order = 'desc', $just_count = FALSE)
 	{
-		// set the filter again here just in case the table names are different
-		$this->filters = array('title', 'content_filtered', $this->_tables['fuel_users'].'.first_name');
-
 		$CI =& get_instance();
 		if ($CI->fuel->blog->config('multiple_authors'))
 		{

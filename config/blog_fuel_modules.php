@@ -14,7 +14,13 @@ $config['modules']['blog_posts'] = array(
 //	'language' => array('blog' => 'blog'),
 	'default_col' => 'post_date',
 	'default_order' => 'desc',
-	'sanitize_input' => array('template','php')
+	'sanitize_input' => array('template','php'),
+	'filters' => array(
+		'category_id' => array('label' => lang('form_label_category'), 'type' => 'select', 'model' => array(FUEL_FOLDER => 'fuel_categories_model'), 'first_option' => lang('label_select_one')),
+		'author_id' => array('label' => lang('form_label_author'), 'type' => 'select', 'model' => array(BLOG_FOLDER => 'blog_users_model'), 'first_option' => lang('label_select_one'))
+
+		),
+	'advanced_search' => TRUE
 );
 
 // $config['modules']['blog_categories'] = array(
