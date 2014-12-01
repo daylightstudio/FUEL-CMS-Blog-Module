@@ -17,27 +17,27 @@ $config['modules']['blog_posts'] = array(
 	'sanitize_input' => array('template','php')
 );
 
-$config['modules']['blog_categories'] = array(
-	'module_name' => 'Categories',
-	'module_uri' => 'blog/categories',
-	'model_name' => 'blog_categories_model',
-	'model_location' => 'blog',
-	// 'table_headers' => array(
-	// 	'id', 
-	// 	'name', 
-	// 	'precedence', 
-	// 	'published', 
-	// ),
-	'display_field' => 'name',
-	'preview_path' => 'blog/categories/{slug}',
-	'permission' => 'blog_categories',
-	'instructions' => lang('module_instructions_default', 'blog categories'),
-	'archivable' => TRUE,
-	'configuration' => array('blog' => 'blog'),
-	'nav_selected' => 'blog/categories',
-//	'language' => array('blog' => 'blog')
+// $config['modules']['blog_categories'] = array(
+// 	'module_name' => 'Categories',
+// 	'module_uri' => 'blog/categories',
+// 	'model_name' => 'blog_categories_model',
+// 	'model_location' => 'blog',
+// 	// 'table_headers' => array(
+// 	// 	'id', 
+// 	// 	'name', 
+// 	// 	'precedence', 
+// 	// 	'published', 
+// 	// ),
+// 	'display_field' => 'name',
+// 	'preview_path' => 'blog/categories/{slug}',
+// 	'permission' => 'blog_categories',
+// 	'instructions' => lang('module_instructions_default', 'blog categories'),
+// 	'archivable' => TRUE,
+// 	'configuration' => array('blog' => 'blog'),
+// 	'nav_selected' => 'blog/categories',
+// //	'language' => array('blog' => 'blog')
 	
-);
+// );
 
 $config['modules']['blog_comments'] = array(
 	'module_name' => 'Comments',

@@ -6,7 +6,7 @@
 */
 $config['nav']['blog'] = array(
 	'blog/posts' => lang('module_blog_posts'), 
-	'blog/categories' => lang('module_blog_categories'),  
+	//'blog/categories' => lang('module_blog_categories'),  
 	'blog/comments' => lang('module_blog_comments'), 
 	'blog/links' => lang('module_blog_links'), 
 	'blog/users' => lang('module_blog_authors'), 
@@ -119,7 +119,8 @@ $config['blog']['pagination'] = array(
 
 // tables for blog
 $config['tables']['blog_posts'] = 'fuel_blog_posts';
-$config['tables']['blog_categories'] = 'fuel_blog_categories';
+$config['tables']['blog_categories'] = 'fuel_categories';
+$config['tables']['blog_tags'] = 'fuel_tags';
 $config['tables']['blog_users'] = 'fuel_blog_users';
 $config['tables']['blog_comments'] = 'fuel_blog_comments';
 $config['tables']['blog_links'] = 'fuel_blog_links';

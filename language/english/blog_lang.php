@@ -6,6 +6,7 @@
 */
 $lang['module_blog_posts'] = 'Posts';
 $lang['module_blog_categories'] = 'Categories';
+$lang['module_blog_tags'] = 'Tags';
 $lang['module_blog_comments'] = 'Comments';
 $lang['module_blog_links'] = 'Links';
 $lang['module_blog_authors'] = 'Authors';
@@ -32,6 +33,7 @@ $lang['blog_archives_page_title'] = 'Archives';
 $lang['blog_authors_list_page_title'] = 'Authors';
 $lang['blog_author_posts_page_title'] = '%s Posts';
 $lang['blog_categories_page_title'] = 'Categories';
+$lang['blog_tags_page_title'] = 'Tags';
 $lang['blog_search_page_title'] = '%s Search Results';
 
 /*
@@ -67,7 +69,19 @@ $lang['form_label_formatting'] = 'Formatting';
 $lang['form_label_author'] = 'Author';
 $lang['form_label_sticky'] = 'Sticky';
 $lang['form_label_allow_comments'] = 'Allow Comments';
-$lang['form_label_categories'] = 'Categories';
+$lang['form_label_category'] = 'Category';
+$lang['form_label_tags'] = 'Tags';
+$lang['form_label_main_image'] = 'Main image';
+$lang['form_label_list_image'] = 'List image';
+$lang['form_label_thumbnail_image'] = 'Thumbnail image';
+$lang['form_label_page_title'] = 'Page title';
+$lang['form_label_meta_description'] = 'Meta description';
+$lang['form_label_meta_keywords'] = 'Meta keywords';
+$lang['form_label_post_date'] = 'Post date';
+$lang['form_label_related_posts'] = 'Related posts';
+$lang['form_label_blocks'] = 'Blocks';
+
+$lang['form_tags_comment'] = 'Tags must have the context of "blog" in order to be used by the blog module.';
 
 
 /*
@@ -104,7 +118,6 @@ $lang['form_label_reply'] = 'Reply';
 $lang['form_label_commentor'] = 'Commentor';
 $lang['form_label_reply_notify'] = 'Notify';
 $lang['form_label_author_ip'] = 'Author IP Address';
-$lang['form_label_security_text'] = 'Security Text';
 
 
 /*
@@ -141,6 +154,8 @@ $lang['blog_blog'] = 'Block';
 $lang['blog_archives'] = 'Archives';
 $lang['blog_categories'] = 'Categories';
 $lang['blog_category_posts'] = '%1s Posts';
+$lang['blog_tags'] = 'Tags';
+$lang['blog_tags_posts'] = '%1s Posts';
 $lang['blog_post_date_format'] = 'F d, Y';
 $lang['blog_post_date_format'] = 'F d, Y';
 $lang['blog_post_published'] = 'Published';
