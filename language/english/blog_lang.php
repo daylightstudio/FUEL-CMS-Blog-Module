@@ -81,7 +81,8 @@ $lang['form_label_post_date'] = 'Post date';
 $lang['form_label_related_posts'] = 'Related posts';
 $lang['form_label_blocks'] = 'Blocks';
 
-$lang['form_tags_comment'] = 'Tags must have the context of "blog" in order to be used by the blog module.';
+$lang['form_category_comment'] = 'Categories must have a context of "blog" in order to be used by the Blog module.';
+$lang['form_tags_comment'] = 'Tags must belong to a category that has the context of "blog" in order to be used by the Blog module.';
 
 
 /*

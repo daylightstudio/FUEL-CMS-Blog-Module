@@ -183,6 +183,7 @@ class Blog_posts_model extends Base_module_model {
 		$fields['related_posts']['label'] = lang('form_label_related_posts');
 		$fields['blocks']['label'] = lang('form_label_blocks');
 
+		$fields['category_id']['comment'] = lang('form_category_comment');
 		$fields['tags']['comment'] = lang('form_tags_comment');
 		if ($CI->fuel->language->has_multiple())
 		{
@@ -280,6 +281,8 @@ class Blog_posts_model extends Base_module_model {
 	
 	function on_after_save($values)
 	{
+		parent::on_after_save($values);
+		
 		// remove cache
 		$CI =& get_instance();
 		$CI->fuel->blog->remove_cache();

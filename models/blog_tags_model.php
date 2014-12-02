@@ -76,19 +76,19 @@ class Blog_tags_model extends Base_module_model {
 	function get_published_tags($language = NULL)
 	{
 		$CI =& get_instance();
-		$published_categories = $CI->fuel->blog->model('posts')->get_related_keys('posts', array(), $CI->fuel->blog->model('posts')->has_many['categories'], 'has_many');
+		$published_tags = $CI->fuel->blog->model('posts')->get_related_keys('tags', array(), $CI->fuel->blog->model('posts')->has_many['tags'], 'has_many');
 
 		//$published_categories = $this->get_related_keys(array(), $this->belongs_to['posts'], 'belongs_to');
-		$categories_query_params = array();
-		if (!empty($published_categories))
+		$tags_query_params = array();
+		if (!empty($published_tags))
 		{
-			$categories_query_params = array('where_in' => array('id' => $published_categories), 'where' => 'published = "yes"');
+			$tags_query_params = array('where_in' => array('id' => $published_tags), 'where' => 'published = "yes"');
 			if (!empty($language))
 			{
-				$categories_query_params['where'] .= ' AND language="'.$language.'" OR language=""';
+				$tags_query_params['where'] .= ' AND language="'.$language.'" OR language=""';
 			}
-			$categories_query = $this->query($categories_query_params);
-			return $categories_query->result();
+			$tags_query = $this->query($tags_query_params);
+			return $tags_query->result();
 		}
 		return array();
 	}
