@@ -155,7 +155,7 @@ class Blog_tag_model extends Base_module_record {
 
 	function get_url($full_path = TRUE)
 	{
-		$url = 'categories/'.$this->slug;
+		$url = 'tags/'.$this->slug;
 		if ($full_path)
 		{
 			return $this->_CI->fuel_blog->url($url);
