@@ -59,6 +59,7 @@ CREATE TABLE `fuel_blog_posts` (
   `page_title` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `meta_description` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `meta_keywords` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `category_id` int(11) unsigned NOT NULL,
   `date_added` datetime DEFAULT NULL,
   `last_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `published` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'yes',
