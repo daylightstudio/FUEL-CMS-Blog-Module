@@ -23,7 +23,8 @@
 	<div class="comments" id="comments">
 
 		<?=$post->comments_formatted?>
-
+		<?=js('comment_reply', BLOG_FOLDER)?>
+		
 		<?php /* Another example without the nesting... ?>
 		<?php foreach($post->comments as $comment) : ?>
 

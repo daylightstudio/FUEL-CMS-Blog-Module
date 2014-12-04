@@ -1,22 +1,3 @@
-# Dump of table fuel_blog_categories
-# ------------------------------------------------------------
-
-CREATE TABLE `fuel_blog_categories` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `slug` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'If left blank, the slug will automatically be created for you.',
-  `precedence` int(11) unsigned DEFAULT '0',
-  `language` varchar(30) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'english',
-  `published` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'yes',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `name` (`name`,`language`),
-  UNIQUE KEY `slug` (`slug`,`language`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-INSERT INTO `fuel_blog_categories` (`id`, `name`, `slug`, `precedence`, `language`, `published`)
-VALUES
-  (1, 'Uncategorized', 'uncategorized', 0, '', 'yes');
-
-
 # Dump of table fuel_blog_comments
 # ------------------------------------------------------------
 

@@ -200,16 +200,16 @@ class Fuel_blog extends Fuel_advanced_module {
 	 * @param	string
 	 * @return	string
 	 */
-	public function feed($type = 'rss', $category = '')
+	public function feed($type = 'rss', $slug = '', $type = 'categories')
 	{
-		if (empty($category))
+		if (empty($slug))
 		{
-			if ($this->CI->uri->rsegment(1) == 'categories' AND $this->CI->uri->rsegment(2))
+			if (($this->CI->uri->rsegment(1) == 'categories' OR $this->CI->uri->rsegment(1) == 'tags') AND $this->CI->uri->rsegment(2))
 			{
-				$category = $this->CI->uri->rsegment(2);
+				$slug = $this->CI->uri->rsegment(2);
 			}
 		}
-		$uri = (!empty($category)) ? 'categories/'.$category.'/feed/' : 'feed/';
+		$uri = (!empty($slug)) ? $slug.'/feed/' : 'feed/';
 		return $this->url($uri.$type);
 	}
 	
@@ -236,13 +236,13 @@ class Fuel_blog extends Fuel_advanced_module {
 	 * @param	string
 	 * @return	string
 	 */
-	public function feed_output($type = 'rss', $category = NULL)
+	public function feed_output($type = 'rss', $slug = NULL, $type = 'categories')
 	{
 		$this->CI->load->helper('xml');
 		$this->CI->load->helper('date');
 		$this->CI->load->helper('text');
 		
-		$vars = $this->feed_data($category);
+		$vars = $this->feed_data($slug);
 		if ($type == 'atom')
 		{
 			$output = $this->CI->load->module_view(BLOG_FOLDER, 'feed/atom_posts', $vars, TRUE);
@@ -264,7 +264,7 @@ class Fuel_blog extends Fuel_advanced_module {
 	 * @param	string
 	 * @return	array
 	 */
-	public function feed_data($category = NULL, $limit = 10)
+	public function feed_data($slug = NULL, $type = 'categories', $limit = 10)
 	{
 		$data['title'] = $this->title();
 		$data['link'] = $this->url();
@@ -272,9 +272,17 @@ class Fuel_blog extends Fuel_advanced_module {
 		$data['last_updated'] = $this->last_updated();
 		$data['language'] = $this->language();
 		
-		if (!empty($category))
+		if (!empty($slug))
 		{
-			$data['posts'] = $this->get_category_posts($category, 'sticky, post_date desc', $limit);
+			if ($type == 'tags')
+			{
+				$data['posts'] = $this->get_tag_posts($slug, 'sticky, post_date desc', $limit);	
+			}
+			else
+			{
+				$data['posts'] = $this->get_category_posts($slug, 'sticky, post_date desc', $limit);		
+			}
+			
 		}
 		else
 		{
@@ -601,6 +609,65 @@ class Fuel_blog extends Fuel_advanced_module {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Returns the most recent posts for a given category
+	 *
+	 * @access	public
+	 * @param	string
+	 * @param	string
+	 * @param	int
+	 * @param	int
+	 * @param	string
+	 * @param	string
+	 * @return	array
+	 */
+	public function get_tag_posts($tag = '', $order_by = 'post_date desc', $limit = NULL, $offset = NULL, $return_method = NULL, $assoc_key = NULL)
+	{
+		$this->CI->load->module_model(BLOG_FOLDER, 'blog_posts_model');
+		$this->CI->blog_posts_model->readonly = TRUE;
+		$tables = $this->_tables();
+		$where = $this->_publish_status('blog_posts');
+		
+		if (is_numeric($category))
+		{
+			$where[$tables['blog_tags'].'.id'] = $tag;
+		}
+		else
+		{
+			$where[$tables['blog_tags'].'.slug'] = $tag;
+		}
+		$posts = $this->CI->blog_posts_model->find_all($where, $order_by, $limit, $offset, $return_method, $assoc_key);
+		return $posts;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns posts by providing a given date
+	 *
+	 * @access	public
+	 * @param	string
+	 * @param	int
+	 * @param	int
+	 * @param	int
+	 * @param	string
+	 * @param	int
+	 * @param	int
+	 * @param	string
+	 * @param	string
+	 * @return	array
+	 */
+	public function get_tag_posts_by_date($tag, $year = NULL, $month = NULL, $day = NULL, $limit = NULL, $offset = NULL, $order_by = 'sticky, post_date desc', $return_method = NULL, $assoc_key = NULL)
+	{
+		$this->CI->load->module_model(BLOG_FOLDER, 'blog_posts_model');
+		$tables = $this->_tables();
+		$this->CI->blog_posts_model->db()->where($tables['blog_tags'].'.slug', $tag);
+		$posts = $this->get_posts_by_date($year, $month, $day, NULL, $limit, $offset, $order_by, $return_method);
+		return $posts;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Returns posts by providing a given date
 	 *
 	 * @access	public
@@ -830,7 +897,6 @@ class Fuel_blog extends Fuel_advanced_module {
 		return $categories;
 	}
 
-
 	// --------------------------------------------------------------------
 
 	/**
@@ -855,49 +921,74 @@ class Fuel_blog extends Fuel_advanced_module {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Returns a the posts associated with categories
+	 * Returns a list of published categories
+	 *
+	 * @access	public
+	 * @param	string
+	 * @return	object
+	 */
+	public function get_published_categories($language = NULL)
+	{
+		$this->CI->load->module_model(BLOG_FOLDER, 'blog_categories_model');
+		return $this->CI->blog_categories_model->get_published_categories($language);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns a list of blog tags
 	 *
 	 * @access	public
 	 * @param	mixed
-	 * @param	string
 	 * @param	int
 	 * @param	int
 	 * @param	string
 	 * @param	string
 	 * @return	array
 	 */
-	// function get_posts_to_categories($where = array(), $order_by = NULL, $limit = NULL, $offset = NULL, $return_method = NULL, $assoc_key = NULL)
-	// {
-		// $this->CI->load->module_model(BLOG_FOLDER, 'blog_posts_to_categories_model');
-		// $this->CI->blog_posts_to_categories_model->readonly = TRUE;
-		// $tables = $this->_tables();
-		// $where[$tables['blog_categories'].'.published'] = 'yes';
-		// $where[$tables['blog_posts'].'.published'] = 'yes';
-		// $where = $this->_publish_status('blog_posts', $where);
-		// $this->CI->blog_posts_to_categories_model->db()->group_by('category_id');
-		// $posts_to_categories = $this->CI->blog_posts_to_categories_model->find_all($where, $order_by, $limit, $offset, $return_method, $assoc_key);
-		// 
-		// $CI->load->module_model(FUEL_FOLDER, 'relationships_model');
-		// $this->CI->relationships_model->readonly = TRUE;
-		// $tables = $this->_tables();
-		// $where['candidate_table.published'] = 'yes';
-		// $where['foreign_table.published'] = 'yes';
-		// $where = $this->_publish_status('blog_posts', $where);
-		// $this->CI->relationships_model->db()->group_by('foreign_id');
-		// $this->CI->relationships_model->db()->where($where);
-		// $this->CI->relationships_model->db()->order_by($order_by);
-		// $this->CI->relationships_model->db()->limit($limit);
-		// $this->CI->relationships_model->db()->offset($offset);
-		// $this->_tables['blog_posts'], $this->_tables['blog_categories']
-		// $posts_to_categories = $this->CI->relationships_model->find_by_candidate($this->_tables['blog_posts'], $this->_tables['blog_categories'], $return_method, $assoc_key);
-		// 
-		// return $posts_to_categories;
-	// }
-
-	public function get_published_categories($language = NULL)
+	public function get_tags($where = array(), $order_by = NULL, $limit = NULL, $offset = NULL, $return_method = NULL, $assoc_key = NULL)
 	{
-		$this->CI->load->module_model(BLOG_FOLDER, 'blog_categories_model');
-		return $this->CI->blog_categories_model->get_published_categories($language);
+		$this->CI->load->module_model(BLOG_FOLDER, 'blog_tags_model');
+		$this->CI->blog_tags_model->readonly = TRUE;
+		$tables = $this->_tables();
+		$tags = $this->CI->blog_tags_model->find_all($where, $order_by, $limit, $offset, $return_method, $assoc_key);
+		return $tags;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns a single blog tag
+	 *
+	 * @access	public
+	 * @param	string
+	 * @param	string
+	 * @param	string
+	 * @return	object
+	 */
+	public function get_tag($category, $order_by = NULL, $return_method = NULL)
+	{
+		$this->CI->load->module_model(BLOG_FOLDER, 'blog_tags_model');
+		$this->CI->blog_tags_model->readonly = TRUE;
+		$tables = $this->_tables();
+		$where = $tables['blog_tags'].'.slug = "'.$category.'" OR '.$tables['blog_tags'].'.name = "'.$category.'"';
+		$tags = $this->CI->blog_tags_model->find_one($where, $order_by, $return_method);
+		return $tags;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns a list of published tags
+	 *
+	 * @access	public
+	 * @param	string
+	 * @return	object
+	 */
+	public function get_published_tags($language = NULL)
+	{
+		$this->CI->load->module_model(BLOG_FOLDER, 'blog_tags_model');
+		return $this->CI->blog_tags_model->get_published_tags($language);
 	}
 
 	// --------------------------------------------------------------------
@@ -1501,23 +1592,6 @@ class Fuel_blog extends Fuel_advanced_module {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Runs a specific blog hook
-	 *
-	 * @access	public
-	 * @param	string
-	 * @param	array
-	 * @return	string
-	 */
-	public function run_hook($hook, $params = array())
-	{
-		// call module specific hook
-		$hook_name = 'blog_'.$hook;
-		$GLOBALS['EXT']->_call_hook($hook_name, $params);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Returns the table aliases
 	 *
 	 * @access	public
@@ -1536,6 +1610,23 @@ class Fuel_blog extends Fuel_advanced_module {
 			}
 		}
 		return $tables;
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Runs a specific blog hook
+	 *
+	 * @access	public
+	 * @param	string
+	 * @param	array
+	 * @return	string
+	 */
+	public function run_hook($hook, $params = array())
+	{
+		// call module specific hook
+		$hook_name = 'blog_'.$hook;
+		$GLOBALS['EXT']->_call_hook($hook_name, $params);
 	}
 	
 	// --------------------------------------------------------------------

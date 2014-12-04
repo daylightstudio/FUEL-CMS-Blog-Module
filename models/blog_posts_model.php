@@ -8,15 +8,18 @@ class Blog_posts_model extends Base_module_model {
 	public $category = null;
 	public $required = array('title', 'content');
 	public $hidden_fields = array('content_filtered');
+	public $filter_join = 'and';
 	public $filters = array('title', 'content_filtered', 'fuel_users.first_name', 'fuel_users.last_name');
 	public $unique_fields = array('slug');
 	public $linked_fields = array('slug' => array('title' => 'url_title'));
 	public $display_unpublished_if_logged_in = TRUE; // determines whether to display unpublished content on the front end if you are logged in to the CMS
 	public $boolean_fields = array('sticky');
+	public $foreign_keys = array('category_id' => array(FUEL_FOLDER => 'fuel_categories_model', 'where' => 'context = "blog" AND language = "{language}" OR language = ""'));
 
 	public $has_many = array(
-		'categories' => array(
-			'model' => array(BLOG_FOLDER => 'blog_categories')
+		'tags' => array(
+			'model' => array(FUEL_FOLDER => 'fuel_tags_model'),
+			//'where' => 'fuel_categories.context = "blog"', // added in constructor so that the the table name isn't hard coded in query
 			),
 		'related_posts' => array(
 			'model' => array(FUEL_FOLDER => 'blog_posts')
@@ -37,14 +40,16 @@ class Blog_posts_model extends Base_module_model {
 			$this->has_many = array_merge($authors, $this->has_many);
 		}
 
+		$this->has_many['tags']['where'] = $this->_tables['fuel_categories'].'.context = "blog"';
+
+		// set the filter again here just in case the table names are different
+		$this->filters = array('title', 'content_filtered', $this->_tables['fuel_users'].'.first_name', $this->_tables['fuel_users'].'.last_name');
+
 	}
 	
 	// used for the FUEL admin
 	function list_items($limit = NULL, $offset = NULL, $col = 'post_date', $order = 'desc', $just_count = FALSE)
 	{
-		// set the filter again here just in case the table names are different
-		$this->filters = array('title', 'content_filtered', $this->_tables['fuel_users'].'.first_name');
-
 		$CI =& get_instance();
 		if ($CI->fuel->blog->config('multiple_authors'))
 		{
@@ -68,30 +73,7 @@ class Blog_posts_model extends Base_module_model {
 	
 	function tree($just_published = FALSE)
 	{
-		$CI =& get_instance();
-		$CI->load->module_model(BLOG_FOLDER, 'blog_categories_model');
-		$CI->load->module_model(FUEL_FOLDER, 'fuel_relationships_model');
-		$CI->load->helper('array');
-
-		$return = array();
-		
-		$where = ($just_published) ? $where = array('published' => 'yes') : array();
-		$categories = $CI->blog_categories_model->find_all($where, 'precedence asc');
-		$posts_to_categories = $CI->fuel_relationships_model->find_by_candidate($this->_tables['blog_posts'], $this->_tables['blog_categories']);
-		if (empty($posts_to_categories)) return array();
-		
-		foreach($categories as $category)
-		{
-			$return[$category->id] = array('id' => $category->id, 'parent_id' => 0, 'label' => $category->name, 'location' => fuel_url('blog/categories/edit/'.$category->id), 'precedence' => $category->precedence);
-		}
-		
-		foreach($posts_to_categories as $val)
-		{
-			$attributes = ($val->candidate_published == 'no') ? array('class' => 'unpublished', 'title' => 'unpublished') : NULL;
-			$return['p_'.$val->candidate_id.'_c'.$val->foreign_id] = array('label' => $val->candidate_title, 'parent_id' => $val->foreign_id, 'location' => fuel_url('blog/posts/edit/'.$val->candidate_id), 'attributes' => $attributes, 'precedence' => 100000);
-		}
-		$return = array_sorter($return, 'precedence', 'asc');
-		return $return;
+		return $this->_tree('foreign_keys');
 	}
 	
 	function form_fields($values = array())
@@ -134,6 +116,7 @@ class Blog_posts_model extends Base_module_model {
 		}
 		$fields['title']['style'] = 'width: 500px;';
 		$fields['slug']['style'] = 'width: 500px;';
+		$fields['language'] = array('order' => 3, 'type' => 'select', 'options' => $this->fuel->language->options(), 'value' => $this->fuel->language->default_option(), 'hide_if_one' => TRUE);
 		$fields['content']['style'] = 'width: 680px; height: 400px';
 		$fields['excerpt']['style'] = 'width: 680px;';
 		$fields['published']['order'] = 8.5;
@@ -194,13 +177,20 @@ class Blog_posts_model extends Base_module_model {
 			unset($fields['author_id']);
 		}
 
-		
+		// explicitly set labels for related fields to use the lang values
+		$fields['category_id']['label'] = lang('form_label_category');
+		$fields['tags']['label'] = lang('form_label_tags');
+		$fields['related_posts']['label'] = lang('form_label_related_posts');
+		$fields['blocks']['label'] = lang('form_label_blocks');
+
+		$fields['category_id']['comment'] = lang('form_category_comment');
+		$fields['tags']['comment'] = lang('form_tags_comment');
 		if ($CI->fuel->language->has_multiple())
 		{
-			$fields['categories']['type'] = 'dependent';
-			$fields['categories']['depends_on'] = 'language';
-			$fields['categories']['url'] = fuel_url('blog/categories/ajax/options');
-			$fields['categories']['multiple'] = TRUE;
+			$fields['tags']['type'] = 'dependent';
+			$fields['tags']['depends_on'] = 'language';
+			$fields['tags']['url'] = fuel_url('tags/ajax/options');
+			$fields['tags']['multiple'] = TRUE;
 
 			$fields['related_posts']['type'] = 'dependent';
 			$fields['related_posts']['depends_on'] = 'language';
@@ -222,7 +212,18 @@ class Blog_posts_model extends Base_module_model {
 		$fields['page_title'] = array('size' => 100, 'order' => $fields['page_title']['order'], 'comment' => 'If no page title is provided, it will default to the title of the blog post');
 		$fields['meta_description'] = array('type' => 'textarea', 'class' => 'no_editor', 'rows' => 3, 'order' => $fields['meta_description']['order']);
 		$fields['meta_keywords'] = array('type' => 'textarea', 'class' => 'no_editor', 'rows' => 3, 'order' => $fields['meta_keywords']['order']);
+		
 
+		$fields['category_id']['order'] = 21;
+		$fields['category_id']['add_params'] = 'context=blog';
+
+		// find the first category with a context of "blog"
+		$blog_category = current($CI->fuel->categories->find_by_context('blog'));
+		if (isset($blog_category->id))
+		{
+			$fields['tags']['add_params'] = 'category_id='.$blog_category->id;	
+		}
+		
 
 		// setup tabs
 		$fields['Content'] = array('type' => 'fieldset', 'class' => 'tab', 'order' => 1);
@@ -230,7 +231,7 @@ class Blog_posts_model extends Base_module_model {
 		$fields['Settings'] = array('type' => 'fieldset', 'class' => 'tab', 'order' => 12.5);
 		$fields['Meta'] = array('type' => 'fieldset', 'class' => 'tab', 'order' => 15.5);
 		$fields['Associations'] = array('type' => 'fieldset', 'class' => 'tab', 'order' => 20);
-
+		
 		return $fields;
 	}
 	
@@ -280,19 +281,10 @@ class Blog_posts_model extends Base_module_model {
 	
 	function on_after_save($values)
 	{
-
-		// if no category is selected, then we set it to the Uncategorized
-		$saved_data = $this->normalized_save_data;
-		if (empty($saved_data['categories']))
-		{
-			$this->normalized_save_data['categories'] = array(1);
-		}
-
-		$values = parent::on_after_save($values);
-
-		$CI =& get_instance();
-
+		parent::on_after_save($values);
+		
 		// remove cache
+		$CI =& get_instance();
 		$CI->fuel->blog->remove_cache();
 
 		return $values;
@@ -306,11 +298,12 @@ class Blog_posts_model extends Base_module_model {
 		$this->db->select('YEAR('.$this->_tables['blog_posts'].'.post_date) as year, DATE_FORMAT('.$this->_tables['blog_posts'].'.post_date, "%m") as month, DATE_FORMAT('.$this->_tables['blog_posts'].'.post_date, "%d") as day,', FALSE);
 		$rel_join = $this->_tables['blog_relationships'].'.candidate_key = '.$this->_tables['blog_posts'].'.id AND ';
 		$rel_join .= $this->_tables['blog_relationships'].'.candidate_table = "'.$this->_tables['blog_posts'].'" AND ';
-		$rel_join .= $this->_tables['blog_relationships'].'.foreign_table = "'.$this->_tables['blog_categories'].'"';
+		$rel_join .= $this->_tables['blog_relationships'].'.foreign_table = "'.$this->_tables['blog_tags'].'"';
+		$this->db->join($this->_tables['blog_categories'], $this->_tables['blog_categories'].'.id = '.$this->_tables['blog_posts'].'.category_id', 'left');
 		$this->db->join($this->_tables['blog_relationships'], $rel_join, 'left');
 		$this->db->join($this->_tables['blog_users'], $this->_tables['blog_users'].'.fuel_user_id = '.$this->_tables['blog_posts'].'.author_id', 'left');
 		$this->db->join($this->_tables['fuel_users'], $this->_tables['fuel_users'].'.id = '.$this->_tables['blog_posts'].'.author_id', 'left');
-		$this->db->join($this->_tables['blog_categories'], $this->_tables['blog_categories'].'.id = '.$this->_tables['blog_relationships'].'.foreign_key', 'left');
+		$this->db->join($this->_tables['blog_tags'], $this->_tables['blog_tags'].'.id = '.$this->_tables['blog_relationships'].'.foreign_key', 'left');
 		$this->db->group_by($this->_tables['blog_posts'].'.id');
 
 		if (!defined('FUEL_ADMIN') AND $this->fuel->language->has_multiple())
@@ -319,24 +312,6 @@ class Blog_posts_model extends Base_module_model {
 			$this->db->where($this->_tables['blog_posts'].'.language', $language);
 		}
 	}
-
-	function ajax_options($where = array())
-	{
-		// remove the current ID if its past from the list
-		if (!empty($where['exclude']))
-		{
-			$where['id !='] = $where['exclude'];
-			unset($where['exclude']);
-		}
-		$options = $this->options_list(NULL, NULL, $where);
-		$str = '';
-		foreach($options as $key => $val)
-		{
-			$str .= "<option value=\"".$key."\" label=\"".$val."\">".$val."</option>\n";
-		}
-		return $str;
-	}
-
 
 	function preview_path($values, $path)
 	{
@@ -382,7 +357,6 @@ class Blog_post_model extends Base_module_record {
 			$CI->load->helper('security');
 			$content = strip_image_tags($this->content);
 		}
-		
 		$content = $this->_format($content);
 		$content = $this->_parse($content);
 		return $content;
@@ -409,7 +383,6 @@ class Blog_post_model extends Base_module_record {
 		{
 			$excerpt .= ' '.anchor($this->url, $readmore, 'class="readmore"');
 		}
-
 		$excerpt = $this->_format($excerpt);
 		$excerpt = $this->_parse($excerpt);
 		return $excerpt;

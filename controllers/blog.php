@@ -222,6 +222,8 @@ class Blog extends Blog_base_controller {
 	function comment_reply($comment_id)
 	{
 		$this->load->module_model(BLOG_FOLDER, 'blog_comments_model');
+		$this->load->helper('ajax');
+
 		$comment = $this->blog_comments_model->find_by_key($comment_id);
 		$output = '';
 
@@ -280,6 +282,7 @@ class Blog extends Blog_base_controller {
 	function _process_comment($post)
 	{
 		if (!is_true_val($this->fuel->blog->config('allow_comments'))) return;
+		$this->load->helper('ajax');
 		
 		$notified = FALSE;
 		
