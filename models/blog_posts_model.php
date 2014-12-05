@@ -459,6 +459,12 @@ class Blog_post_model extends Base_module_record {
 		}
 		return $str;
 	}
+
+	// needed to overwrite this otherwise it would load the fuel_categories model
+	function get_category()
+	{
+		return $this->lazy_load('category_id', 'blog_categories_model');
+	}
 	
 	function belongs_to_category($category)
 	{
