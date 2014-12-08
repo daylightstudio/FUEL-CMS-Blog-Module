@@ -118,7 +118,9 @@ class Blog_posts_model extends Base_module_model {
 		$fields['slug']['style'] = 'width: 500px;';
 		$fields['language'] = array('order' => 3, 'type' => 'select', 'options' => $this->fuel->language->options(), 'value' => $this->fuel->language->default_option(), 'hide_if_one' => TRUE);
 		$fields['content']['style'] = 'width: 680px; height: 400px';
+		$fields['content']['link_pdfs'] = TRUE;
 		$fields['excerpt']['style'] = 'width: 680px;';
+		$fields['excerpt']['link_pdfs'] = TRUE;
 		$fields['published']['order'] = 8.5;
 		
 		if (!is_true_val($CI->fuel->blog->config('allow_comments')))
