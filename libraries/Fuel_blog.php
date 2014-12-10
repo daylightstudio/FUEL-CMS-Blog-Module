@@ -627,7 +627,7 @@ class Fuel_blog extends Fuel_advanced_module {
 		$tables = $this->_tables();
 		$where = $this->_publish_status('blog_posts');
 		
-		if (is_numeric($category))
+		if (is_numeric($tag))
 		{
 			$where[$tables['blog_tags'].'.id'] = $tag;
 		}
