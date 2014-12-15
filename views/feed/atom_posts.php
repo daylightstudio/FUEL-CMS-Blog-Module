@@ -14,9 +14,9 @@
 	<entry>
 		<title><?php echo $post->title; ?></title>
 	    <link rel="alternate" type="text/html" href="<?php echo $post->url; ?>" />
-		<id>tag:<?php echo $this->fuel->blog->domain() ?>,<?php echo date('Y-m-d', strtotime($post->post_date)); ?>:article/<?php echo $post->permalink; ?></id>
+		<id>tag:<?php echo $this->fuel->blog->domain() ?>,<?php echo date('Y-m-d', strtotime($post->publish_date)); ?>:article/<?php echo $post->permalink; ?></id>
 	
-		<published><?php echo standard_date('DATE_ATOM', strtotime($post->post_date)); ?></published>
+		<published><?php echo standard_date('DATE_ATOM', strtotime($post->publish_date)); ?></published>
 		<summary><![CDATA[<?php echo html_entity_decode(strip_tags(word_limiter($post->excerpt, 100, '...')), ENT_COMPAT, 'UTF-8'); ?>]]></summary>
 		<author>
 			<name><?php echo $post->author_name; ?></name>

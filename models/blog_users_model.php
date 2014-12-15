@@ -119,7 +119,7 @@ class Blog_user_model extends Base_module_record {
 	
 	function get_posts()
 	{
-		$params['order_by'] ='post_date desc';
+		$params['order_by'] ='publish_date desc';
 		return $this->lazy_load(array('fuel_blog_posts.author_id' => $this->fuel_user_id, 'fuel_blog_posts.published' => 'yes'), array(BLOG_FOLDER => 'blog_posts_model'), TRUE, $params);
 	}
 

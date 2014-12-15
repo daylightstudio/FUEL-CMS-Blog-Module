@@ -78,7 +78,7 @@ class Blog_categories_model extends Base_module_model {
 	function get_published_categories($language = NULL)
 	{
 		$CI =& get_instance();
-		$posts = $CI->fuel->blog->model('posts')->find_all_array_assoc('category_id');
+		$posts = $CI->fuel->blog->model('blog_posts')->find_all_array_assoc('category_id');
 		$published_categories = array_keys($posts);
 
 		//$published_categories = $this->get_related_keys(array(), $this->belongs_to['posts'], 'belongs_to');

@@ -48,16 +48,16 @@ class Blog_posts_model extends Base_module_model {
 	}
 	
 	// used for the FUEL admin
-	function list_items($limit = NULL, $offset = NULL, $col = 'post_date', $order = 'desc', $just_count = FALSE)
+	function list_items($limit = NULL, $offset = NULL, $col = 'publish_date', $order = 'desc', $just_count = FALSE)
 	{
 		$CI =& get_instance();
 		if ($CI->fuel->blog->config('multiple_authors'))
 		{
-			$select = $this->_tables['blog_posts'].'.id, title, '.$this->_tables['blog_posts'].'.post_date';
+			$select = $this->_tables['blog_posts'].'.id, title, '.$this->_tables['blog_posts'].'.publish_date';
 		}
 		else
 		{
-			$select = $this->_tables['blog_posts'].'.id, '.$this->_tables['blog_posts'].'.title, IF('.$this->_tables['fuel_users'].'.first_name IS NULL, display_name, CONCAT('.$this->_tables['fuel_users'].'.first_name, " ", '.$this->_tables['fuel_users'].'.last_name)) AS author, '.$this->_tables['blog_posts'].'.post_date';
+			$select = $this->_tables['blog_posts'].'.id, '.$this->_tables['blog_posts'].'.title, IF('.$this->_tables['fuel_users'].'.first_name IS NULL, display_name, CONCAT('.$this->_tables['fuel_users'].'.first_name, " ", '.$this->_tables['fuel_users'].'.last_name)) AS author, '.$this->_tables['blog_posts'].'.publish_date';
 		}
 
 		if ($CI->fuel->language->has_multiple()) $select .= ', '.$this->_tables['blog_posts'].'.language';
@@ -81,11 +81,10 @@ class Blog_posts_model extends Base_module_model {
 		$fields = parent::form_fields($values);
 		$CI =& get_instance();
 		
-		$CI->load->module_model(BLOG_FOLDER, 'blog_users_model');
-		
+		$blog_users = $CI->fuel->blog->model('blog_users');
 		$blog_config = $CI->fuel->blog->config();
 		
-		$user_options = $CI->blog_users_model->options_list();
+		$user_options = $blog_users->options_list();
 		$user = $this->fuel->auth->user_data();
 		
 		$user_value = (!empty($values['author_id'])) ? $values['author_id'] : $user['id'];
@@ -118,9 +117,7 @@ class Blog_posts_model extends Base_module_model {
 		$fields['slug']['style'] = 'width: 500px;';
 		$fields['language'] = array('order' => 3, 'type' => 'select', 'options' => $this->fuel->language->options(), 'value' => $this->fuel->language->default_option(), 'hide_if_one' => TRUE);
 		$fields['content']['style'] = 'width: 680px; height: 400px';
-		$fields['content']['link_pdfs'] = TRUE;
 		$fields['excerpt']['style'] = 'width: 680px;';
-		$fields['excerpt']['link_pdfs'] = TRUE;
 		$fields['published']['order'] = 8.5;
 		
 		if (!is_true_val($CI->fuel->blog->config('allow_comments')))
@@ -161,9 +158,9 @@ class Blog_posts_model extends Base_module_model {
 
 
 
-		if (empty($fields['post_date']['value']))
+		if (empty($fields['publish_date']['value']))
 		{
-			$fields['post_date']['value'] = datetime_now();
+			$fields['publish_date']['value'] = datetime_now();
 		}
 
 		$fields['blocks']['sorting'] = TRUE;
@@ -241,19 +238,19 @@ class Blog_posts_model extends Base_module_model {
 	{
 		$values['slug'] = (empty($values['slug']) && !empty($values['title'])) ? url_title($values['title'], 'dash', TRUE) : url_title($values['slug'], 'dash');
 		
-		if (empty($values['post_date']))
+		if (empty($values['publish_date']))
 		{
-			$values['post_date'] = datetime_now();
+			$values['publish_date'] = datetime_now();
 		}
 		
 		// create author if it doesn't exists'
 		$CI =& get_instance();
 		$id = (!empty($values['author_id'])) ? $values['author_id'] : $CI->fuel->auth->user_data('id');
-		$CI->load->module_model(BLOG_FOLDER, 'blog_users_model');
-		$author = $CI->blog_users_model->find_one(array('fuel_user_id' => $id));
+		$blog_users = $CI->fuel->blog->model('blog_users');
+		$author = $blog_users->find_one(array('fuel_user_id' => $id));
 		if (!isset($author->id))
 		{
-			$author = $CI->blog_users_model->create();
+			$author = $blog_users->create();
 			$author->fuel_user_id = $CI->fuel->auth->user_data('id');
 
 			// determine a display name if one isn't provided'
@@ -297,7 +294,7 @@ class Blog_posts_model extends Base_module_model {
 		parent::_common_query();
 		
 		$this->db->select($this->_tables['blog_posts'].'.*, '.$this->_tables['blog_users'].'.display_name, CONCAT('.$this->_tables['fuel_users'].'.first_name, " ", '.$this->_tables['fuel_users'].'.last_name) as author_name', FALSE);
-		$this->db->select('YEAR('.$this->_tables['blog_posts'].'.post_date) as year, DATE_FORMAT('.$this->_tables['blog_posts'].'.post_date, "%m") as month, DATE_FORMAT('.$this->_tables['blog_posts'].'.post_date, "%d") as day,', FALSE);
+		$this->db->select('YEAR('.$this->_tables['blog_posts'].'.publish_date) as year, DATE_FORMAT('.$this->_tables['blog_posts'].'.publish_date, "%m") as month, DATE_FORMAT('.$this->_tables['blog_posts'].'.publish_date, "%d") as day,', FALSE);
 		$rel_join = $this->_tables['blog_relationships'].'.candidate_key = '.$this->_tables['blog_posts'].'.id AND ';
 		$rel_join .= $this->_tables['blog_relationships'].'.candidate_table = "'.$this->_tables['blog_posts'].'" AND ';
 		$rel_join .= $this->_tables['blog_relationships'].'.foreign_table = "'.$this->_tables['blog_tags'].'"';
@@ -392,7 +389,7 @@ class Blog_post_model extends Base_module_record {
 	
 	function is_future_post()
 	{
-		return strtotime($this->post_date) > time();
+		return strtotime($this->publish_date) > time();
 	}
 	
 	function is_published()
@@ -402,18 +399,18 @@ class Blog_post_model extends Base_module_record {
 	
 	function get_comments($order = 'date_added asc', $limit = NULL)
 	{
-		$this->_CI->load->module_model('blog', 'blog_comments_model');
+		$blog_comments = $this->_CI->fuel->blog->model('blog_comments');
 		$where = array('post_id' => $this->id, $this->_tables['blog_comments'].'.published' => 'yes');
 		$order = $this->_tables['blog_comments'].'.'.$order;
-		$comments = $this->_CI->blog_comments_model->find_all($where, $order, $limit);
+		$comments = $blog_comments->find_all($where, $order, $limit);
 		return $comments;
 	}
 	
 	function get_comments_count($order = 'date_added asc', $limit = NULL)
 	{
-		$this->_CI->load->module_model('blog', 'blog_comments_model');
+		$blog_comments = $this->_CI->fuel->blog->model('blog_comments');
 		$where = array('post_id' => $this->id, $this->_tables['blog_comments'].'.published' => 'yes');
-		$cnt = $this->_CI->blog_comments_model->record_count($where, $order, $limit);
+		$cnt = $blog_comments->record_count($where, $order, $limit);
 		return $cnt;
 	}
 	
@@ -461,12 +458,6 @@ class Blog_post_model extends Base_module_record {
 		}
 		return $str;
 	}
-
-	// needed to overwrite this otherwise it would load the fuel_categories model
-	function get_category()
-	{
-		return $this->lazy_load('category_id', 'blog_categories_model');
-	}
 	
 	function belongs_to_category($category)
 	{
@@ -507,8 +498,8 @@ class Blog_post_model extends Base_module_record {
 			}
 			else
 			{
-				$this->_CI->load->module_model(BLOG_FOLDER, 'blog_users_model');
-				$author = $this->_CI->blog_users_model->find_one(array('fuel_blog_users.fuel_user_id' => $this->author_id));
+				$blog_users = $CI->fuel->blog->model('blog_users');
+				$author = $blog_users->find_one(array('fuel_blog_users.fuel_user_id' => $this->author_id));
 			}
 		}
 		return $author;
@@ -552,9 +543,9 @@ class Blog_post_model extends Base_module_record {
 	
 	function get_url($full_path = TRUE)
 	{
-		$year = date('Y', strtotime($this->post_date));
-		$month = date('m', strtotime($this->post_date));
-		$day = date('d', strtotime($this->post_date));
+		$year = date('Y', strtotime($this->publish_date));
+		$month = date('m', strtotime($this->publish_date));
+		$day = date('d', strtotime($this->publish_date));
 		$url = $year.'/'.$month.'/'.$day.'/'.$this->slug;
 		if ($full_path)
 		{
@@ -571,17 +562,17 @@ class Blog_post_model extends Base_module_record {
 	
 	function get_rss_date()
 	{
-		return standard_date('DATE_RSS', strtotime($this->post_date));
+		return standard_date('DATE_RSS', strtotime($this->publish_date));
 	}
 	
 	function get_atom_date()
 	{
-		return standard_date('DATE_ATOM', strtotime($this->post_date));
+		return standard_date('DATE_ATOM', strtotime($this->publish_date));
 	}
 
 	function get_date_formatted($format = 'M d, Y')
 	{
-		return date($format, strtotime($this->post_date));
+		return date($format, strtotime($this->publish_date));
 	}
 	
 	function get_allow_comments()
@@ -600,8 +591,8 @@ class Blog_post_model extends Base_module_record {
 		$time_limit = (int) $this->_CI->fuel->blog->config('comments_time_limit') * (24 * 60 * 60);
 		if (!empty($time_limit))
 		{
-			$post_date = strtotime($this->post_date);
-			return (time() - $post_date < $time_limit);
+			$publish_date = strtotime($this->publish_date);
+			return (time() - $publish_date < $time_limit);
 		}
 		return TRUE;
 	}

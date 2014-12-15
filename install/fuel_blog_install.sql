@@ -55,7 +55,7 @@ CREATE TABLE `fuel_blog_posts` (
   `thumbnail_image` varchar(100) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `sticky` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
   `allow_comments` enum('yes','no') COLLATE utf8_unicode_ci DEFAULT 'no',
-  `post_date` datetime NOT NULL,
+  `publish_date` datetime NOT NULL,
   `page_title` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `meta_description` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `meta_keywords` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',

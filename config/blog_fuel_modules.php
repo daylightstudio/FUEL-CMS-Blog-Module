@@ -12,7 +12,7 @@ $config['modules']['blog_posts'] = array(
 	'configuration' => array('blog' => 'blog'),
 	'nav_selected' => 'blog/posts',
 //	'language' => array('blog' => 'blog'),
-	'default_col' => 'post_date',
+	'default_col' => 'publish_date',
 	'default_order' => 'desc',
 	'sanitize_input' => array('template','php'),
 	'filters' => array(
@@ -42,6 +42,7 @@ $config['modules']['blog_posts'] = array(
 // 	'configuration' => array('blog' => 'blog'),
 // 	'nav_selected' => 'blog/categories',
 // //	'language' => array('blog' => 'blog')
+// 	'hidden' => TRUE,
 	
 // );
 

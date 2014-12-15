@@ -6,6 +6,7 @@ ALTER TABLE `fuel_blog_posts` ADD `meta_description` VARCHAR(255)  NOT NULL  DEF
 ALTER TABLE `fuel_blog_posts` ADD `meta_keywords` VARCHAR(255)  NOT NULL  DEFAULT ''  AFTER `meta_description`;
 
 ALTER TABLE `fuel_blog_users` CHANGE `twitter` `social_media_links` TEXT  CHARACTER SET utf8  COLLATE utf8_general_ci  NOT NULL;
+ALTER TABLE `fuel_blog_posts` CHANGE `post_date` `publish_date` DATETIME NOT NULL;
 
 ALTER TABLE `fuel_blog_categories` DROP INDEX `permalink`;
 ALTER TABLE `fuel_blog_categories` DROP INDEX `name`;

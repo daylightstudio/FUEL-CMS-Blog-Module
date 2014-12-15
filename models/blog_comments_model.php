@@ -67,7 +67,7 @@ class Blog_comments_model extends Base_module_model {
 		
 		$post_title = '';
 
-		$post_options = $CI->blog_posts_model->options_list('id', 'title', array(), 'post_date desc');
+		$post_options = $CI->blog_posts_model->options_list('id', 'title', array(), 'publish_date desc');
 		if (empty($post_options))
 		{
 			$fields = array();
@@ -216,7 +216,7 @@ class Blog_comments_model extends Base_module_model {
 		$this->db->select($this->_tables['blog_comments'].'.*, '.$this->_tables['blog_posts'].'.id as post_id, 
 		'.$this->_tables['blog_posts'].'.title as title, '.$this->_tables['blog_posts'].'.slug as slug,
 		'.$this->_tables['blog_posts'].'.published AS post_published', FALSE);
-		$this->db->select('YEAR('.$this->_tables['blog_posts'].'.post_date) as year, DATE_FORMAT('.$this->_tables['blog_posts'].'.post_date, "%m") as month, DATE_FORMAT('.$this->_tables['blog_posts'].'.post_date, "%d") as day,', FALSE);
+		$this->db->select('YEAR('.$this->_tables['blog_posts'].'.publish_date) as year, DATE_FORMAT('.$this->_tables['blog_posts'].'.publish_date, "%m") as month, DATE_FORMAT('.$this->_tables['blog_posts'].'.publish_date, "%d") as day,', FALSE);
 		$this->db->join($this->_tables['blog_posts'], $this->_tables['blog_comments'].'.post_id = '.$this->_tables['blog_posts'].'.id', 'inner');
 	}
 
@@ -238,7 +238,8 @@ class Blog_comment_model extends Base_module_record {
 	
 	function get_post()
 	{
-		return $this->lazy_load('post_id', array(BLOG_FOLDER => 'blog_posts_model'));
+		$model = $this->_CI->fuel->blog->model('blog_posts');
+		return $model->find_by_key($this->post_id);
 	}
 	
 	function is_duplicate()

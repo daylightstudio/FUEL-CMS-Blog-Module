@@ -49,44 +49,6 @@ class Fuel_blog extends Fuel_advanced_module {
 	}
 	
 	// --------------------------------------------------------------------
-	
-	/**
-	 * Initialize the user preferences
-	 *
-	 * Accepts an associative array as input, containing display preferences
-	 *
-	 * @access	public
-	 * @param	array	config preferences
-	 * @return	void
-	 */	
-	public function initialize($params = array())
-	{
-		parent::initialize($params);
-		
-		if (!empty($params))
-		{
-			foreach ($params as $key => $val)
-			{
-				$sans_blog_key = substr($key, count('blog_'));
-				if (isset($this->$key))
-				{
-					$this->$sans_blog_key = $val;
-				}
-			}
-		}
-		// 
-		// if ($this->CI->config->item('blog_use_db_table_settings'))
-		// {
-		// 	$this->_settings = $this->fuel->settings->get('blog');
-		// }
-		// else
-		// {
-		// 	$this->_settings = $this->CI->config->item('blog');
-		// }
-		
-	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Returns the title of the blog specified in the settings
@@ -276,17 +238,17 @@ class Fuel_blog extends Fuel_advanced_module {
 		{
 			if ($type == 'tags')
 			{
-				$data['posts'] = $this->get_tag_posts($slug, 'sticky, post_date desc', $limit);	
+				$data['posts'] = $this->get_tag_posts($slug, 'sticky, publish_date desc', $limit);	
 			}
 			else
 			{
-				$data['posts'] = $this->get_category_posts($slug, 'sticky, post_date desc', $limit);		
+				$data['posts'] = $this->get_category_posts($slug, 'sticky, publish_date desc', $limit);		
 			}
 			
 		}
 		else
 		{
-			$data['posts'] = $this->get_posts(array(), 'sticky, post_date desc', $limit);
+			$data['posts'] = $this->get_posts(array(), 'sticky, publish_date desc', $limit);
 		}
 		return $data;
 	}
@@ -301,7 +263,7 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	public function last_updated()
 	{
-		$post = $this->get_posts(array(), 'post_date desc', 1);
+		$post = $this->get_posts(array(), 'publish_date desc', 1);
 		if (!empty($post[0])) return $post[0]->atom_date;
 		return FALSE;
 	}
@@ -380,38 +342,6 @@ class Fuel_blog extends Fuel_advanced_module {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Returns the setting(s) information
-	 *
-	 * @access	public
-	 * @param	string
-	 * @return	array
-	 */
-	// function settings($key = NULL)
-	// {
-	// 	if (isset($key))
-	// 	{
-	// 		if (isset($this->_settings[$key]))
-	// 		{
-	// 			if (is_numeric($this->_settings[$key]))
-	// 			{
-	// 				return (int) $this->_settings[$key];
-	// 			}
-	// 			else
-	// 			{
-	// 				return $this->_settings[$key];
-	// 			}
-	// 		}
-	// 	}
-	// 	else if ($key == 'all')
-	// 	{
-	// 		return $this->_settings;
-	// 	}
-	// 	return NULL;
-	// }
-	
-	// --------------------------------------------------------------------
-
-	/**
 	 * Returns header of the blog
 	 *
 	 * @access	public
@@ -473,12 +403,11 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	public function model($model)
 	{
-		$model_name = 'blog_'.strtolower($model).'_model';
-		if (!isset($this->CI->$model))
+		if (strncmp('blog_', $model, 5) !== 0)
 		{
-			$this->load_model($model_name);
+			$model = 'blog_'.strtolower($model);
 		}
-		return $this->CI->$model_name;
+		return parent::model($model);
 	}
 	
 	// --------------------------------------------------------------------
@@ -520,7 +449,7 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	public function get_recent_posts($limit = 5, $where = array())
 	{
-		$posts = $this->get_posts($where, 'post_date desc', $limit);
+		$posts = $this->get_posts($where, 'publish_date desc', $limit);
 		return $posts;
 	}
 	
@@ -535,14 +464,12 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	public function get_popular_posts($limit = 5, $where = array())
 	{
-		$this->CI->load->module_model(BLOG_FOLDER, 'blog_posts_model');
+		$model = $this->model('blog_posts');
 		$tables = $this->_tables();
-		$this->CI->blog_posts_model->db()->select('(SELECT COUNT(*) FROM '.$tables['blog_comments'].' WHERE '.$tables['blog_posts'].'.id = '.$tables['blog_comments'].'.post_id GROUP BY fuel_blog_comments.post_id) AS num_comments', FALSE);
-		$this->CI->blog_posts_model->db()->limit($limit);
-		$where = $this->_publish_status('blog_posts', $where);
-		$this->CI->blog_posts_model->db()->where($where);
-		$this->CI->blog_posts_model->db()->order_by('num_comments desc');
-		$query = $this->CI->blog_posts_model->get();
+		$model->db()->select('(SELECT COUNT(*) FROM '.$tables['blog_comments'].' WHERE '.$tables['blog_posts'].'.id = '.$tables['blog_comments'].'.post_id GROUP BY fuel_blog_comments.post_id) AS num_comments', FALSE);
+		$model->db()->limit($limit);
+		$model->db()->order_by('num_comments desc');
+		$query = $model->get();
 		$posts = $query->result();
 		return $posts;
 	}
@@ -561,12 +488,11 @@ class Fuel_blog extends Fuel_advanced_module {
 	 * @param	string
 	 * @return	array
 	 */
-	public function get_category_posts($category = '', $order_by = 'post_date desc', $limit = NULL, $offset = NULL, $return_method = NULL, $assoc_key = NULL)
+	public function get_category_posts($category = '', $order_by = 'publish_date desc', $limit = NULL, $offset = NULL, $return_method = NULL, $assoc_key = NULL)
 	{
-		$this->CI->load->module_model(BLOG_FOLDER, 'blog_posts_model');
-		$this->CI->blog_posts_model->readonly = TRUE;
+		$model = $this->model('blog_posts');
+		$model->readonly = TRUE;
 		$tables = $this->_tables();
-		$where = $this->_publish_status('blog_posts');
 		
 		if (is_numeric($category))
 		{
@@ -576,7 +502,7 @@ class Fuel_blog extends Fuel_advanced_module {
 		{
 			$where[$tables['blog_categories'].'.slug'] = $category;
 		}
-		$posts = $this->CI->blog_posts_model->find_all($where, $order_by, $limit, $offset, $return_method, $assoc_key);
+		$posts = $model->find_all($where, $order_by, $limit, $offset, $return_method, $assoc_key);
 		return $posts;
 	}
 
@@ -597,11 +523,11 @@ class Fuel_blog extends Fuel_advanced_module {
 	 * @param	string
 	 * @return	array
 	 */
-	public function get_category_posts_by_date($category, $year = NULL, $month = NULL, $day = NULL, $limit = NULL, $offset = NULL, $order_by = 'sticky, post_date desc', $return_method = NULL, $assoc_key = NULL)
+	public function get_category_posts_by_date($category, $year = NULL, $month = NULL, $day = NULL, $limit = NULL, $offset = NULL, $order_by = 'sticky, publish_date desc', $return_method = NULL, $assoc_key = NULL)
 	{
-		$this->CI->load->module_model(BLOG_FOLDER, 'blog_posts_model');
+		$model = $this->model('blog_posts');
 		$tables = $this->_tables();
-		$this->CI->blog_posts_model->db()->where($tables['blog_categories'].'.slug', $category);
+		$model->db()->where($tables['blog_categories'].'.slug', $category);
 		$posts = $this->get_posts_by_date($year, $month, $day, NULL, $limit, $offset, $order_by, $return_method);
 		return $posts;
 	}
@@ -620,12 +546,11 @@ class Fuel_blog extends Fuel_advanced_module {
 	 * @param	string
 	 * @return	array
 	 */
-	public function get_tag_posts($tag = '', $order_by = 'post_date desc', $limit = NULL, $offset = NULL, $return_method = NULL, $assoc_key = NULL)
+	public function get_tag_posts($tag = '', $order_by = 'publish_date desc', $limit = NULL, $offset = NULL, $return_method = NULL, $assoc_key = NULL)
 	{
-		$this->CI->load->module_model(BLOG_FOLDER, 'blog_posts_model');
-		$this->CI->blog_posts_model->readonly = TRUE;
+		$model = $this->model('blog_posts');
+		$model->readonly = TRUE;
 		$tables = $this->_tables();
-		$where = $this->_publish_status('blog_posts');
 		
 		if (is_numeric($tag))
 		{
@@ -635,7 +560,7 @@ class Fuel_blog extends Fuel_advanced_module {
 		{
 			$where[$tables['blog_tags'].'.slug'] = $tag;
 		}
-		$posts = $this->CI->blog_posts_model->find_all($where, $order_by, $limit, $offset, $return_method, $assoc_key);
+		$posts = $model->find_all($where, $order_by, $limit, $offset, $return_method, $assoc_key);
 		return $posts;
 	}
 
@@ -656,11 +581,11 @@ class Fuel_blog extends Fuel_advanced_module {
 	 * @param	string
 	 * @return	array
 	 */
-	public function get_tag_posts_by_date($tag, $year = NULL, $month = NULL, $day = NULL, $limit = NULL, $offset = NULL, $order_by = 'sticky, post_date desc', $return_method = NULL, $assoc_key = NULL)
+	public function get_tag_posts_by_date($tag, $year = NULL, $month = NULL, $day = NULL, $limit = NULL, $offset = NULL, $order_by = 'sticky, publish_date desc', $return_method = NULL, $assoc_key = NULL)
 	{
-		$this->CI->load->module_model(BLOG_FOLDER, 'blog_posts_model');
+		$model = $this->model('blog_posts');
 		$tables = $this->_tables();
-		$this->CI->blog_posts_model->db()->where($tables['blog_tags'].'.slug', $tag);
+		$model->db()->where($tables['blog_tags'].'.slug', $tag);
 		$posts = $this->get_posts_by_date($year, $month, $day, NULL, $limit, $offset, $order_by, $return_method);
 		return $posts;
 	}
@@ -681,25 +606,23 @@ class Fuel_blog extends Fuel_advanced_module {
 	 * @param	string
 	 * @return	array
 	 */
-	public function get_posts_by_date($year = NULL, $month = NULL, $day = NULL, $slug = NULL, $limit = NULL, $offset = NULL, $order_by = 'sticky, post_date desc', $return_method = NULL, $assoc_key = NULL)
+	public function get_posts_by_date($year = NULL, $month = NULL, $day = NULL, $slug = NULL, $limit = NULL, $offset = NULL, $order_by = 'sticky, publish_date desc', $return_method = NULL, $assoc_key = NULL)
 	{
-		$this->CI->load->module_model(BLOG_FOLDER, 'blog_posts_model');
-		$this->CI->blog_posts_model->readonly = TRUE;
+		$model = $this->model('blog_posts');
+		$model->readonly = TRUE;
 		$tables = $this->_tables();
-		$where = $this->_publish_status('blog_posts');
-		$this->CI->blog_posts_model->db()->where($where);
-		if (!empty($year)) $this->CI->blog_posts_model->db()->where('YEAR('.$tables['blog_posts'].'.post_date) = '.$year);
-		if (!empty($month)) $this->CI->blog_posts_model->db()->where('MONTH('.$tables['blog_posts'].'.post_date) = '.$month);
-		if (!empty($day)) $this->CI->blog_posts_model->db()->where('DAY('.$tables['blog_posts'].'.post_date) = '.$day);
-		if (!empty($slug)) $this->CI->blog_posts_model->db()->where($tables['blog_posts'].'.slug = "'.$slug.'"');
+		if (!empty($year)) $model->db()->where('YEAR('.$tables['blog_posts'].'.publish_date) = '.$year);
+		if (!empty($month)) $model->db()->where('MONTH('.$tables['blog_posts'].'.publish_date) = '.$month);
+		if (!empty($day)) $model->db()->where('DAY('.$tables['blog_posts'].'.publish_date) = '.$day);
+		if (!empty($slug)) $model->db()->where($tables['blog_posts'].'.slug = "'.$slug.'"');
 		$return_arr = (!empty($slug)) ? FALSE : TRUE;
 		if (!empty($limit))
 		{
-			$this->CI->blog_posts_model->db()->limit($limit);
+			$model->db()->limit($limit);
 		}
-		$this->CI->blog_posts_model->db()->offset($offset);
-		$this->CI->blog_posts_model->db()->order_by($order_by);
-		$posts = $this->CI->blog_posts_model->get($return_arr)->result();
+		$model->db()->offset($offset);
+		$model->db()->order_by($order_by);
+		$posts = $model->get($return_arr)->result();
 		return $posts;
 	}
 
@@ -717,12 +640,11 @@ class Fuel_blog extends Fuel_advanced_module {
 	 * @param	string
 	 * @return	array
 	 */
-	public function get_posts($where = array(), $order_by = 'sticky, post_date desc', $limit = NULL, $offset = NULL, $return_method = NULL, $assoc_key = NULL)
+	public function get_posts($where = array(), $order_by = 'sticky, publish_date desc', $limit = NULL, $offset = NULL, $return_method = NULL, $assoc_key = NULL)
 	{
-		$this->CI->load->module_model(BLOG_FOLDER, 'blog_posts_model');
-		$this->CI->blog_posts_model->readonly = TRUE;
-		$where = $this->_publish_status('blog_posts', $where);
-		$posts = $this->CI->blog_posts_model->find_all($where, $order_by, $limit, $offset, $return_method, $assoc_key);
+		$model = $this->model('blog_posts');
+		$model->readonly = TRUE;
+		$posts = $model->find_all($where, $order_by, $limit, $offset, $return_method, $assoc_key);
 		return $posts;
 	}
 
@@ -737,17 +659,16 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	public function get_posts_count($where = array())
 	{
-		$this->CI->load->module_model(BLOG_FOLDER, 'blog_posts_model');
-		$where = $this->_publish_status('blog_posts', $where);
+		$model = $this->model('blog_posts');
 
 		if ($this->fuel->language->has_multiple())
 		{
 			$tables = $this->_tables();
 			$language = $this->language();
-			$this->CI->blog_posts_model->db()->where($tables['blog_posts'].'.language', $language);
+			$model->db()->where($tables['blog_posts'].'.language', $language);
 		}
 
-		$count = $this->CI->blog_posts_model->record_count($where);
+		$count = $model->record_count($where);
 		return $count;
 	}
 
@@ -765,9 +686,9 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	public function get_posts_by_page($limit = NULL, $offset = NULL, $return_method = NULL, $assoc_key = NULL)
 	{
-		$this->CI->load->module_model(BLOG_FOLDER, 'blog_posts_model');
-		$this->CI->blog_posts_model->readonly = TRUE;
-		$posts = $this->get_posts('', 'sticky, post_date desc', $limit, $offset, $return_method, $assoc_key);
+		$model = $this->model('blog_posts');
+		$model->readonly = TRUE;
+		$posts = $this->get_posts('', 'sticky, publish_date desc', $limit, $offset, $return_method, $assoc_key);
 		return $posts;
 	}
 
@@ -784,11 +705,11 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	public function get_post_archives($where = array(), $limit = NULL, $offset = NULL)
 	{
-		$posts = $this->get_posts($where, 'post_date desc');
+		$posts = $this->get_posts($where, 'publish_date desc');
 		$return = array();
 		foreach($posts as $post)
 		{
-			$key = date('Y/m', strtotime($post->post_date));
+			$key = date('Y/m', strtotime($post->publish_date));
 			// if ($key != date('Y/m', time()))
 			// {
 				if (!isset($return[$key]))
@@ -814,9 +735,8 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	public function get_post($post, $order_by = NULL, $return_method = NULL)
 	{
-		$this->CI->load->module_model(BLOG_FOLDER, 'blog_posts_model');
-		$this->CI->blog_posts_model->readonly = TRUE;
-		$where = $this->_publish_status('blog_posts');
+		$model = $this->model('blog_posts');
+		$model->readonly = TRUE;
 		$tables = $this->_tables();
 		if (is_int($post))
 		{
@@ -826,7 +746,7 @@ class Fuel_blog extends Fuel_advanced_module {
 		{
 			$where[$tables['blog_posts'].'.slug'] = $post;
 		}
-		$post = $this->CI->blog_posts_model->find_one($where, $order_by, $return_method);
+		$post = $model->find_one($where, $order_by, $return_method);
 		$this->_current_post = $post;
 		return $post;
 	}
@@ -844,7 +764,7 @@ class Fuel_blog extends Fuel_advanced_module {
 	public function get_next_post($current_post, $return_method = NULL)
 	{
 		$tables = $this->_tables();
-		$posts = $this->get_posts(array('post_date >=' => $current_post->post_date, "{$tables['blog_posts']}.id !=" => $current_post->id), 'post_date asc, id asc', 1, NULL, $return_method);
+		$posts = $this->get_posts(array('publish_date >=' => $current_post->publish_date, "{$tables['blog_posts']}.id !=" => $current_post->id), 'publish_date asc, id asc', 1, NULL, $return_method);
 		if (!empty($posts))
 		{
 			return $posts[0];
@@ -865,7 +785,7 @@ class Fuel_blog extends Fuel_advanced_module {
 	public function get_prev_post($current_post, $return_method = NULL)
 	{
 		$tables = $this->_tables();
-		$posts = $this->get_posts(array('post_date <=' => $current_post->post_date, "{$tables['blog_posts']}.id !=" => $current_post->id), 'post_date desc, id desc', 1, NULL, $return_method);
+		$posts = $this->get_posts(array('publish_date <=' => $current_post->publish_date, "{$tables['blog_posts']}.id !=" => $current_post->id), 'publish_date desc, id desc', 1, NULL, $return_method);
 		if (!empty($posts))
 		{
 			return $posts[0];
@@ -888,12 +808,11 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	public function get_categories($where = array(), $order_by = NULL, $limit = NULL, $offset = NULL, $return_method = NULL, $assoc_key = NULL)
 	{
-		$this->CI->load->module_model(BLOG_FOLDER, 'blog_categories_model');
-		$this->CI->blog_categories_model->readonly = TRUE;
+		$model = $this->model('blog_categories');
+		$model->readonly = TRUE;
 		$tables = $this->_tables();
 		$where[$tables['blog_categories'].'.published'] = 'yes';
-		
-		$categories = $this->CI->blog_categories_model->find_all($where, $order_by, $limit, $offset, $return_method, $assoc_key);
+		$categories = $model->find_all($where, $order_by, $limit, $offset, $return_method, $assoc_key);
 		return $categories;
 	}
 
@@ -910,11 +829,11 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	public function get_category($category, $order_by = NULL, $return_method = NULL)
 	{
-		$this->CI->load->module_model(BLOG_FOLDER, 'blog_categories_model');
-		$this->CI->blog_categories_model->readonly = TRUE;
+		$model = $this->model('blog_categories');
+		$model->readonly = TRUE;
 		$tables = $this->_tables();
 		$where = $tables['blog_categories'].'.slug = "'.$category.'" OR '.$tables['blog_categories'].'.name = "'.$category.'" AND '.$tables['blog_categories'].'.published = "yes"';
-		$categories = $this->CI->blog_categories_model->find_one($where, $order_by, $return_method);
+		$categories = $model->find_one($where, $order_by, $return_method);
 		return $categories;
 	}
 
@@ -929,8 +848,8 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	public function get_published_categories($language = NULL)
 	{
-		$this->CI->load->module_model(BLOG_FOLDER, 'blog_categories_model');
-		return $this->CI->blog_categories_model->get_published_categories($language);
+		$model = $this->model('blog_categories');
+		return $model->get_published_categories($language);
 	}
 
 	// --------------------------------------------------------------------
@@ -948,10 +867,9 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	public function get_tags($where = array(), $order_by = NULL, $limit = NULL, $offset = NULL, $return_method = NULL, $assoc_key = NULL)
 	{
-		$this->CI->load->module_model(BLOG_FOLDER, 'blog_tags_model');
-		$this->CI->blog_tags_model->readonly = TRUE;
-		$tables = $this->_tables();
-		$tags = $this->CI->blog_tags_model->find_all($where, $order_by, $limit, $offset, $return_method, $assoc_key);
+		$model = $this->model('blog_tags');
+		$model->readonly = TRUE;
+		$tags = $model->find_all($where, $order_by, $limit, $offset, $return_method, $assoc_key);
 		return $tags;
 	}
 
@@ -964,15 +882,15 @@ class Fuel_blog extends Fuel_advanced_module {
 	 * @param	string
 	 * @param	string
 	 * @param	string
-	 * @return	object
+	 * @return	array
 	 */
 	public function get_tag($category, $order_by = NULL, $return_method = NULL)
 	{
-		$this->CI->load->module_model(BLOG_FOLDER, 'blog_tags_model');
-		$this->CI->blog_tags_model->readonly = TRUE;
+		$model = $this->model('blog_tags');
+		$model->readonly = TRUE;
 		$tables = $this->_tables();
 		$where = $tables['blog_tags'].'.slug = "'.$category.'" OR '.$tables['blog_tags'].'.name = "'.$category.'"';
-		$tags = $this->CI->blog_tags_model->find_one($where, $order_by, $return_method);
+		$tags = $model->find_one($where, $order_by, $return_method);
 		return $tags;
 	}
 
@@ -983,12 +901,12 @@ class Fuel_blog extends Fuel_advanced_module {
 	 *
 	 * @access	public
 	 * @param	string
-	 * @return	object
+	 * @return	array
 	 */
 	public function get_published_tags($language = NULL)
 	{
-		$this->CI->load->module_model(BLOG_FOLDER, 'blog_tags_model');
-		return $this->CI->blog_tags_model->get_published_tags($language);
+		$model = $this->model('blog_tags');
+		return $model->get_published_tags($language);
 	}
 
 	// --------------------------------------------------------------------
@@ -1003,16 +921,16 @@ class Fuel_blog extends Fuel_advanced_module {
 	 * @param	int
 	 * @return	array
 	 */
-	public function search_posts($term, $order_by = 'post_date desc', $limit = NULL, $offset = NULL)
+	public function search_posts($term, $order_by = 'publish_date desc', $limit = NULL, $offset = NULL)
 	{
-		$this->CI->load->module_model('blog', 'blog_posts_model');
-		$this->CI->blog_posts_model->readonly = TRUE;
+		$model = $this->model('blog_posts');
+		$model->readonly = TRUE;
 		
 		$tables = $this->_tables();
 
 		// can't use this because of the need to group with parenthesis'
-		// $this->CI->blog_posts_model->db()->like('title', $t);
-		// $this->CI->blog_posts_model->db()->or_like('content', $t);
+		// $model->db()->like('title', $t);
+		// $model->db()->or_like('content', $t);
 		
 		$terms = explode(' ', $term);
 		$where = '(';
@@ -1026,8 +944,8 @@ class Fuel_blog extends Fuel_advanced_module {
 			$i++;
 		}
 		$where .= ") AND ".$tables['blog_posts'].".published = 'yes' AND ";
-		$where .= $tables['blog_posts'].'.post_date <= "'.datetime_now().'"';
-		$posts = $this->CI->blog_posts_model->find_all($where, $order_by, $limit, $offset);
+		$where .= $tables['blog_posts'].'.publish_date <= "'.datetime_now().'"';
+		$posts = $model->find_all($where, $order_by, $limit, $offset);
 		return $posts;
 	}
 	
@@ -1047,12 +965,12 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	public function get_comments($where = array(), $order_by = 'date_added desc', $limit = NULL, $offset = NULL, $return_method = NULL, $assoc_key = NULL)
 	{
-		$this->CI->load->module_model(BLOG_FOLDER, 'blog_comments_model');
-		$this->CI->blog_comments_model->readonly = TRUE;
+		$model = $this->model('blog_comments');
+		$model->readonly = TRUE;
 		$tables = $this->_tables();
 		$where[$tables['blog_comments'].'.published'] = 'yes';
 		$where[$tables['blog_posts'].'.published'] = 'yes';
-		$comments = $this->CI->blog_comments_model->find_all($where, $order_by, $limit, $offset, $return_method, $assoc_key);
+		$comments = $model->find_all($where, $order_by, $limit, $offset, $return_method, $assoc_key);
 		return $comments;
 	}
 
@@ -1067,9 +985,9 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	public function get_comment($id)
 	{
-		$this->CI->load->module_model(BLOG_FOLDER, 'blog_comments_model');
-		$this->CI->blog_comments_model->readonly = TRUE;
-		$comment = $this->CI->blog_comments_model->find_by_key($id);
+		$model = $this->model('blog_comments');
+		$model->readonly = TRUE;
+		$comment = $model->find_by_key($id);
 		return $comment;
 	}
 
@@ -1089,11 +1007,11 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	public function get_links($where = array(), $order_by = 'precedence desc', $limit = NULL, $offset = NULL, $return_method = NULL, $assoc_key = NULL)
 	{
-		$this->CI->load->module_model(BLOG_FOLDER, 'blog_links_model');
-		$this->CI->blog_links_model->readonly = TRUE;
+		$model = $this->model('blog_links');
+		$model->readonly = TRUE;
 		$tables = $this->_tables();
 		$where[$tables['blog_links'].'.published'] = 'yes';
-		$links = $this->CI->blog_links_model->find_all($where, $order_by, $limit, $offset, $return_method, $assoc_key);
+		$links = $model->find_all($where, $order_by, $limit, $offset, $return_method, $assoc_key);
 		return $links;
 	}
 
@@ -1108,11 +1026,11 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	public function get_user($id)
 	{
-		$this->CI->load->module_model(BLOG_FOLDER, 'blog_users_model');
-		$this->CI->blog_users_model->readonly = TRUE;
+		$model = $this->model('blog_users');
+		$model->readonly = TRUE;
 		$where['active'] = 'yes';
 		$where['fuel_user_id'] = $id;
-		$user = $this->CI->blog_users_model->find_one($where);
+		$user = $model->find_one($where);
 		return $user;
 	}
 
@@ -1132,10 +1050,10 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	public function get_users($where = array(), $order_by = NULL, $limit = NULL, $offset = NULL, $return_method = NULL, $assoc_key = NULL)
 	{
-		$this->CI->load->module_model(BLOG_FOLDER, 'blog_users_model');
-		$this->CI->blog_users_model->readonly = TRUE;
+		$model = $this->model('blog_users');
+		$model->readonly = TRUE;
 		$where['active'] = 'yes';
-		$users = $this->CI->blog_users_model->find_all($where, $order_by, $limit, $offset, $return_method, $assoc_key);
+		$users = $model->find_all($where, $order_by, $limit, $offset, $return_method, $assoc_key);
 		return $users;
 	}
 	
@@ -1647,54 +1565,7 @@ class Fuel_blog extends Fuel_advanced_module {
 			return call_user_func_array(array($this, $method), $args);
 		}
 	}
-	
-	// --------------------------------------------------------------------
 
-	/**
-	 * Returns where condition based on the users logged in state
-	 *
-	 * @access	protected
-	 * @param	string
-	 * @param	mixed
-	 * @return	array
-	 */
-	protected function _publish_status($t = 'blog_posts', $where = array())
-	{
-		$this->CI->load->module_helper(FUEL_FOLDER, 'fuel');
-		$tables = Base_module_model::$tables;
-		
-		if (!is_fuelified())
-		{
-
-			if (empty($where) OR is_array($where))
-			{
-				// taken care of in the model
-				//$where[$tables[$t].'.published'] = 'yes';
-
-				// don't show posts in the future'
-				if ($t == 'blog_posts')
-				{
-					$where[$tables[$t].'.post_date <= '] = datetime_now();
-				}
-			}
-
-			// commented out because it needs to be an array syntax for now
-			else
-			{
-			//	$where .= ' AND '.$tables[$t].'.published = "yes"';
-
-				// don't show posts in the future'
-				if ($t == 'blog_posts')
-				{
-				//	$where .= ' AND '.$tables[$t].'.post_date <= "'.datetime_now().'"';
-				}
-			}
-		}
-		return $where;
-	}
-	
-	
-	
 }
 
 /* End of file Fuel_blog.php */

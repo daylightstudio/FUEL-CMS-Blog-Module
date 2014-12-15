@@ -12,7 +12,7 @@ if (isset($current_post) AND !$is_home)
 <?php $this->load->view('_blocks/header')?>
 	
 	<div id="right">
-		<?php echo $this->fuel->blog->sidemenu(array('search', 'authors', 'categories', 'links', 'archives'))?>
+		<?php echo $this->fuel->blog->sidemenu(array('search', 'authors', 'tags', 'categories', 'links', 'archives'))?>
 	</div>
 
 	<div id="main_inner">

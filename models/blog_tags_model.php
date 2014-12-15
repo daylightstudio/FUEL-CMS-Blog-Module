@@ -76,7 +76,7 @@ class Blog_tags_model extends Base_module_model {
 	function get_published_tags($language = NULL)
 	{
 		$CI =& get_instance();
-		$published_tags = $CI->fuel->blog->model('posts')->get_related_keys('tags', array(), $CI->fuel->blog->model('posts')->has_many['tags'], 'has_many');
+		$published_tags = $CI->fuel->blog->model('blog_posts')->get_related_keys('tags', array(), $CI->fuel->blog->model('posts')->has_many['tags'], 'has_many');
 
 		//$published_categories = $this->get_related_keys(array(), $this->belongs_to['posts'], 'belongs_to');
 		$tags_query_params = array();
