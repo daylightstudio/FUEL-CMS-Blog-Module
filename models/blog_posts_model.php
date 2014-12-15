@@ -115,10 +115,9 @@ class Blog_posts_model extends Base_module_model {
 		}
 		$fields['title']['style'] = 'width: 500px;';
 		$fields['slug']['style'] = 'width: 500px;';
-		$fields['language'] = array('order' => 3, 'type' => 'select', 'options' => $this->fuel->language->options(), 'value' => $this->fuel->language->default_option(), 'hide_if_one' => TRUE);
+		$fields['language'] = array('type' => 'select', 'options' => $this->fuel->language->options(), 'value' => $this->fuel->language->default_option(), 'hide_if_one' => TRUE);
 		$fields['content']['style'] = 'width: 680px; height: 400px';
 		$fields['excerpt']['style'] = 'width: 680px;';
-		$fields['published']['order'] = 8.5;
 		
 		if (!is_true_val($CI->fuel->blog->config('allow_comments')))
 		{
@@ -129,7 +128,6 @@ class Blog_posts_model extends Base_module_model {
 		$fields['date_added']['type'] = 'hidden'; // so it will auto add
 		//$fields['date_added']['type'] = 'datetime'; // so it will auto add
 		$fields['last_modified']['type'] = 'hidden'; // so it will auto add
-		$fields['slug']['order'] = 2.5; // for older versions where the schema order was different
 		
 		$image_sizes = $CI->fuel->blog->config('image_sizes');
 		$image_types = array('main', 'list', 'thumbnail');
@@ -208,12 +206,16 @@ class Blog_posts_model extends Base_module_model {
 			$fields['blocks']['multiple'] = TRUE;
 		}
 
-		$fields['page_title'] = array('size' => 100, 'order' => $fields['page_title']['order'], 'comment' => 'If no page title is provided, it will default to the title of the blog post');
-		$fields['meta_description'] = array('type' => 'textarea', 'class' => 'no_editor', 'rows' => 3, 'order' => $fields['meta_description']['order']);
-		$fields['meta_keywords'] = array('type' => 'textarea', 'class' => 'no_editor', 'rows' => 3, 'order' => $fields['meta_keywords']['order']);
-		
+		$fields['page_title'] = array('size' => 100, 'comment' => 'If no page title is provided, it will default to the title of the blog post');
+		$fields['meta_description'] = array('type' => 'textarea', 'class' => 'no_editor', 'rows' => 3);
+		$fields['meta_keywords'] = array('type' => 'textarea', 'class' => 'no_editor', 'rows' => 3);
+		$fields['canonical'] = array('size' => 100, 'comment' => 'This field is used to help prevent duplicate content issues for search engines');
 
-		$fields['category_id']['order'] = 21;
+		$fields['Open Graph'] = array('type' => 'section');
+		$fields['og_title'] = array('size' => 100);
+		$fields['og_description'] = array('size' => 100);
+		$fields['og_image'] = array('img_styles' => 'float: left; width: 100px;', 'folder' => $CI->fuel->blog->config('asset_upload_path'));
+
 		$fields['category_id']['add_params'] = 'context=blog';
 
 		// find the first category with a context of "blog"
@@ -225,11 +227,48 @@ class Blog_posts_model extends Base_module_model {
 		
 
 		// setup tabs
-		$fields['Content'] = array('type' => 'fieldset', 'class' => 'tab', 'order' => 1);
-		$fields['Images'] = array('type' => 'fieldset', 'class' => 'tab', 'order' => 9);
-		$fields['Settings'] = array('type' => 'fieldset', 'class' => 'tab', 'order' => 12.5);
-		$fields['Meta'] = array('type' => 'fieldset', 'class' => 'tab', 'order' => 15.5);
-		$fields['Associations'] = array('type' => 'fieldset', 'class' => 'tab', 'order' => 20);
+		$fields['Content'] = array('type' => 'fieldset', 'class' => 'tab');
+		$fields['Images'] = array('type' => 'fieldset', 'class' => 'tab');
+		$fields['Settings'] = array('type' => 'fieldset', 'class' => 'tab');
+		$fields['Meta'] = array('type' => 'fieldset', 'class' => 'tab');
+		$fields['Associations'] = array('type' => 'fieldset', 'class' => 'tab');
+
+		// now set the order
+		$order = array(	'Content', 
+						'title',
+						'slug',
+						'language',
+						'content',
+						'formatting',
+						'excerpt',
+						'author',
+						'published',
+						'Images', 
+						'main_image',
+						'list_image',
+						'thumbnail_image',
+						'Settings', 
+						'sticky',
+						'publish_date',
+						'Meta', 
+						'page_title',
+						'meta_description',
+						'meta_keywords',
+						'canonical',
+						'Open Graph',
+						'og_title',
+						'og_description',
+						'og_image',
+						'Associations', 
+						'category_id',
+						'tags',
+						'related_posts',
+						'blocks',
+						);
+		foreach($order as $key => $val)
+		{
+			$fields[$val]['order'] = $key + 1;
+		}
 		
 		return $fields;
 	}
