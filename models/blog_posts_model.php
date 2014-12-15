@@ -508,7 +508,13 @@ class Blog_post_model extends Base_module_record {
 		}
 		return FALSE;
 	}
-	
+		
+	function get_category()
+	{
+		$model = $this->_CI->fuel->blog->model('categories');
+		return $model->find_by_key($this->category_id);
+	}
+
 	function get_categories_linked($order = 'name asc', $join = ', ')
 	{
 		$categories = $this->categories;
@@ -524,7 +530,7 @@ class Blog_post_model extends Base_module_record {
 		}
 		return NULL;
 	}
-	
+
 	function get_author()
 	{
 		static $author;
