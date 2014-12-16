@@ -70,6 +70,7 @@ class Blog_tags_model extends Base_module_model {
 	function _common_query()
 	{
 		parent::_common_query();
+		$this->db->join($this->_tables['fuel_categories'], $this->_tables['fuel_categories'].'.id = '.$this->_tables['fuel_tags'].'.category_id', 'LEFT');
 		$this->db->order_by('precedence, name asc');
 	}
 
