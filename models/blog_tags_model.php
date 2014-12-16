@@ -83,10 +83,10 @@ class Blog_tags_model extends Base_module_model {
 		$tags_query_params = array();
 		if (!empty($published_tags))
 		{
-			$tags_query_params = array('where_in' => array('id' => $published_tags), 'where' => 'published = "yes"');
+			$tags_query_params = array('where_in' => array($this->table_name.'.id' => $published_tags), 'where' => $this->table_name.'.published = "yes"');
 			if (!empty($language))
 			{
-				$tags_query_params['where'] .= ' AND language="'.$language.'" OR language=""';
+				$tags_query_params['where'] .= ' AND '.$this->table_name.'.language="'.$language.'" OR '.$this->table_name.'.language=""';
 			}
 			$tags_query = $this->query($tags_query_params);
 			return $tags_query->result();
