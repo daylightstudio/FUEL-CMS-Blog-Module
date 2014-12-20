@@ -94,7 +94,32 @@ class Blog_tags_model extends Base_module_model {
 		return array();
 	}
 
-	public function ajax_options($where = array())
+	function options_list($key = NULL, $val = NULL, $where = array(), $order = TRUE)
+	{
+		$this->db->join($this->_tables['fuel_categories'], $this->_tables['fuel_categories'].'.id = '.$this->_tables['fuel_tags'].'.category_id', 'LEFT');
+
+		// if (empty($key)) $key = $this->_tables['fuel_categories'].'.id';
+		// if (empty($val)) $val = $this->_tables['fuel_categories'].'.name';
+		if (empty($key)) $key = $this->_tables['fuel_tags'].'.id';
+		if (empty($val)) $val = $this->_tables['fuel_tags'].'.name';
+
+		// needed to prevent ambiguity
+		if (strpos($key, '.') === FALSE AND strpos($key, '(') === FALSE)
+		{
+			$key = $this->_tables['fuel_tags'].'.'.$key;
+		}
+
+		// needed to prevent ambiguity
+		if (strpos($val, '.') === FALSE AND strpos($val, '(') === FALSE)
+		{
+			$val = $this->_tables['fuel_tags'].'.'.$val;
+		}
+	
+		$options = parent::options_list($key, $val, $where, $order);
+		return $options;
+	}
+	
+	function ajax_options($where = array())
 	{
 		if (!empty($where['language']))
 		{
