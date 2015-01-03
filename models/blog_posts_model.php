@@ -14,7 +14,7 @@ class Blog_posts_model extends Base_module_model {
 	public $linked_fields = array('slug' => array('title' => 'url_title'));
 	public $display_unpublished_if_logged_in = TRUE; // determines whether to display unpublished content on the front end if you are logged in to the CMS
 	public $boolean_fields = array('sticky');
-	public $foreign_keys = array('category_id' => array(FUEL_FOLDER => 'fuel_categories_model', 'where' => 'context = "blog" AND language = "{language}" OR language = ""'));
+	public $foreign_keys = array('category_id' => array(FUEL_FOLDER => 'fuel_categories_model', 'where' => '(context = "blog" OR context = "") AND language = "{language}" OR language = ""'));
 
 	public $has_many = array(
 		'tags' => array(
@@ -39,9 +39,10 @@ class Blog_posts_model extends Base_module_model {
 			$authors = array('authors' => array('model' => array(BLOG_FOLDER => 'blog_users')));
 			$this->has_many = array_merge($authors, $this->has_many);
 		}
-
-		$this->has_many['tags']['where'] = $this->_tables['fuel_categories'].'.context = "blog"';
-
+		
+		$this->has_many['tags']['where'] = 'FIND_IN_SET("blog", '.$this->_tables['fuel_tags'].'.context) OR '.$this->_tables['fuel_tags'].'.context=""';
+		$this->foreign_keys['category_id']['where'] = 'FIND_IN_SET("blog", '.$this->_tables['fuel_categories'].'.context) OR '.$this->_tables['fuel_categories'].'.context=""';
+	
 		// set the filter again here just in case the table names are different
 		$this->filters = array('title', 'content_filtered', $this->_tables['fuel_users'].'.first_name', $this->_tables['fuel_users'].'.last_name');
 
@@ -216,7 +217,7 @@ class Blog_posts_model extends Base_module_model {
 		$fields['og_description'] = array('size' => 100);
 		$fields['og_image'] = array('img_styles' => 'float: left; width: 100px;', 'folder' => $CI->fuel->blog->config('asset_upload_path'));
 
-		$fields['category_id']['add_params'] = 'context=blog';
+		//$fields['category_id']['add_params'] = 'context=blog';
 
 		// find the first category with a context of "blog"
 		$blog_category = current($CI->fuel->categories->find_by_context('blog'));
@@ -224,7 +225,7 @@ class Blog_posts_model extends Base_module_model {
 		{
 			$fields['tags']['add_params'] = 'category_id='.$blog_category->id;	
 		}
-		
+		//$fields['tags']['add_params'] = 'context=blog';
 
 		// setup tabs
 		$fields['Content'] = array('type' => 'fieldset', 'class' => 'tab');
