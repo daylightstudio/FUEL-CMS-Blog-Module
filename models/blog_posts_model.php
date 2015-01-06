@@ -39,9 +39,8 @@ class Blog_posts_model extends Base_module_model {
 			$authors = array('authors' => array('model' => array(BLOG_FOLDER => 'blog_users')));
 			$this->has_many = array_merge($authors, $this->has_many);
 		}
-		
-		$this->has_many['tags']['where'] = 'FIND_IN_SET("blog", '.$this->_tables['fuel_tags'].'.context) OR '.$this->_tables['fuel_tags'].'.context=""';
-		$this->foreign_keys['category_id']['where'] = 'FIND_IN_SET("blog", '.$this->_tables['fuel_categories'].'.context) OR '.$this->_tables['fuel_categories'].'.context=""';
+		$this->has_many['tags']['where'] = '(FIND_IN_SET("blog", '.$this->_tables['fuel_tags'].'.context) OR '.$this->_tables['fuel_tags'].'.context="")';
+		$this->foreign_keys['category_id']['where'] = '(FIND_IN_SET("blog", '.$this->_tables['fuel_categories'].'.context) OR '.$this->_tables['fuel_categories'].'.context="")';
 	
 		// set the filter again here just in case the table names are different
 		$this->filters = array('title', 'content_filtered', $this->_tables['fuel_users'].'.first_name', $this->_tables['fuel_users'].'.last_name');
