@@ -241,7 +241,7 @@ class Blog_posts_model extends Base_module_model {
 						'content',
 						'formatting',
 						'excerpt',
-						'author',
+						'author_id',
 						'published',
 						'Images', 
 						'main_image',
