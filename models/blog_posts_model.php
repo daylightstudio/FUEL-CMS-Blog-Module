@@ -371,6 +371,7 @@ class Blog_post_model extends Base_module_record {
 
 	private $_tables;
 	public $author_name;
+
 	
 	function on_init()
 	{
@@ -455,15 +456,12 @@ class Blog_post_model extends Base_module_record {
 	
 	function get_comments_formatted($block = 'comment', $parent_id = 0, $container_class = 'child')
 	{
-		static $comments;
-		static $post;
 		
 		// initialization... grab all comments
 		$items = array();
-		if (empty($comments))
+		if (empty($this->_objs['comments']))
 		{
-			$comments = $this->comments;
-			$post = $this->post;
+			$comments = $this->_objs['comments'];
 		}
 
 		$str = '';
@@ -533,21 +531,20 @@ class Blog_post_model extends Base_module_record {
 
 	function get_author()
 	{
-		static $author;
-		if (!isset($author))
+		if (!isset($this->_objs['author']))
 		{
 			if ($this->_CI->fuel->blog->config('multiple_authors'))
 			{
 				$authors = $this->get_authors();
-				$author = current($authors);
+				$this->_objs['author'] = current($authors);
 			}
 			else
 			{
 				$blog_users = $CI->fuel->blog->model('blog_users');
-				$author = $blog_users->find_one(array('fuel_blog_users.fuel_user_id' => $this->author_id));
+				$this->_objs['author'] = $blog_users->find_one(array('fuel_blog_users.fuel_user_id' => $this->author_id));
 			}
 		}
-		return $author;
+		return $this->_objs['author'];
 	}
 
 	function has_author()
