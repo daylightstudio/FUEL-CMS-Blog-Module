@@ -540,7 +540,7 @@ class Blog_post_model extends Base_module_record {
 			}
 			else
 			{
-				$blog_users = $CI->fuel->blog->model('blog_users');
+				$blog_users = $this->_CI->fuel->blog->model('users');
 				$this->_objs['author'] = $blog_users->find_one(array('fuel_blog_users.fuel_user_id' => $this->author_id));
 			}
 		}
