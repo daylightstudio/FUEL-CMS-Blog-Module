@@ -529,19 +529,28 @@ class Blog_post_model extends Base_module_record {
 		return NULL;
 	}
 
-	function get_author()
+	function get_author($active = TRUE)
 	{
 		if (!isset($this->_objs['author']))
 		{
 			if ($this->_CI->fuel->blog->config('multiple_authors'))
 			{
-				$authors = $this->get_authors();
-				$this->_objs['author'] = current($authors);
+				$authors_model = $this->get_authors(TRUE);
+				$where = array();
+				if ($active)
+				{
+					$where[$this->_tables['blog_users'].'.active'] = 'yes';
+				}
+				$this->_objs['author'] = $this->find_one($where);
 			}
 			else
 			{
-				$blog_users = $this->_CI->fuel->blog->model('users');
-				$this->_objs['author'] = $blog_users->find_one(array('fuel_blog_users.fuel_user_id' => $this->author_id));
+				$where = array($this->_tables['blog_users'].'.fuel_user_id' => $this->author_id);
+				if ($active)
+				{
+					$where[$this->_tables['blog_users'].'.active'] = 'yes';
+				}
+				$this->_objs['author'] = $this->lazy_load($where, array(BLOG_FOLDER => 'blog_users_model'), FALSE);
 			}
 		}
 		return $this->_objs['author'];
