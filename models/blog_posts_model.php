@@ -529,16 +529,16 @@ class Blog_post_model extends Base_module_record {
 		return NULL;
 	}
 
-	function get_author($active = TRUE)
+	function get_author($all = FALSE)
 	{
-		$cache_key ='author'.$active;
+		$cache_key ='author'.$all;
 		if (!isset($this->_objs[$cache_key]))
 		{
 			if ($this->_CI->fuel->blog->config('multiple_authors'))
 			{
 				$authors_model = $this->get_authors(TRUE);
 				$where = array();
-				if ($active)
+				if (!$all)
 				{
 					$where[$this->_tables['blog_users'].'.active'] = 'yes';
 				}
@@ -547,7 +547,7 @@ class Blog_post_model extends Base_module_record {
 			else
 			{
 				$where = array($this->_tables['blog_users'].'.fuel_user_id' => $this->author_id);
-				if ($active)
+				if (!$all)
 				{
 					$where[$this->_tables['blog_users'].'.active'] = 'yes';
 				}
@@ -557,7 +557,8 @@ class Blog_post_model extends Base_module_record {
 		return $this->_objs[$cache_key];
 	}
 
-	function has_author($active = TRUE)
+
+	function has_author($active = FALSE)
 	{
 		$author = $this->get_author($active);
 		return !empty($author);
@@ -565,14 +566,13 @@ class Blog_post_model extends Base_module_record {
 
 	function get_author_link()
 	{
-		$author = $this->get_author(FALSE);
-		if(is_true_val($author->active))
+		$author = $this->get_author(TRUE);
+		if(is_true_val($author->active) AND $author->current == 'yes')
 		{
 			return '<a href="'.$author->url.'">'.$author->display_name.'</a>';
 		}else{
 			return $author->display_name;
 		}
-		
 	}
 
 	function get_image($type = 'main')
