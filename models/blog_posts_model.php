@@ -567,7 +567,7 @@ class Blog_post_model extends Base_module_record {
 	function get_author_link()
 	{
 		$author = $this->get_author(TRUE);
-		if(is_true_val($author->active) AND $author->current == 'yes')
+		if(is_true_val($author->active))
 		{
 			return '<a href="'.$author->url.'">'.$author->display_name.'</a>';
 		}else{
