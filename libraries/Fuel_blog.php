@@ -162,13 +162,14 @@ class Fuel_blog extends Fuel_advanced_module {
 	 * @param	string
 	 * @return	string
 	 */
-	public function feed($type = 'rss', $slug = '', $type = 'categories')
+	public function feed($type = 'rss', $slug = '')
 	{
 		if (empty($slug))
 		{
 			if (($this->CI->uri->rsegment(1) == 'categories' OR $this->CI->uri->rsegment(1) == 'tags') AND $this->CI->uri->rsegment(2))
 			{
-				$slug = $this->CI->uri->rsegment(2);
+				$uri = $this->CI->uri->rsegment(1).'/feed/'.$this->CI->uri->rsegment(2).'/';
+				return $this->url($uri.$type);
 			}
 		}
 		$uri = (!empty($slug)) ? $slug.'/feed/' : 'feed/';

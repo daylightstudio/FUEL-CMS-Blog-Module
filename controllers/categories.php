@@ -33,6 +33,8 @@ class Categories extends Blog_base_controller {
 				// set the header type
 				$this->fuel->blog->feed_header();
 				
+				$category = uri_segment(4, FALSE, TRUE, TRUE);
+				
 				// set the output
 				$output = $this->fuel->blog->feed_output($type, $category);
 			}
