@@ -198,7 +198,7 @@ class Fuel_blog extends Fuel_advanced_module {
 	 * @param	string
 	 * @return	string
 	 */
-	public function feed_output($type = 'rss', $slug = NULL, $type = 'categories')
+	public function feed_output($type = 'rss', $slug = NULL)
 	{
 		$this->CI->load->helper('xml');
 		$this->CI->load->helper('date');
