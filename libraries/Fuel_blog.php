@@ -1143,7 +1143,7 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	public function save_cache($cache_id, $output)
 	{
-		if ($this->use_cache())
+		if ($this->use_cache() AND !is_fuelified())
 		{
 			$cache_options =  array('default_ttl' => $this->config('cache_ttl'));
 			$this->CI->load->library('cache', $cache_options);
