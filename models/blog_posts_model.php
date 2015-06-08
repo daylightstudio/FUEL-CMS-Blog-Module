@@ -64,8 +64,8 @@ class Blog_posts_model extends Base_module_model {
 		$select .= ', sticky, '.$this->_tables['blog_posts'].'.published';
 		$this->db->select($select, FALSE);
 
-		$this->db->join($this->_tables['fuel_users'], $this->_tables['fuel_users'].'.id = '.$this->_tables['blog_posts'].'.author_id', 'left');
 		$this->db->join($this->_tables['blog_users'], $this->_tables['blog_users'].'.id = '.$this->_tables['blog_posts'].'.author_id', 'left');
+		$this->db->join($this->_tables['blog_users'], $this->_tables['blog_users'].'.fuel_user_id = '.$this->_tables['fuel_users'].'.id', 'left');
 
 		$data = parent::list_items($limit, $offset, $col, $order, $just_count);
 		return $data;
