@@ -402,7 +402,7 @@ class Fuel_blog extends Fuel_advanced_module {
 	 * @param	string
 	 * @return	object
 	 */
-	public function model($model)
+	public function &model($model = NULL)
 	{
 		if (strncmp('blog_', $model, 5) !== 0)
 		{
@@ -1114,17 +1114,20 @@ class Fuel_blog extends Fuel_advanced_module {
 	 * @param	string
 	 * @return	mixed
 	 */
-	public function get_cache($cache_id)
+	public function get_cache($cache_id, $cache_group = NULL, $skip_checking = FALSE)
 	{
 		if ($this->use_cache())
 		{
 			$cache_options =  array('default_ttl' => $this->config('cache_ttl'));
 			$this->CI->load->library('cache', $cache_options);
-			$cache_group = $this->CI->config->item('blog_cache_group');
+			if (empty($cache_group))
+			{
+				$cache_group = $this->CI->config->item('blog_cache_group');
+			}
 
 			if ($this->use_cache() AND $this->CI->cache->get($cache_id, $cache_group, FALSE))
 			{
-				$output = $this->CI->cache->get($cache_id, $cache_group);
+				$output = parent::get_cache($cache_id, $cache_group, $skip_checking);
 				return $output;
 			}
 		}
@@ -1141,17 +1144,25 @@ class Fuel_blog extends Fuel_advanced_module {
 	 * @param	string
 	 * @return	void
 	 */
-	public function save_cache($cache_id, $output)
+	public function save_cache($cache_id, $data, $cache_group = NULL, $ttl = NULL)
 	{
 		if ($this->use_cache() AND !is_fuelified())
 		{
 			$cache_options =  array('default_ttl' => $this->config('cache_ttl'));
 			$this->CI->load->library('cache', $cache_options);
 
-			$cache_group = $this->CI->config->item('blog_cache_group');
+			if (empty($cache_group))
+			{
+				$cache_group = $this->CI->config->item('blog_cache_group');
+			}
+
+			if (empty($ttl))
+			{
+				$cache_group = $this->CI->config->item('cache_ttl');
+			}
 
 			// save to cache
-			$this->CI->cache->save($cache_id, $output, $cache_group, $this->config('cache_ttl'));
+			$this->CI->cache->save($cache_id, $output, $cache_group, $ttl);
 		}
 	}
 

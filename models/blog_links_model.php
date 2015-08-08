@@ -27,9 +27,9 @@ class Blog_links_model extends Base_module_model {
 		return $data;
 	}
 
-	function form_fields()
+	function form_fields($values = array(), $related = array())
 	{
-		$fields = parent::form_fields();
+		$fields = parent::form_fields($values, $related);
 	
 		// set language field
 		$fields['language'] = array('type' => 'select', 'options' => $this->fuel->language->options(), 'value' => $this->fuel->language->default_option(), 'hide_if_one' => TRUE);
@@ -38,9 +38,9 @@ class Blog_links_model extends Base_module_model {
 		return $fields;
 	}
 	
-	function _common_query()
+	function _common_query($display_unpublished_if_logged_in = NULL)
 	{
-		parent::_common_query();
+		parent::_common_query($display_unpublished_if_logged_in);
 
 		if (!defined('FUEL_ADMIN') AND $this->fuel->language->has_multiple())
 		{

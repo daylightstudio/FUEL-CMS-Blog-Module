@@ -76,7 +76,7 @@ class Blog_posts_model extends Base_module_model {
 		return $this->_tree('foreign_keys');
 	}
 	
-	function form_fields($values = array())
+	function form_fields($values = array(), $related = array())
 	{
 		$fields = parent::form_fields($values);
 		$CI =& get_instance();
@@ -328,7 +328,7 @@ class Blog_posts_model extends Base_module_model {
 		return $values;
 	}
 	
-	function _common_query()
+	function _common_query($display_unpublished_if_logged_in = NULL)
 	{
 		parent::_common_query();
 		

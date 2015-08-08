@@ -58,9 +58,9 @@ class Blog_comments_model extends Base_module_model {
 		return $return;
 	}
 	
-	function form_fields($values = array())
+	function form_fields($values = array(), $related = array())
 	{
-		$fields = parent::form_fields();
+		$fields = parent::form_fields($values, $related);
 		$CI =& get_instance();
 		$CI->load->module_model(BLOG_FOLDER, 'blog_users_model');
 		$CI->load->module_model(BLOG_FOLDER, 'blog_posts_model');
@@ -211,7 +211,7 @@ class Blog_comments_model extends Base_module_model {
 		return $values;
 	}
 	
-	function _common_query()
+	function _common_query($display_unpublished_if_logged_in = NULL)
 	{
 		$this->db->select($this->_tables['blog_comments'].'.*, '.$this->_tables['blog_posts'].'.id as post_id, 
 		'.$this->_tables['blog_posts'].'.title as title, '.$this->_tables['blog_posts'].'.slug as slug,

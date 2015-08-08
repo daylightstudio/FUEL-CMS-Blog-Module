@@ -69,9 +69,9 @@ class Blog_categories_model extends Base_module_model {
 		return $fields;
 	}*/
 	
-	function _common_query()
+	function _common_query($display_unpublished_if_logged_in = NULL)
 	{
-		parent::_common_query();
+		parent::_common_query($display_unpublished_if_logged_in);
 		$this->db->order_by('precedence, name asc');
 	}
 

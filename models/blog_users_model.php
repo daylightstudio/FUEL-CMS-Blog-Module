@@ -82,7 +82,7 @@ class Blog_users_model extends Base_module_model {
 		return $values;
 	}
 	
-	function _common_query()
+	function _common_query($display_unpublished_if_logged_in = NULL)
 	{
 		$this->db->select('fuel_blog_users.*, CONCAT(first_name, " ", last_name) as name, fuel_users.first_name, fuel_users.last_name, fuel_users.email, fuel_users.user_name, fuel_users.active as users_active', FALSE);
 		$this->db->select('posts_count'); // for temp table to get posts count
