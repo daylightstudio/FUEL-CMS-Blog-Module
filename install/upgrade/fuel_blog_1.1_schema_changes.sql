@@ -4,7 +4,7 @@ ALTER TABLE `fuel_blog_categories` ADD `language` VARCHAR(30)  NOT NULL  DEFAULT
 ALTER TABLE `fuel_blog_posts` ADD `page_title` VARCHAR(255)  NOT NULL  DEFAULT ''  AFTER `post_date`;
 ALTER TABLE `fuel_blog_posts` ADD `meta_description` VARCHAR(255)  NOT NULL  DEFAULT ''  AFTER `page_title`;
 ALTER TABLE `fuel_blog_posts` ADD `meta_keywords` VARCHAR(255)  NOT NULL  DEFAULT ''  AFTER `meta_description`;
-ALTER TABLE `fuel_blog_posts` ADD `canonical` INT  NULL  DEFAULT NULL  AFTER `meta_keywords`;
+ALTER TABLE `fuel_blog_posts` ADD `canonical` VARCHAR(255)  NOT NULL  DEFAULT '' AFTER `meta_keywords`;
 ALTER TABLE `fuel_blog_posts` ADD `og_title` VARCHAR(255)  NOT NULL  DEFAULT ''  AFTER `canonical`;
 ALTER TABLE `fuel_blog_posts` ADD `og_description` VARCHAR(255)  NOT NULL  DEFAULT ''  AFTER `og_title`;
 ALTER TABLE `fuel_blog_posts` ADD `og_image` VARCHAR(255)  NOT NULL  DEFAULT ''  AFTER `og_description`;
