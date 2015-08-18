@@ -225,7 +225,8 @@ class Blog_posts_model extends Base_module_model {
 			$fields['tags']['add_params'] = 'category_id='.$blog_category->id;	
 		}
 		//$fields['tags']['add_params'] = 'context=blog';
-
+		$fields['tags']['module'] = 'tags'; // must be set here since blog_tags is used as the module
+		
 		// setup tabs
 		$fields['Content'] = array('type' => 'fieldset', 'class' => 'tab');
 		$fields['Images'] = array('type' => 'fieldset', 'class' => 'tab');
