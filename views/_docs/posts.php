@@ -86,7 +86,7 @@ Default ordering is by <dfn>name</dfn> in ascending order.
 
 belongs_to_category
 
-<h2>get_categories_linked(<var>'[order]'</var>, <var>'[join]'</var>)</h2>
+<h2>get_tags_linked(<var>'[order]'</var>, <var>'[join]'</var>)</h2>
 <p>
 Returns a string of category links.
 Default ordering is by <dfn>name</dfn> in ascending order.

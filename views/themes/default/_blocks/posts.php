@@ -18,7 +18,7 @@
 				<?=$post->excerpt_formatted?> 
 			</div>
 			<div class="post_meta">
-				<?=$post->categories_linked ?> 
+				<?=$post->tags_linked ?> 
 			</div>
 		</div>
 		<div class="clear"></div>
