@@ -155,6 +155,38 @@ class Fuel_blog extends Fuel_advanced_module {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Returns the blog specific URI
+	 *
+	 * @access	public
+	 * @param	string
+	 * @return	string
+	 */
+	function uri($uri = '')
+	{
+		$uri = trim($uri, '/');
+		$base_uri = trim($this->config('uri'), '/');
+		return $base_uri.'/'.$uri;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns the blog specific URI
+	 *
+	 * @access	public
+	 * @param	string
+	 * @return	string
+	 */
+	function uri_segment($n, $default = FALSE, $rerouted = TRUE, $strip_lang = TRUE)
+	{
+		$segs = explode('/', $this->config('uri'));
+		$index = count($segs) - 1 + $n;
+		return uri_segment($index, $default, $rerouted, $strip_lang);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Returns the blog specific RSS feed URL
 	 *
 	 * @access	public

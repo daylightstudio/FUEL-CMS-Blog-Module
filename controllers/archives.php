@@ -11,7 +11,7 @@ class Archives extends Blog_base_controller {
 	{
 
 		// get the category this way in case there is a language parameter
-		$slug = uri_segment(3, FALSE, TRUE, TRUE);
+		$slug = $this->fuel->blog->uri_segment(3);
 
 		$cache_id = fuel_cache_id();
 		$vars = $this->_common_vars();

@@ -358,11 +358,11 @@ class Blog_posts_model extends Base_module_model {
 		$CI =& get_instance();
 		if ($CI->fuel->language->has_multiple() AND $values['language'] != 'english')
 		{
-			return "{$language}/blog/{$year}/{$month}/{$day}/{$slug}";
+			return "{$language}/".$CI->fuel->blog->config('uri')."/{$year}/{$month}/{$day}/{$slug}";
 		}
 		else
 		{
-			return "blog/{$year}/{$month}/{$day}/{$slug}";
+			return $CI->fuel->blog->config('uri')."/{$year}/{$month}/{$day}/{$slug}";
 		}
 	}
 

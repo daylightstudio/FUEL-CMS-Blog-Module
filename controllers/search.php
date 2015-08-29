@@ -13,7 +13,7 @@ class Search extends Blog_base_controller {
 		$this->load->library('pagination');
 		$this->load->helper('text');
 		
-		$q = uri_segment(3, FALSE, TRUE, TRUE);
+		$q = $this->fuel->blog->uri_segment(3);
 		$use_get = FALSE;
 		
 		if (empty($q))

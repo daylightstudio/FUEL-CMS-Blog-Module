@@ -10,25 +10,25 @@ class Blog extends Blog_base_controller {
 	
 	function _remap()
 	{
-		$year = (uri_segment(2, FALSE, TRUE, TRUE) != 'index') ? (int) uri_segment(2, FALSE, TRUE, TRUE) : NULL;
-		$month = (int) uri_segment(3, FALSE, TRUE, TRUE);
-		$day = (int) uri_segment(4, FALSE, TRUE, TRUE);
-		$slug = uri_segment(5, FALSE, TRUE, TRUE);
+		$year = ($this->fuel->blog->uri_segment(2) != 'index') ? (int) $this->fuel->blog->uri_segment(2) : NULL;
+		$month = (int) $this->fuel->blog->uri_segment(3);
+		$day = (int) $this->fuel->blog->uri_segment(4);
+		$slug = $this->fuel->blog->uri_segment(5);
 
 		$limit = (int) $this->fuel->blog->config('per_page');
 
 		$view_by = 'page';
-		
+
 		// we empty out year variable if it is page because we won't be querying on year'
 		if (preg_match('#\d{4}#', $year) && !empty($year) && empty($slug))
 		{
 			$view_by = 'date';
 		}
 		// if the first segment is id then treat the second segment as the id
-		else if (uri_segment(2, FALSE, TRUE, TRUE) === 'id' && uri_segment(3, FALSE, TRUE, TRUE))
+		else if ($this->fuel->blog->uri_segment(2) === 'id' && $this->fuel->blog->uri_segment(3))
 		{
 			$view_by = 'slug';
-			$slug = (int) uri_segment(3, FALSE, TRUE, TRUE);
+			$slug = (int) $this->fuel->blog->uri_segment(3);
 			$post = $this->fuel->blog->get_post($slug);
 			if (isset($post->id))
 			{
@@ -36,7 +36,7 @@ class Blog extends Blog_base_controller {
 			}
 		}
 		// if the first segment is comment_reply
-		else if (uri_segment(2, FALSE, TRUE, TRUE) === 'comment_reply' AND uri_segment(3, FALSE, TRUE, TRUE))
+		else if ($this->fuel->blog->uri_segment(2) === 'comment_reply' AND $this->fuel->blog->uri_segment(3))
 		{
 			$comment_id = (int) $this->uri->rsegment(3);
 			$this->comment_reply($comment_id);
@@ -128,7 +128,7 @@ class Blog extends Blog_base_controller {
 			}
 
 			// show the index page if the page doesn't have any uri_segment(3)'
-			$view = (uri_segment(2, FALSE, TRUE, TRUE) == 'index' OR (uri_segment(2, FALSE, TRUE, TRUE) == 'page' AND !uri_segment(3, FALSE, TRUE, TRUE))) ? 'index' : 'posts';
+			$view = ($this->fuel->blog->uri_segment(2) == 'index' OR ($this->fuel->blog->uri_segment(2) == 'page' AND !$this->fuel->blog->uri_segment(3))) ? 'index' : 'posts';
 			$output = $this->_render($view, $vars, TRUE);
 			$this->fuel->blog->save_cache($cache_id, $output);
 		}

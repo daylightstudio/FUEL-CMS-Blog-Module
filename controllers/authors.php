@@ -20,11 +20,11 @@ class Authors extends Blog_base_controller {
 			$vars = $this->_common_vars();
 
 			// get the category this way in case there is a language parameter
-			$id = uri_segment(3, FALSE, TRUE, TRUE);
+			$id = $this->fuel->blog->uri_segment(3);
 
 			if ($id == 'posts')
 			{
-				$author_id = (int) uri_segment(3, FALSE, TRUE, TRUE);
+				$author_id = (int) $this->fuel->blog->uri_segment(3);
 				
 				$author = $this->fuel->blog->get_user($author_id);
 				if (empty($author)) show_404();

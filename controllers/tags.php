@@ -12,7 +12,7 @@ class Tags extends Blog_base_controller {
 	function _remap($method = NULL)
 	{
 		// get the tag this way in case there is a language parameter
-		$tag = uri_segment(3, FALSE, TRUE, TRUE);
+		$tag = $this->fuel->blog->uri_segment(3);
 
 		$cache_id = fuel_cache_id();
 		if ($cache = $this->fuel->blog->get_cache($cache_id))
@@ -25,10 +25,10 @@ class Tags extends Blog_base_controller {
 			$vars['pagination'] = '';
 			
 			// check if RSS feed
-			if (uri_segment(3, FALSE, TRUE, TRUE) == 'feed')
+			if ($this->fuel->blog->uri_segment(3) == 'feed')
 			{
 				
-				$type = (uri_segment(4, FALSE, TRUE, TRUE) == 'atom') ? 'atom' : 'rss';
+				$type = ($this->fuel->blog->uri_segment(4) == 'atom') ? 'atom' : 'rss';
 				
 				// set the header type
 				$this->fuel->blog->feed_header();
@@ -39,9 +39,9 @@ class Tags extends Blog_base_controller {
 			else if (!empty($tag) AND $tag != 'index')
 			{
 
-				$year = (int) uri_segment(4, FALSE, TRUE, TRUE);
-				$month = (int) uri_segment(5, FALSE, TRUE, TRUE);
-				$day = (int) uri_segment(6, FALSE, TRUE, TRUE);
+				$year = (int) $this->fuel->blog->uri_segment(4);
+				$month = (int) $this->fuel->blog->uri_segment(5);
+				$day = (int) $this->fuel->blog->uri_segment(6);
 
 				$tag_obj = $this->fuel->blog->get_tag($tag);
 				if (!isset($tag_obj->id)) show_404();

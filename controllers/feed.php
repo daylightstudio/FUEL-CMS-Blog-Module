@@ -10,7 +10,7 @@ class Feed extends Blog_base_controller {
 	
 	function _remap($method)
 	{
-		if (uri_segment(3, FALSE, TRUE, TRUE) == 'atom')
+		if ($this->fuel->blog->uri_segment(3) == 'atom')
 		{
 			$this->atom();
 		}
