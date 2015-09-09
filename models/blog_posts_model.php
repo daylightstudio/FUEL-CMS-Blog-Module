@@ -65,7 +65,7 @@ class Blog_posts_model extends Base_module_model {
 		$this->db->select($select, FALSE);
 
 		$this->db->join($this->_tables['blog_users'], $this->_tables['blog_users'].'.id = '.$this->_tables['blog_posts'].'.author_id', 'left');
-		$this->db->join($this->_tables['fuel_users'], $this->_tables['blog_users'].'.fuel_user_id = '.$this->_tables['fuel_users'].'.id', 'left');
+		$this->db->join($this->_tables['fuel_users'], $this->_tables['blog_posts'].'.author_id = '.$this->_tables['fuel_users'].'.id', 'left');
 
 		$data = parent::list_items($limit, $offset, $col, $order, $just_count);
 		return $data;
@@ -358,11 +358,11 @@ class Blog_posts_model extends Base_module_model {
 		$CI =& get_instance();
 		if ($CI->fuel->language->has_multiple() AND $values['language'] != 'english')
 		{
-			return "{$language}/".$CI->fuel->blog->config('uri')."/{$year}/{$month}/{$day}/{$slug}";
+			return "{$language}/blog/{$year}/{$month}/{$day}/{$slug}";
 		}
 		else
 		{
-			return $CI->fuel->blog->config('uri')."/{$year}/{$month}/{$day}/{$slug}";
+			return "blog/{$year}/{$month}/{$day}/{$slug}";
 		}
 	}
 

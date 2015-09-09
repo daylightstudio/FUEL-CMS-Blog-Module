@@ -18,25 +18,26 @@ class Blog_users_model extends Base_module_model {
 	function list_items($limit = NULL, $offset = NULL, $col = 'name', $order = 'asc', $just_count = FALSE)
 	{
 		$this->db->select('fuel_blog_users.id, CONCAT(first_name, " ", last_name) as name, display_name, fuel_blog_users.active', FALSE);
-		$this->db->join('fuel_users', 'fuel_users.id = fuel_blog_users.fuel_user_id', 'left');
+		//$this->db->join('fuel_users', 'fuel_users.id = fuel_blog_users.fuel_user_id', 'left');
 		$data = parent::list_items($limit, $offset, $col, $order, $just_count);
 		return $data;
 	}
 
-	function options_list($key = 'fuel_user_id', $val = 'display_name', $where = array(), $order = 'display_name')
+	function options_list($key = 'fuel_user_id', $val = 'name', $where = array(), $order = 'first_name')
 	{
 		if (empty($key) OR $key == 'id')
 		{
 			//$key = $this->table_name.'.fuel_user_id';
 			$key = $this->table_name.'.id';
 		}
-		if (empty($key) OR empty($val) OR $val == 'display_name')
+		if (empty($key) OR empty($val) OR $val == 'name')
 		{
-			$val = 'IF(display_name = "", fuel_users.email, display_name) AS name';
-			$order = 'display_name';
+			//$val = 'IF(display_name = "", fuel_users.email, display_name) AS name';
+			$val = 'CONCAT(first_name, " ", last_name) as name';
+			$order = 'first_name';
 		}
 
-		$this->db->join('fuel_users', 'fuel_users.id = fuel_blog_users.fuel_user_id', 'left');
+		//$this->db->join('fuel_users', 'fuel_users.id = fuel_blog_users.fuel_user_id', 'left');
 		$return = parent::options_list($key, $val, $where, $order);
 		return $return;
 	}
@@ -60,7 +61,7 @@ class Blog_users_model extends Base_module_model {
 
 		$options = $CI->fuel_users_model->options_list();
 		$upload_image_path = assets_server_path($CI->fuel->blog->settings('asset_upload_path'));
-		$fields['fuel_user_id'] = array('label' => 'User', 'type' => 'select', 'options' => $options,  'module' => 'users');
+		$fields['fuel_user_id'] = array('label' => 'User', 'type' => 'select', 'options' => $options,  'module' => 'users', 'required' => TRUE);
 
 		$socialfields = $this->fuel->blog->config('social_media');
 		$fields['social_media_links'] = array('ignore_representative' => TRUE, 
@@ -84,12 +85,17 @@ class Blog_users_model extends Base_module_model {
 	
 	function _common_query($display_unpublished_if_logged_in = NULL)
 	{
+		parent::_common_query($display_unpublished_if_logged_in);
 		$this->db->select('fuel_blog_users.*, CONCAT(first_name, " ", last_name) as name, fuel_users.first_name, fuel_users.last_name, fuel_users.email, fuel_users.user_name, fuel_users.active as users_active', FALSE);
 		$this->db->select('posts_count'); // for temp table to get posts count
+		$this->db->group_by('fuel_users.id');
+	}
+
+	function _common_joins()
+	{
 		$this->db->join('fuel_users', 'fuel_users.id = fuel_blog_users.fuel_user_id', 'left');
 		$this->db->join('fuel_blog_posts', 'fuel_blog_posts.author_id = fuel_users.id', 'left'); // left or inner????
 		$this->db->join('(SELECT COUNT(*) AS posts_count, fuel_blog_posts.author_id FROM fuel_blog_posts GROUP BY fuel_blog_posts.author_id) AS temp', 'temp.author_id= fuel_users.id', 'left'); 
-		$this->db->group_by('fuel_users.id');
 	}
 
 }
