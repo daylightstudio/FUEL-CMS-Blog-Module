@@ -586,7 +586,7 @@ class Blog_post_model extends Base_module_record {
 	{
 		$CI =& get_instance();
 		$img = $this->get_image($type);
-		$path = $CI->fuel->blog->config('asset_upload_path').$img;
+		$path = trim($CI->fuel->blog->config('asset_upload_path'),'/').'/'.$img;
 
 		return assets_path($path);
 	}
