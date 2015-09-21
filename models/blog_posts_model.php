@@ -514,7 +514,7 @@ class Blog_post_model extends Base_module_record {
 		return $model->find_by_key($this->category_id);
 	}
 
-	function get_tags_linked($order = 'name asc', $join = ', ')
+	function get_tags_linked($order = 'name asc', $join = ', ', $link_params = array())
 	{
 		$tags = $this->tags;
 		if ( ! empty($tags))
@@ -522,12 +522,27 @@ class Blog_post_model extends Base_module_record {
 			$tags_linked = array();
 			foreach ($tags as $tag)
 			{
-				$tags_linked[] = anchor($this->_CI->fuel->blog->url($tag->get_url(FALSE)), $tag->name);
+				$tags_linked[] = anchor($this->_CI->fuel->blog->url($tag->get_url(FALSE)), $tag->name, $link_params);
 			}
 			$return = implode($tags_linked, $join);
 			return $return;
 		}
 		return NULL;
+	}
+
+	function get_category_link($link_params = array())
+	{
+		if ($this->has_category_id())
+		{
+			$category = $this->category;
+			if (isset($category->id))
+			{
+				return anchor($this->_CI->fuel->blog->url($category->get_url(FALSE)), $category->name, $link_params);
+			}
+		}
+
+		return NULL;
+
 	}
 
 	function get_author($all = FALSE)
