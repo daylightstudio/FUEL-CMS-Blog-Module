@@ -356,13 +356,14 @@ class Blog_posts_model extends Base_module_model {
 	{
 		extract($values);
 		$CI =& get_instance();
+		$base_uri = $this->fuel->blog->uri();
 		if ($CI->fuel->language->has_multiple() AND $values['language'] != 'english')
 		{
-			return "{$language}/blog/{$year}/{$month}/{$day}/{$slug}";
+			return "{$language}/".$base_uri."{$year}/{$month}/{$day}/{$slug}";
 		}
 		else
 		{
-			return "blog/{$year}/{$month}/{$day}/{$slug}";
+			return $base_uri."{$year}/{$month}/{$day}/{$slug}";
 		}
 	}
 
