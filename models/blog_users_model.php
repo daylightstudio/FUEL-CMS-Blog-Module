@@ -86,16 +86,16 @@ class Blog_users_model extends Base_module_model {
 	function _common_query($display_unpublished_if_logged_in = NULL)
 	{
 		parent::_common_query($display_unpublished_if_logged_in);
-		$this->db->select('fuel_blog_users.*, CONCAT(first_name, " ", last_name) as name, fuel_users.first_name, fuel_users.last_name, fuel_users.email, fuel_users.user_name, fuel_users.active as users_active', FALSE);
+		$this->db->select($this->_tables['blog_users'].'.*, CONCAT(first_name, " ", last_name) as name, '.$this->_tables['fuel_users'].'.first_name, '.$this->_tables['fuel_users'].'.last_name, '.$this->_tables['fuel_users'].'.email, '.$this->_tables['fuel_users'].'.user_name, '.$this->_tables['fuel_users'].'.active as users_active', FALSE);
 		$this->db->select('posts_count'); // for temp table to get posts count
-		$this->db->group_by('fuel_users.id');
+		$this->db->group_by($this->_tables['fuel_users'].'.id');
 	}
 
 	function _common_joins()
 	{
-		$this->db->join('fuel_users', 'fuel_users.id = fuel_blog_users.fuel_user_id', 'left');
-		$this->db->join('fuel_blog_posts', 'fuel_blog_posts.author_id = fuel_users.id', 'left'); // left or inner????
-		$this->db->join('(SELECT COUNT(*) AS posts_count, fuel_blog_posts.author_id FROM fuel_blog_posts GROUP BY fuel_blog_posts.author_id) AS temp', 'temp.author_id= fuel_users.id', 'left'); 
+		$this->db->join($this->_tables['fuel_users'], $this->_tables['fuel_users'].'.id = '.$this->_tables['blog_users'].'.fuel_user_id', 'left');
+		//$this->db->join('fuel_blog_posts', $this->_tables['blog_posts'].'.author_id = '.$this->_tables['fuel_users'].'.id', 'left'); // left or inner????
+		$this->db->join('(SELECT COUNT(*) AS posts_count, '.$this->_tables['blog_posts'].'.author_id FROM '.$this->_tables['blog_posts'].' GROUP BY '.$this->_tables['blog_posts'].'.author_id) AS temp', 'temp.author_id= fuel_users.id', 'left'); 
 	}
 
 }
@@ -126,7 +126,7 @@ class Blog_user_model extends Base_module_record {
 	function get_posts()
 	{
 		$params['order_by'] ='publish_date desc';
-		return $this->lazy_load(array('fuel_blog_posts.author_id' => $this->fuel_user_id, 'fuel_blog_posts.published' => 'yes'), array(BLOG_FOLDER => 'blog_posts_model'), TRUE, $params);
+		return $this->lazy_load(array($this->_tables['blog_posts'].'.author_id' => $this->fuel_user_id, $this->_tables['blog_posts'].'.published' => 'yes'), array(BLOG_FOLDER => 'blog_posts_model'), TRUE, $params);
 	}
 
 	function get_posts_url($full_path = TRUE)
