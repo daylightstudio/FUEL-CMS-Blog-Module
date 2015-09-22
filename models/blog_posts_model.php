@@ -45,6 +45,11 @@ class Blog_posts_model extends Base_module_model {
 		// set the filter again here just in case the table names are different
 		$this->filters = array('title', 'content_filtered', $this->_tables['fuel_users'].'.first_name', $this->_tables['fuel_users'].'.last_name');
 
+		if ($this->fuel->blog->config('limit_to_user'))
+		{
+			$this->limit_to_user_field = 'author_id';
+		}
+
 	}
 	
 	// used for the FUEL admin
