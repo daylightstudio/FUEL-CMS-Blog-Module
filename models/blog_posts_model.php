@@ -346,7 +346,10 @@ class Blog_posts_model extends Base_module_model {
 		$this->db->join($this->_tables['blog_categories'], $this->_tables['blog_categories'].'.id = '.$this->_tables['blog_posts'].'.category_id', 'left');
 		$this->db->join($this->_tables['blog_relationships'], $rel_join, 'left');
 		$this->db->join($this->_tables['blog_users'], $this->_tables['blog_users'].'.fuel_user_id = '.$this->_tables['blog_posts'].'.author_id', 'left');
-		$this->db->join($this->_tables['fuel_users'], $this->_tables['fuel_users'].'.id = '.$this->_tables['blog_posts'].'.author_id', 'left');
+		if (empty($this->limit_to_user_field))
+		{
+			$this->db->join($this->_tables['fuel_users'], $this->_tables['fuel_users'].'.id = '.$this->_tables['blog_posts'].'.author_id', 'left');	
+		}
 		$this->db->join($this->_tables['blog_tags'], $this->_tables['blog_tags'].'.id = '.$this->_tables['blog_relationships'].'.foreign_key', 'left');
 		$this->db->group_by($this->_tables['blog_posts'].'.id');
 
