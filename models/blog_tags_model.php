@@ -57,9 +57,9 @@ class Blog_tags_model extends Base_module_model {
 		}
 	}
 
-	function form_fields($values = array())
+	function form_fields($values = array(), $related = array())
 	{
-		$fields = parent::form_fields($values);
+		$fields = parent::form_fields($values, $related);
 
 		// set language field
 		$fields['language'] = array('type' => 'select', 'options' => $this->fuel->language->options(), 'value' => $this->fuel->language->default_option(), 'hide_if_one' => TRUE);
@@ -67,7 +67,7 @@ class Blog_tags_model extends Base_module_model {
 		return $fields;
 	}
 	
-	function _common_query()
+	function _common_query($display_unpublished_if_logged_in = NULL)
 	{
 		parent::_common_query();
 		$this->db->join($this->_tables['fuel_categories'], $this->_tables['fuel_categories'].'.id = '.$this->_tables['fuel_tags'].'.category_id', 'LEFT');
