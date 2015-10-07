@@ -126,7 +126,7 @@ class Blog_user_model extends Base_module_record {
 	function get_posts()
 	{
 		$params['order_by'] ='publish_date desc';
-		return $this->lazy_load(array($this->_tables['blog_posts'].'.author_id' => $this->fuel_user_id, $this->_tables['blog_posts'].'.published' => 'yes'), array(BLOG_FOLDER => 'blog_posts_model'), TRUE, $params);
+		return $this->lazy_load(array($this->_parent_model->tables('blog_posts').'.author_id' => $this->fuel_user_id, $this->_parent_model->tables('blog_posts').'.published' => 'yes'), array(BLOG_FOLDER => 'blog_posts_model'), TRUE, $params);
 	}
 
 	function get_posts_url($full_path = TRUE)
