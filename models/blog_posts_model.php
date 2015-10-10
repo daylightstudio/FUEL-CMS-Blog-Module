@@ -254,6 +254,7 @@ class Blog_posts_model extends Base_module_model {
 						'list_image',
 						'thumbnail_image',
 						'Settings', 
+						'allow_comments',
 						'sticky',
 						'publish_date',
 						'Meta', 
