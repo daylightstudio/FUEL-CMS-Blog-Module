@@ -157,5 +157,5 @@ class Blog_user_model extends Base_module_record {
 		}
 		return '';
 	}
-	
+
 }
