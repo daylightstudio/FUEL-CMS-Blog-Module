@@ -144,6 +144,7 @@ $lang['form_label_cache_ttl'] = 'Cache Time to Live';
 $lang['form_label_asset_upload_path'] = 'Asset Upload Path';
 $lang['form_label_per_page'] = 'Per Page';
 $lang['form_label_page_title_separator'] = 'Page Title Separator';
+$lang['form_label_email_notify_comment_reply'] = 'E-mail notifications on comment replies';
 
 
 /*

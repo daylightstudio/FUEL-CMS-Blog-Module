@@ -56,6 +56,7 @@ $config['blog']['stopforumspam'] = array(
 	'ip_threshold_ignore'    => 20,
 	'email_threshold_ignore' => 50,
 );
+$config['blog']['email_notify_comment_reply'] = TRUE;
 
 // used for Settings area
 $config['blog']['settings']['title'] = array();
@@ -79,6 +80,7 @@ $config['blog']['settings']['page_title_separator'] = array('value' => '&laquo;'
 $config['blog']['settings']['multiple_authors'] = array('type' => 'checkbox', 'value' => '1');
 $config['blog']['settings']['limit_to_user'] = array('type' => 'checkbox', 'value' => '1');
 $config['blog']['settings']['social_media'] = array('type' => 'keyval');
+$config['blog']['settings']['email_notify_comment_reply'] = array('type' => 'checkbox', 'value' => '1');
 
 
 // the cache folder to hold blog cache files

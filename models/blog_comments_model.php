@@ -116,7 +116,9 @@ class Blog_comments_model extends Base_module_model {
 			}
 			$fields['replies'] = array('displayonly' => TRUE, 'value' => implode('<br /><br />', $reply_arr));
 			
-			if (isset($post->id) AND $post->author_id == $CI->fuel->auth->user_data('id') OR $CI->fuel->auth->is_super_admin())
+			// don't show the form if the email_notify_comment_reply setting is off
+			// on_after_save checks if reply_notify has been posted before sending an email, so this will also stop the email from firing because of that
+			if ($CI->fuel->blog->config('email_notify_comment_reply') AND isset($post->id) AND $post->author_id == $CI->fuel->auth->user_data('id') OR $CI->fuel->auth->is_super_admin())
 			{
 				$fields['reply'] = array('type' => 'textarea');
 				$notify_options = array('Commentor' => lang('blog_comment_notify_option2'), 'All' => lang('blog_comment_notify_option1'), 'None' => lang('blog_comment_notify_option3'));

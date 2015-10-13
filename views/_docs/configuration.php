@@ -26,6 +26,7 @@
 			<li><strong>page_title_separator</strong></li>
 			<li><strong>multiple_authors</strong></li>
 			<li><strong>social_media</strong></li>
+			<li><strong>email_notify_comment_reply</strong></li>
 		</ul>
 	</li>
 </ul>
