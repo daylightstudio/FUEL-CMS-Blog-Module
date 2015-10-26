@@ -91,14 +91,14 @@ class Blog extends Blog_base_controller {
 
 				$config = $this->fuel->blog->config('pagination');
 				$config['uri_segment'] = count(explode('/', uri_path(FALSE, 0 , FALSE)));
-				$offset = uri_segment(3, FALSE, TRUE);
+				$offset = ((uri_segment(3, 1, TRUE) - 1) * $limit);
 
 				$this->config->set_item('enable_query_strings', FALSE);
 				$config['base_url'] = $this->fuel->blog->url('page/');
 				$config['page_query_string'] = FALSE;
 				$config['per_page'] = $limit;
 				$config['num_links'] = 2;
-
+				$config['use_page_numbers'] = TRUE;
 				
 				if (!empty($offset))
 				{
