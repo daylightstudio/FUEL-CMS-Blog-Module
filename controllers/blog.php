@@ -28,7 +28,7 @@ class Blog extends Blog_base_controller {
 		else if ($this->fuel->blog->uri_segment(2) === 'id' && $this->fuel->blog->uri_segment(3))
 		{
 			$view_by = 'slug';
-			$slug = (int) $this->fuel->blog->uri_segment(3);
+			$slug = $this->fuel->blog->uri_segment(3);
 			$post = $this->fuel->blog->get_post($slug);
 			if (isset($post->id))
 			{
