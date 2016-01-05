@@ -40,6 +40,7 @@ each main view file as well. You could even load in directly any of the blog's m
 	<li><strong>archives.php</strong> - displays side menu links for older blog posts</li>
 	<li><strong>author.php</strong> - displays the various authors of the blogs and number of posts associated with them</li>
 	<li><strong>categories.php</strong> - displays side menu links of blog categories</li>
+	<li><strong>comment.php</strong> - displays a single comment</li>
 	<li><strong>comment_form.php</strong> - displays the comment form for a post</li>
 	<li><strong>comment_thanks.php</strong> - displays the thanks information after a successful comment has been made on a post</li>
 	<li><strong>header.php</strong> - the HTML header content which normally includes the RSS feed and css links</li>

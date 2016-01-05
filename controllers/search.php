@@ -13,7 +13,7 @@ class Search extends Blog_base_controller {
 		$this->load->library('pagination');
 		$this->load->helper('text');
 		
-		$q = $this->uri->segment(3);
+		$q = $this->fuel->blog->uri_segment(3);
 		$use_get = FALSE;
 		
 		if (empty($q))
@@ -36,7 +36,7 @@ class Search extends Blog_base_controller {
 			$limit = $this->fuel->blog->config('per_page');
 			if ($use_get)
 			{
-				$this->config->set_item('enable_query_strings', TRUE);
+				//$this->config->set_item('enable_query_strings', TRUE);
 				$config['base_url'] = $this->fuel->blog->url('search?q='.$q);
 			}
 			else

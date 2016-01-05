@@ -6,7 +6,7 @@
 */
 $config['nav']['blog'] = array(
 	'blog/posts' => lang('module_blog_posts'), 
-	'blog/categories' => lang('module_blog_categories'),  
+	//'blog/categories' => lang('module_blog_categories'),  
 	'blog/comments' => lang('module_blog_comments'), 
 	'blog/links' => lang('module_blog_links'), 
 	'blog/users' => lang('module_blog_authors'), 
@@ -42,7 +42,21 @@ $config['blog']['asset_upload_path'] = 'images/blog/';
 $config['blog']['per_page'] = 10;
 $config['blog']['page_title_separator'] = '&laquo;';
 $config['blog']['multiple_authors'] = FALSE;
-
+$config['blog']['limit_to_user'] = FALSE;
+$config['blog']['social_media'] = array('twitter' => 'Twitter', 'linkedin' => 'LinkedIn', 'rdio' => 'Rdio', 'googleplus' => 'Google+', 'instagram' => 'Instagram', 'pinterest' => 'Pinterest', 'flickr' => 'Flickr');
+$config['blog']['image_sizes'] = array(
+	'main'      => array('width' => 515, 'resize_method' => 'resize_and_crop', 'resize_and_crop' => TRUE), 
+	'list'      => array('width' => 300, 'height' => 175, 'resize_method' => 'resize_and_crop', 'resize_and_crop' => TRUE), 
+	'thumbnail' => array('width' => 100, 'height' => 100, 'resize_method' => 'resize_and_crop', 'resize_and_crop' => TRUE),  
+	'avatar'    => array('width' => 100, 'height' => 95, 'resize_method' => 'resize_and_crop', 'resize_and_crop' => TRUE)
+);
+$config['blog']['stopforumspam'] = array(
+	'ip_threshold_flag'      => 5,
+	'email_threshold_flag'   => 20,
+	'ip_threshold_ignore'    => 20,
+	'email_threshold_ignore' => 50,
+);
+$config['blog']['email_notify_comment_reply'] = TRUE;
 
 // used for Settings area
 $config['blog']['settings']['title'] = array();
@@ -64,6 +78,9 @@ $config['blog']['settings']['asset_upload_path'] = array('default' => 'images/bl
 $config['blog']['settings']['per_page'] = array('value' => 10, 'size' => 3);
 $config['blog']['settings']['page_title_separator'] = array('value' => '&laquo;', 'size' => 10);
 $config['blog']['settings']['multiple_authors'] = array('type' => 'checkbox', 'value' => '1');
+$config['blog']['settings']['limit_to_user'] = array('type' => 'checkbox', 'value' => '1');
+$config['blog']['settings']['social_media'] = array('type' => 'keyval');
+$config['blog']['settings']['email_notify_comment_reply'] = array('type' => 'checkbox', 'value' => '1');
 
 
 // the cache folder to hold blog cache files
@@ -106,7 +123,8 @@ $config['blog']['pagination'] = array(
 
 // tables for blog
 $config['tables']['blog_posts'] = 'fuel_blog_posts';
-$config['tables']['blog_categories'] = 'fuel_blog_categories';
+$config['tables']['blog_categories'] = 'fuel_categories';
+$config['tables']['blog_tags'] = 'fuel_tags';
 $config['tables']['blog_users'] = 'fuel_blog_users';
 $config['tables']['blog_comments'] = 'fuel_blog_comments';
 $config['tables']['blog_links'] = 'fuel_blog_links';

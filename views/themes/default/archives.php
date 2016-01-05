@@ -1,4 +1,4 @@
-<h1>Archives</h1>
+<h1><?=lang('blog_archives')?></h1>
 <?php if (!empty($archives_by_month)) : ?>
 <?php foreach($archives_by_month as $month => $archives) : 
 	$month_str = date('F Y', strtotime(str_replace('/', '-', $month).'-01'));

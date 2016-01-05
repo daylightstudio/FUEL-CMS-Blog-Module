@@ -4,8 +4,8 @@
 	<subtitle><?php echo $description; ?></subtitle>
 	<link href="<?php echo $link; ?>"/>
 	<link rel="alternate" type="text/html" href="<?php echo $link; ?>" />
-	<link rel="self" type="application/atom+xml" href="<?php echo $this->fuel_blog->feed('atom')?>" />
-	<id><?php echo $this->fuel_blog->feed('atom')?></id>
+	<link rel="self" type="application/atom+xml" href="<?php echo $this->fuel->blog->feed('atom')?>" />
+	<id><?php echo $this->fuel->blog->feed('atom')?></id>
 	<updated><?php echo standard_date('DATE_ATOM', strtotime($last_updated)); ?></updated> 
 
 	<?php if ($posts){ ?> 
@@ -14,14 +14,14 @@
 	<entry>
 		<title><?php echo $post->title; ?></title>
 	    <link rel="alternate" type="text/html" href="<?php echo $post->url; ?>" />
-		<id>tag:<?php echo $this->fuel_blog->domain() ?>,<?php echo date('Y-m-d', strtotime($post->post_date)); ?>:article/<?php echo $post->permalink; ?></id>
+		<id>tag:<?php echo $this->fuel->blog->domain() ?>,<?php echo date('Y-m-d', strtotime($post->publish_date)); ?>:article/<?php echo $post->permalink; ?></id>
 	
-		<published><?php echo standard_date('DATE_ATOM', strtotime($post->post_date)); ?></published>
+		<published><?php echo standard_date('DATE_ATOM', strtotime($post->publish_date)); ?></published>
 		<summary><![CDATA[<?php echo html_entity_decode(strip_tags(word_limiter($post->excerpt, 100, '...')), ENT_COMPAT, 'UTF-8'); ?>]]></summary>
 		<author>
 			<name><?php echo $post->author_name; ?></name>
 		</author>
-		<content type="html" xml:lang="<?php echo $this->fuel_blog->language(TRUE)?>" xml:base="<?php echo $link; ?>/article">
+		<content type="html" xml:lang="<?php echo $this->fuel->blog->language(TRUE)?>" xml:base="<?php echo $link; ?>/article">
 			<![CDATA[<?php echo strip_javascript($post->excerpt_formatted); ?>]]> 
 		</content>
 		<updated><?php echo standard_date('DATE_ATOM', strtotime($post->last_modified)); ?></updated>

@@ -8,17 +8,21 @@ class Blog_posts_model extends Base_module_model {
 	public $category = null;
 	public $required = array('title', 'content');
 	public $hidden_fields = array('content_filtered');
+	public $filter_join = 'and';
 	public $filters = array('title', 'content_filtered', 'fuel_users.first_name', 'fuel_users.last_name');
 	public $unique_fields = array('slug');
 	public $linked_fields = array('slug' => array('title' => 'url_title'));
 	public $display_unpublished_if_logged_in = TRUE; // determines whether to display unpublished content on the front end if you are logged in to the CMS
+	public $boolean_fields = array('sticky');
+	public $foreign_keys = array('category_id' => array(FUEL_FOLDER => 'fuel_categories_model', 'where' => '(context = "blog" OR context = "") AND language = "{language}" OR language = ""'));
 
 	public $has_many = array(
-		'categories' => array(
-			'model' => array(BLOG_FOLDER => 'blog_categories')
+		'tags' => array(
+			'model' => array(BLOG_FOLDER => 'blog_tags_model'),
+			//'where' => 'fuel_categories.context = "blog"', // added in constructor so that the the table name isn't hard coded in query
 			),
 		'related_posts' => array(
-			'model' => array(FUEL_FOLDER => 'blog_posts')
+			'model' => array(BLOG_FOLDER => 'blog_posts')
 			), 
 		'blocks' => array(
 			'model' => array(FUEL_FOLDER => 'fuel_blocks')
@@ -35,25 +39,38 @@ class Blog_posts_model extends Base_module_model {
 			$authors = array('authors' => array('model' => array(BLOG_FOLDER => 'blog_users')));
 			$this->has_many = array_merge($authors, $this->has_many);
 		}
+		$this->has_many['tags']['where'] = '(FIND_IN_SET("blog", '.$this->_tables['fuel_tags'].'.context) OR '.$this->_tables['fuel_tags'].'.context="")';
+		$this->foreign_keys['category_id']['where'] = '(FIND_IN_SET("blog", '.$this->_tables['fuel_categories'].'.context) OR '.$this->_tables['fuel_categories'].'.context="")';
+	
+		// set the filter again here just in case the table names are different
+		$this->filters = array('title', 'content_filtered', $this->_tables['fuel_users'].'.first_name', $this->_tables['fuel_users'].'.last_name');
+
+		if ($this->fuel->blog->config('limit_to_user'))
+		{
+			$this->limit_to_user_field = 'author_id';
+		}
 
 	}
 	
 	// used for the FUEL admin
-	function list_items($limit = NULL, $offset = NULL, $col = 'post_date', $order = 'desc', $just_count = FALSE)
+	function list_items($limit = NULL, $offset = NULL, $col = 'publish_date', $order = 'desc', $just_count = FALSE)
 	{
-		// set the filter again here just in case the table names are different
-		$this->filters = array('title', 'content_filtered', $this->_tables['fuel_users'].'.first_name', $this->_tables['fuel_users'].'.last_name');
 		$CI =& get_instance();
 		if ($CI->fuel->blog->config('multiple_authors'))
 		{
-			$this->db->select($this->_tables['blog_posts'].'.id, title, '.$this->_tables['blog_posts'].'.post_date, '.$this->_tables['blog_posts'].'.published', FALSE);
+			$select = $this->_tables['blog_posts'].'.id, title, '.$this->_tables['blog_posts'].'.publish_date';
 		}
 		else
 		{
-			$this->db->select($this->_tables['blog_posts'].'.id, '.$this->_tables['blog_posts'].'.title, IF('.$this->_tables['fuel_users'].'.first_name IS NULL, display_name, CONCAT('.$this->_tables['fuel_users'].'.first_name, " ", '.$this->_tables['fuel_users'].'.last_name)) AS author, '.$this->_tables['blog_posts'].'.post_date, '.$this->_tables['blog_posts'].'.published', FALSE);
+			$select = $this->_tables['blog_posts'].'.id, '.$this->_tables['blog_posts'].'.title, IF('.$this->_tables['fuel_users'].'.first_name IS NULL, display_name, CONCAT('.$this->_tables['fuel_users'].'.first_name, " ", '.$this->_tables['fuel_users'].'.last_name)) AS author, '.$this->_tables['blog_posts'].'.publish_date';
 		}
-		$this->db->join($this->_tables['fuel_users'], $this->_tables['fuel_users'].'.id = '.$this->_tables['blog_posts'].'.author_id', 'left');
+
+		if ($CI->fuel->language->has_multiple()) $select .= ', '.$this->_tables['blog_posts'].'.language';
+		$select .= ', sticky, '.$this->_tables['blog_posts'].'.published';
+		$this->db->select($select, FALSE);
+
 		$this->db->join($this->_tables['blog_users'], $this->_tables['blog_users'].'.id = '.$this->_tables['blog_posts'].'.author_id', 'left');
+		$this->db->join($this->_tables['fuel_users'], $this->_tables['blog_posts'].'.author_id = '.$this->_tables['fuel_users'].'.id', 'left');
 
 		$data = parent::list_items($limit, $offset, $col, $order, $just_count);
 		return $data;
@@ -61,46 +78,23 @@ class Blog_posts_model extends Base_module_model {
 	
 	function tree($just_published = FALSE)
 	{
-		$CI =& get_instance();
-		$CI->load->module_model(BLOG_FOLDER, 'blog_categories_model');
-		$CI->load->module_model(FUEL_FOLDER, 'fuel_relationships_model');
-		$CI->load->helper('array');
-
-		$return = array();
-		
-		$where = ($just_published) ? $where = array('published' => 'yes') : array();
-		$categories = $CI->blog_categories_model->find_all($where, 'precedence asc');
-		$posts_to_categories = $CI->fuel_relationships_model->find_by_candidate($this->_tables['blog_posts'], $this->_tables['blog_categories']);
-		if (empty($posts_to_categories)) return array();
-		
-		foreach($categories as $category)
-		{
-			$return[$category->id] = array('id' => $category->id, 'parent_id' => 0, 'label' => $category->name, 'location' => fuel_url('blog/categories/edit/'.$category->id), 'precedence' => $category->precedence);
-		}
-		
-		foreach($posts_to_categories as $val)
-		{
-			$attributes = ($val->candidate_published == 'no') ? array('class' => 'unpublished', 'title' => 'unpublished') : NULL;
-			$return['p_'.$val->candidate_id.'_c'.$val->foreign_id] = array('label' => $val->candidate_title, 'parent_id' => $val->foreign_id, 'location' => fuel_url('blog/posts/edit/'.$val->candidate_id), 'attributes' => $attributes, 'precedence' => 100000);
-		}
-		$return = array_sorter($return, 'precedence', 'asc');
-		return $return;
+		return $this->_tree('foreign_keys');
 	}
 	
-	function form_fields($values = array())
+	function form_fields($values = array(), $related = array())
 	{
 		$fields = parent::form_fields($values);
 		$CI =& get_instance();
 		
-		$CI->load->module_model(BLOG_FOLDER, 'blog_users_model');
-		
+		$blog_users = $CI->fuel->blog->model('blog_users');
 		$blog_config = $CI->fuel->blog->config();
 		
-		$user_options = $CI->blog_users_model->options_list();
+		$user_options = $blog_users->options_list();
 		$user = $this->fuel->auth->user_data();
 		
 		$user_value = (!empty($values['author_id'])) ? $values['author_id'] : $user['id'];
 		$author_comment = $fields['author_id']['comment'];
+
 		$fields['author_id'] = array('label' => 'Author', 'type' => 'select', 'options' => $user_options, 'first_option' => 'Select an author...', 'value' => $user_value, 'comment' => $author_comment);
 		if (!isset($values['allow_comments']))
 		{
@@ -126,9 +120,9 @@ class Blog_posts_model extends Base_module_model {
 		}
 		$fields['title']['style'] = 'width: 500px;';
 		$fields['slug']['style'] = 'width: 500px;';
+		$fields['language'] = array('type' => 'select', 'options' => $this->fuel->language->options(), 'value' => $this->fuel->language->default_option(), 'hide_if_one' => TRUE);
 		$fields['content']['style'] = 'width: 680px; height: 400px';
 		$fields['excerpt']['style'] = 'width: 680px;';
-		$fields['published']['order'] = 10000;
 		
 		if (!is_true_val($CI->fuel->blog->config('allow_comments')))
 		{
@@ -139,20 +133,37 @@ class Blog_posts_model extends Base_module_model {
 		$fields['date_added']['type'] = 'hidden'; // so it will auto add
 		//$fields['date_added']['type'] = 'datetime'; // so it will auto add
 		$fields['last_modified']['type'] = 'hidden'; // so it will auto add
-		$fields['slug']['order'] = 2.5; // for older versions where the schema order was different
 		
-		$fields['main_image']['folder'] = $CI->fuel->blog->config('asset_upload_path');
-		$fields['main_image']['img_styles'] = 'float: left; width: 200px;';
-		
-		$fields['list_image']['folder'] = $CI->fuel->blog->config('asset_upload_path');
-		$fields['list_image']['img_styles'] = 'float: left; width: 100px;';
+		$image_sizes = $CI->fuel->blog->config('image_sizes');
+		$image_types = array('main', 'list', 'thumbnail');
+		foreach($image_types as $type)
+		{
+			if (!empty($image_sizes[$type]))
+			{
+				$fields[$type.'_image'] = array_merge($fields[$type.'_image'], $image_sizes[$type]);
+			}
+			$fields[$type.'_image']['folder'] = $CI->fuel->blog->config('asset_upload_path');
 
-		$fields['thumbnail_image']['folder'] = $CI->fuel->blog->config('asset_upload_path');
+			if (!empty($image_sizes[$type]['width']) OR !empty($image_sizes[$type]['height']))
+			{
+				$image_comment = 'Recommended dimensions are ';
+				if (!empty($image_sizes[$type]['width'])) $image_comment .= $image_sizes[$type]['width'].'w';
+				if (!empty($image_sizes[$type]['height'])) $image_comment .= ' x ';
+				if (!empty($image_sizes[$type]['height'])) $image_comment .= $image_sizes[$type]['height'].'h';
+				$fields[$type.'_image']['comment'] = $image_comment;
+			}
+
+			$fields[$type.'_image']['multiple'] = FALSE;
+		}
+		$fields['main_image']['img_styles'] = 'float: left; width: 200px;';
+		$fields['list_image']['img_styles'] = 'float: left; width: 100px;';
 		$fields['thumbnail_image']['img_styles'] = 'float: left; width: 60px;';
 
-		if (empty($fields['post_date']['value']))
+
+
+		if (empty($fields['publish_date']['value']))
 		{
-			$fields['post_date']['value'] = datetime_now();
+			$fields['publish_date']['value'] = datetime_now();
 		}
 
 		$fields['blocks']['sorting'] = TRUE;
@@ -167,6 +178,104 @@ class Blog_posts_model extends Base_module_model {
 		{
 			unset($fields['author_id']);
 		}
+
+		// explicitly set labels for related fields to use the lang values
+		$fields['category_id']['label'] = lang('form_label_category');
+		$fields['tags']['label'] = lang('form_label_tags');
+		$fields['related_posts']['label'] = lang('form_label_related_posts');
+		$fields['blocks']['label'] = lang('form_label_blocks');
+
+		$fields['category_id']['comment'] = lang('form_category_comment');
+		$fields['tags']['comment'] = lang('form_tags_comment');
+		if ($CI->fuel->language->has_multiple())
+		{
+			$fields['tags']['type'] = 'dependent';
+			$fields['tags']['depends_on'] = 'language';
+			$fields['tags']['url'] = fuel_url('tags/ajax/options');
+			$fields['tags']['multiple'] = TRUE;
+
+			$fields['related_posts']['type'] = 'dependent';
+			$fields['related_posts']['depends_on'] = 'language';
+			$fields['related_posts']['url'] = fuel_url('blog/posts/ajax/options');
+			if (!empty($values['id']))
+			{
+				$fields['related_posts']['additional_ajax_data'] = array('exclude' => $values['id']);	
+			}
+			
+			
+			$fields['related_posts']['multiple'] = TRUE;
+
+			$fields['blocks']['type'] = 'dependent';
+			$fields['blocks']['depends_on'] = 'language';
+			$fields['blocks']['url'] = fuel_url('blocks/ajax/options');
+			$fields['blocks']['multiple'] = TRUE;
+		}
+
+		$fields['page_title'] = array('size' => 100, 'comment' => 'If no page title is provided, it will default to the title of the blog post');
+		$fields['meta_description'] = array('type' => 'textarea', 'class' => 'no_editor', 'rows' => 3);
+		$fields['meta_keywords'] = array('type' => 'textarea', 'class' => 'no_editor', 'rows' => 3);
+		$fields['canonical'] = array('size' => 100, 'comment' => 'This field is used to help prevent duplicate content issues for search engines');
+
+		$fields['Open Graph'] = array('type' => 'section');
+		$fields['og_title'] = array('size' => 100);
+		$fields['og_description'] = array('size' => 100);
+		$fields['og_image'] = array('img_styles' => 'float: left; width: 100px;', 'folder' => $CI->fuel->blog->config('asset_upload_path'));
+
+		//$fields['category_id']['add_params'] = 'context=blog';
+
+		// find the first category with a context of "blog"
+		$blog_category = current($CI->fuel->categories->find_by_context('blog'));
+		if (isset($blog_category->id))
+		{
+			$fields['tags']['add_params'] = 'category_id='.$blog_category->id;	
+		}
+		//$fields['tags']['add_params'] = 'context=blog';
+		$fields['tags']['module'] = 'tags'; // must be set here since blog_tags is used as the module
+		
+		// setup tabs
+		$fields['Content'] = array('type' => 'fieldset', 'class' => 'tab');
+		$fields['Images'] = array('type' => 'fieldset', 'class' => 'tab');
+		$fields['Settings'] = array('type' => 'fieldset', 'class' => 'tab');
+		$fields['Meta'] = array('type' => 'fieldset', 'class' => 'tab');
+		$fields['Associations'] = array('type' => 'fieldset', 'class' => 'tab');
+
+		// now set the order
+		$order = array(	'Content', 
+						'title',
+						'slug',
+						'language',
+						'content',
+						'formatting',
+						'excerpt',
+						'author_id',
+						'published',
+						'Images', 
+						'main_image',
+						'list_image',
+						'thumbnail_image',
+						'Settings', 
+						'allow_comments',
+						'sticky',
+						'publish_date',
+						'Meta', 
+						'page_title',
+						'meta_description',
+						'meta_keywords',
+						'canonical',
+						'Open Graph',
+						'og_title',
+						'og_description',
+						'og_image',
+						'Associations', 
+						'category_id',
+						'tags',
+						'related_posts',
+						'blocks',
+						);
+		foreach($order as $key => $val)
+		{
+			$fields[$val]['order'] = $key + 1;
+		}
 		
 		return $fields;
 	}
@@ -175,19 +284,19 @@ class Blog_posts_model extends Base_module_model {
 	{
 		$values['slug'] = (empty($values['slug']) && !empty($values['title'])) ? url_title($values['title'], 'dash', TRUE) : url_title($values['slug'], 'dash');
 		
-		if (empty($values['post_date']))
+		if (empty($values['publish_date']))
 		{
-			$values['post_date'] = datetime_now();
+			$values['publish_date'] = datetime_now();
 		}
 		
 		// create author if it doesn't exists'
 		$CI =& get_instance();
 		$id = (!empty($values['author_id'])) ? $values['author_id'] : $CI->fuel->auth->user_data('id');
-		$CI->load->module_model(BLOG_FOLDER, 'blog_users_model');
-		$author = $CI->blog_users_model->find_one(array('fuel_user_id' => $id));
+		$blog_users = $CI->fuel->blog->model('blog_users');
+		$author = $blog_users->find_one(array('fuel_user_id' => $id));
 		if (!isset($author->id))
 		{
-			$author = $CI->blog_users_model->create();
+			$author = $blog_users->create();
 			$author->fuel_user_id = $CI->fuel->auth->user_data('id');
 
 			// determine a display name if one isn't provided'
@@ -217,49 +326,51 @@ class Blog_posts_model extends Base_module_model {
 	
 	function on_after_save($values)
 	{
-
-		// if no category is selected, then we set it to the Uncategorized
-		$saved_data = $this->normalized_save_data;
-		if (empty($saved_data['categories']))
-		{
-			$this->normalized_save_data['categories'] = array(1);
-		}
-
-		$values = parent::on_after_save($values);
-
-		$CI =& get_instance();
-
+		parent::on_after_save($values);
+		
 		// remove cache
+		$CI =& get_instance();
 		$CI->fuel->blog->remove_cache();
 
 		return $values;
 	}
-
-	function ajax_options()
-	{
-		$options = $this->options_list();
-		$str = '';
-		foreach($options as $key => $val)
-		{
-			$str .= "<option value=\"".$key."\" label=\"".$val."\">".$val."</option>\n";
-		}
-		return $str;
-	}
 	
-	function _common_query()
+	function _common_query($display_unpublished_if_logged_in = NULL)
 	{
 		parent::_common_query();
 		
 		$this->db->select($this->_tables['blog_posts'].'.*, '.$this->_tables['blog_users'].'.display_name, CONCAT('.$this->_tables['fuel_users'].'.first_name, " ", '.$this->_tables['fuel_users'].'.last_name) as author_name', FALSE);
-		$this->db->select('YEAR('.$this->_tables['blog_posts'].'.post_date) as year, DATE_FORMAT('.$this->_tables['blog_posts'].'.post_date, "%m") as month, DATE_FORMAT('.$this->_tables['blog_posts'].'.post_date, "%d") as day,', FALSE);
+		$this->db->select('YEAR('.$this->_tables['blog_posts'].'.publish_date) as year, DATE_FORMAT('.$this->_tables['blog_posts'].'.publish_date, "%m") as month, DATE_FORMAT('.$this->_tables['blog_posts'].'.publish_date, "%d") as day,', FALSE);
 		$rel_join = $this->_tables['blog_relationships'].'.candidate_key = '.$this->_tables['blog_posts'].'.id AND ';
 		$rel_join .= $this->_tables['blog_relationships'].'.candidate_table = "'.$this->_tables['blog_posts'].'" AND ';
-		$rel_join .= $this->_tables['blog_relationships'].'.foreign_table = "'.$this->_tables['blog_categories'].'"';
+		$rel_join .= $this->_tables['blog_relationships'].'.foreign_table = "'.$this->_tables['blog_tags'].'"';
+		$this->db->join($this->_tables['blog_categories'], $this->_tables['blog_categories'].'.id = '.$this->_tables['blog_posts'].'.category_id', 'left');
 		$this->db->join($this->_tables['blog_relationships'], $rel_join, 'left');
 		$this->db->join($this->_tables['blog_users'], $this->_tables['blog_users'].'.fuel_user_id = '.$this->_tables['blog_posts'].'.author_id', 'left');
-		$this->db->join($this->_tables['fuel_users'], $this->_tables['fuel_users'].'.id = '.$this->_tables['blog_posts'].'.author_id', 'left');
-		$this->db->join($this->_tables['blog_categories'], $this->_tables['blog_categories'].'.id = '.$this->_tables['blog_relationships'].'.foreign_key', 'left');
+		$this->db->join($this->_tables['fuel_users'], $this->_tables['fuel_users'].'.id = '.$this->_tables['blog_posts'].'.author_id', 'left');	
+		$this->db->join($this->_tables['blog_tags'], $this->_tables['blog_tags'].'.id = '.$this->_tables['blog_relationships'].'.foreign_key', 'left');
 		$this->db->group_by($this->_tables['blog_posts'].'.id');
+
+		if (!defined('FUEL_ADMIN') AND $this->fuel->language->has_multiple())
+		{
+			$language = $this->fuel->blog->language();
+			$this->db->where($this->_tables['blog_posts'].'.language', $language);
+		}
+	}
+
+	function preview_path($values, $path)
+	{
+		extract($values);
+		$CI =& get_instance();
+		$base_uri = $this->fuel->blog->uri();
+		if ($CI->fuel->language->has_multiple() AND $values['language'] != 'english')
+		{
+			return "{$language}/".$base_uri."{$year}/{$month}/{$day}/{$slug}";
+		}
+		else
+		{
+			return $base_uri."{$year}/{$month}/{$day}/{$slug}";
+		}
 	}
 
 }
@@ -268,12 +379,16 @@ class Blog_post_model extends Base_module_record {
 
 	private $_tables;
 	public $author_name;
-	
-	function on_init()
+
+	function get_page_title()
 	{
-		$this->_tables = $this->_CI->config->item('tables');
+		if (empty($this->_fields['page_title']))
+		{
+			return $this->title;
+		}
+		return $this->_fields['page_title'];
 	}
-	
+
 	function get_content_formatted($strip_images = FALSE)
 	{
 		$this->_CI->load->module_helper(FUEL_FOLDER, 'fuel');
@@ -288,17 +403,23 @@ class Blog_post_model extends Base_module_record {
 		return $content;
 	}
 
-	function get_excerpt_formatted($char_limit = NULL, $readmore = '')
+	function get_excerpt($char_limit = NULL, $end_char = '&#8230;')
 	{
 		$this->_CI->load->helper('text');
-		$excerpt = (empty($this->excerpt)) ? $this->content : $this->excerpt;
+		$excerpt = (empty($this->_fields['excerpt'])) ? $this->content : $this->_fields['excerpt'];
 
 		if (!empty($char_limit))
 		{
 			// must strip tags to get accruate character count
 			$excerpt = strip_tags($excerpt);
-			$excerpt = character_limiter($excerpt, $char_limit);
+			$excerpt = character_limiter($excerpt, $char_limit, $end_char);
 		}
+		return $excerpt;
+	}
+
+	function get_excerpt_formatted($char_limit = NULL, $readmore = '')
+	{
+		$excerpt = $this->get_excerpt($char_limit);
 		if (!empty($readmore))
 		{
 			$excerpt .= ' '.anchor($this->url, $readmore, 'class="readmore"');
@@ -310,7 +431,7 @@ class Blog_post_model extends Base_module_record {
 	
 	function is_future_post()
 	{
-		return strtotime($this->post_date) > time();
+		return strtotime($this->publish_date) > time();
 	}
 	
 	function is_published()
@@ -320,30 +441,27 @@ class Blog_post_model extends Base_module_record {
 	
 	function get_comments($order = 'date_added asc', $limit = NULL)
 	{
-		$this->_CI->load->module_model('blog', 'blog_comments_model');
-		$where = array('post_id' => $this->id, $this->_tables['blog_comments'].'.published' => 'yes');
-		$order = $this->_tables['blog_comments'].'.'.$order;
-		$comments = $this->_CI->blog_comments_model->find_all($where, $order, $limit);
+		$blog_comments = $this->_CI->fuel->blog->model('blog_comments');
+		$where = array('post_id' => $this->id, $this->_parent_model->tables('blog_comments').'.published' => 'yes');
+		$order = $this->_parent_model->tables('blog_comments').'.'.$order;
+		$comments = $blog_comments->find_all($where, $order, $limit);
 		return $comments;
 	}
 	
 	function get_comments_count($order = 'date_added asc', $limit = NULL)
 	{
-		$this->_CI->load->module_model('blog', 'blog_comments_model');
-		$where = array('post_id' => $this->id, $this->_tables['blog_comments'].'.published' => 'yes');
-		$cnt = $this->_CI->blog_comments_model->record_count($where, $order, $limit);
+		$blog_comments = $this->_CI->fuel->blog->model('blog_comments');
+		$where = array('post_id' => $this->id, $this->_parent_model->tables('blog_comments').'.published' => 'yes');
+		$cnt = $blog_comments->record_count($where, $order, $limit);
 		return $cnt;
 	}
 	
 	function get_comments_formatted($block = 'comment', $parent_id = 0, $container_class = 'child')
 	{
-	
+		
 		// initialization... grab all comments
 		$items = array();
-		if (empty($this->_objs['comments']))
-		{
-			$comments = $this->_objs['comments'];
-		}
+		$comments = $this->get_comments();
 
 		$str = '';
 		
@@ -387,46 +505,88 @@ class Blog_post_model extends Base_module_record {
 		}
 		return FALSE;
 	}
-	
-	function get_categories_linked($order = 'name asc', $join = ', ')
+		
+	function get_category()
 	{
-		$categories = $this->categories;
-		if ( ! empty($categories))
+		$model = $this->_CI->fuel->blog->model('categories');
+		return $model->find_by_key($this->category_id);
+	}
+
+	function get_tags_linked($order = 'name asc', $join = ', ', $link_params = array())
+	{
+		$tags = $this->tags;
+		if ( ! empty($tags))
 		{
-			$categories_linked = array();
-			foreach ($this->categories as $category)
+			$tags_linked = array();
+			foreach ($tags as $tag)
 			{
-				$categories_linked[] = anchor($this->_CI->fuel->blog->url($category->get_url(FALSE)), $category->name);
+				$tags_linked[] = anchor($this->_CI->fuel->blog->url($tag->get_url(FALSE)), $tag->name, $link_params);
 			}
-			$return = implode($categories_linked, $join);
+			$return = implode($tags_linked, $join);
 			return $return;
 		}
 		return NULL;
 	}
-	
-	function get_author()
+
+	function get_category_link($link_params = array())
 	{
-		if (!isset($this->_objs['author']))
+		if ($this->has_category_id())
+		{
+			$category = $this->category;
+			if (isset($category->id))
+			{
+				return anchor($this->_CI->fuel->blog->url($category->get_url(FALSE)), $category->name, $link_params);
+			}
+		}
+
+		return NULL;
+
+	}
+
+	function get_author($all = FALSE)
+	{
+		$cache_key ='author'.$all;
+		if (!isset($this->_objs[$cache_key]))
 		{
 			if ($this->_CI->fuel->blog->config('multiple_authors'))
 			{
-				$authors = $this->get_authors();
-				$this->_objs['author'] = current($authors);
+				$authors_model = $this->get_authors(TRUE);
+				$where = array();
+				if (!$all)
+				{
+					$where[$this->_parent_model->tables('blog_users').'.active'] = 'yes';
+				}
+				$this->_objs[$cache_key] = $this->find_one($where);
 			}
 			else
 			{
-				$blog_users = $this->_CI->fuel->blog->model('users');
-				$this->_objs['author'] = $blog_users->find_one(array('fuel_blog_users.fuel_user_id' => $this->author_id));
+				$where = array($this->_parent_model->tables('blog_users').'.fuel_user_id' => $this->author_id);
+				if (!$all)
+				{
+					$where[$this->_parent_model->tables('blog_users').'.active'] = 'yes';
+				}
+				$this->_objs[$cache_key] = $this->lazy_load($where, array(BLOG_FOLDER => 'blog_users_model'), FALSE);
 			}
 		}
-		return $this->_objs['author'];
+		return $this->_objs[$cache_key];
 	}
 
 
-	function has_author()
+	function has_author($active = FALSE)
 	{
-		$author = $this->get_author();
+		$author = $this->get_author($active);
 		return !empty($author);
+	}
+
+	function get_author_link()
+	{
+		$author = $this->get_author(TRUE);
+		if(is_true_val($author->active))
+		{
+			return '<a href="'.$author->url.'">'.$author->display_name.'</a>';
+		}else{
+			return $author->display_name;
+		}
 	}
 
 	function get_image($type = 'main')
@@ -439,7 +599,8 @@ class Blog_post_model extends Base_module_record {
 	{
 		$CI =& get_instance();
 		$img = $this->get_image($type);
-		$path = $CI->fuel->blog->config('asset_upload_path').$img;
+		$path = trim($CI->fuel->blog->config('asset_upload_path'),'/').'/'.$img;
+
 		return assets_path($path);
 	}
 	
@@ -460,9 +621,9 @@ class Blog_post_model extends Base_module_record {
 	
 	function get_url($full_path = TRUE)
 	{
-		$year = date('Y', strtotime($this->post_date));
-		$month = date('m', strtotime($this->post_date));
-		$day = date('d', strtotime($this->post_date));
+		$year = date('Y', strtotime($this->publish_date));
+		$month = date('m', strtotime($this->publish_date));
+		$day = date('d', strtotime($this->publish_date));
 		$url = $year.'/'.$month.'/'.$day.'/'.$this->slug;
 		if ($full_path)
 		{
@@ -471,20 +632,25 @@ class Blog_post_model extends Base_module_record {
 		$base_uri = trim($this->_CI->fuel->blog->config('uri'), '/');
 		return $base_uri.'/'.$url;
 	}
+
+	function get_link_title($attrs = array())
+	{
+		return anchor($this->url, $this->title, $attrs);
+	}
 	
 	function get_rss_date()
 	{
-		return standard_date('DATE_RSS', strtotime($this->post_date));
+		return standard_date('DATE_RSS', strtotime($this->publish_date));
 	}
 	
 	function get_atom_date()
 	{
-		return standard_date('DATE_ATOM', strtotime($this->post_date));
+		return standard_date('DATE_ATOM', strtotime($this->publish_date));
 	}
 
 	function get_date_formatted($format = 'M d, Y')
 	{
-		return date($format, strtotime($this->post_date));
+		return date($format, strtotime($this->publish_date));
 	}
 	
 	function get_allow_comments()
@@ -503,32 +669,40 @@ class Blog_post_model extends Base_module_record {
 		$time_limit = (int) $this->_CI->fuel->blog->config('comments_time_limit') * (24 * 60 * 60);
 		if (!empty($time_limit))
 		{
-			$post_date = strtotime($this->post_date);
-			return (time() - $post_date < $time_limit);
+			$publish_date = strtotime($this->publish_date);
+			return (time() - $publish_date < $time_limit);
 		}
 		return TRUE;
 	}
 	
-	function get_social_bookmarking_links()
+	function get_prev_post()
 	{
-		return social_bookmarking_links($this->url, $this->title);
-	}
-	
-	function get_facebook_recommend()
-	{
-		return social_facebook_recommend($this->url);
+		return $this->_CI->fuel->blog->prev_post($this);
 	}
 
-	function get_digg($size = 'Icon')
+	function get_prev_post_url()
 	{
-		return social_digg($this->url, $this->title, $size);
+		$prev = $this->prev_post;
+		if ($prev)
+		{
+			return $prev->url;	
+		}
 	}
 
-	function get_tweetme()
+	function get_next_post()
 	{
-		return social_tweetme($this->url);
+		return $this->_CI->fuel->blog->next_post($this);
 	}
-	
+
+	function get_next_post_url()
+	{
+		$next = $this->next_post;
+		if ($next)
+		{
+			return $next->url;	
+		}
+	}
+
 	private function _format($content)
 	{
 		$this->_CI->load->helper('typography');

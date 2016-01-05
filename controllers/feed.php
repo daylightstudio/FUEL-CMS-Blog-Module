@@ -8,9 +8,16 @@ class Feed extends Blog_base_controller {
 		parent::__construct();
 	}
 	
-	function index()
+	function _remap($method)
 	{
-		$this->rss();
+		if ($this->fuel->blog->uri_segment(3) == 'atom')
+		{
+			$this->atom();
+		}
+		else
+		{
+			$this->rss();	
+		}
 	}
 	
 	function atom()

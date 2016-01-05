@@ -1,6 +1,6 @@
 <?php if ($searched) : ?>
 	
-	<h1><?=count($posts)?> Search <?=pluralize(count($posts), 'Result')?> Returned for &ldquo;<?=$q?>&rdquo;</h1>
+	<h1><?=lang('blog_search', count($posts), $q)?></h1>
 	<?php if (!empty($posts)) : ?>
 
 		<?php foreach($posts as $post) : ?>

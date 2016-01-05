@@ -1,7 +1,7 @@
 <?php
 require_once(MODULES_PATH.'/blog/libraries/Blog_base_controller.php');
 
-class Categories extends Blog_base_controller {
+class Tags extends Blog_base_controller {
 	
 	function __construct()
 	{
@@ -11,8 +11,8 @@ class Categories extends Blog_base_controller {
 	
 	function _remap($method = NULL)
 	{
-		// get the category this way in case there is a language parameter
-		$category = $this->fuel->blog->uri_segment(3);
+		// get the tag this way in case there is a language parameter
+		$tag = $this->fuel->blog->uri_segment(3);
 
 		$cache_id = fuel_cache_id();
 		if ($cache = $this->fuel->blog->get_cache($cache_id))
@@ -33,36 +33,34 @@ class Categories extends Blog_base_controller {
 				// set the header type
 				$this->fuel->blog->feed_header();
 				
-				$category = $this->fuel->blog->uri_segment(4);
-				
 				// set the output
-				$output = $this->fuel->blog->feed_output($type, $category);
+				$output = $this->fuel->blog->feed_output($type, $tag);
 			}
-			else if (!empty($category) AND $category != 'index')
+			else if (!empty($tag) AND $tag != 'index')
 			{
 
 				$year = (int) $this->fuel->blog->uri_segment(4);
 				$month = (int) $this->fuel->blog->uri_segment(5);
 				$day = (int) $this->fuel->blog->uri_segment(6);
 
-				$category_obj = $this->fuel->blog->get_category($category);
-				if (!isset($category_obj->id)) show_404();
+				$tag_obj = $this->fuel->blog->get_tag($tag);
+				if (!isset($tag_obj->id)) show_404();
 
 				// run before_posts_by_date hook
-				$hook_params = array('category' => $category_obj, 'category_slug' => $category);
-				$this->fuel->blog->run_hook('before_posts_by_category', $hook_params);
+				$hook_params = array('tag' => $tag_obj, 'tag_slug' => $tag);
+				$this->fuel->blog->run_hook('before_posts_by_tag', $hook_params);
 				
 				$vars = array_merge($vars, $hook_params);
-				$vars['posts'] = $this->fuel->blog->get_category_posts_by_date($category, $year, $month, $day);
+				$vars['posts'] = $this->fuel->blog->get_tag_posts_by_date($tag, $year, $month, $day);
 
-				$vars['page_title'] = array($category_obj->name, lang('blog_categories_page_title'));
-				$output = $this->_render('category', $vars, TRUE);
+				$vars['page_title'] = array($tag_obj->name, lang('blog_tags_page_title'));
+				$output = $this->_render('tag', $vars, TRUE);
 			}
 			else
 			{
-				$vars['categories'] = $this->fuel->blog->get_categories();
-				$vars['page_title'] = lang('blog_categories_page_title');
-				$output = $this->_render('categories', $vars, TRUE);
+				$vars['tags'] = $this->fuel->blog->get_tags();
+				$vars['page_title'] = lang('blog_tags_page_title');
+				$output = $this->_render('tags', $vars, TRUE);
 			}
 			$this->fuel->blog->save_cache($cache_id, $output);
 		}

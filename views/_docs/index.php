@@ -30,7 +30,6 @@ There are various <a href="<?=user_guide_url('modules/blog/settings')?>">setting
 <ul>
 	<li><a href="<?=user_guide_url('modules/blog/fuel_blog')?>">Fuel_blog Class</a></li>
 	<li><a href="<?=user_guide_url('modules/blog/blog_helper')?>">blog_helper</a></li>
-	<li><a href="<?=user_guide_url('modules/blog/social_helper')?>">social_helper</a></li>
 </ul>
 
 <h2>Misc.</h2>

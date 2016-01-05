@@ -6,6 +6,7 @@
 */
 $lang['module_blog_posts'] = 'Posts';
 $lang['module_blog_categories'] = 'Categories';
+$lang['module_blog_tags'] = 'Tags';
 $lang['module_blog_comments'] = 'Comments';
 $lang['module_blog_links'] = 'Links';
 $lang['module_blog_authors'] = 'Authors';
@@ -32,6 +33,7 @@ $lang['blog_archives_page_title'] = 'Archives';
 $lang['blog_authors_list_page_title'] = 'Authors';
 $lang['blog_author_posts_page_title'] = '%s Posts';
 $lang['blog_categories_page_title'] = 'Categories';
+$lang['blog_tags_page_title'] = 'Tags';
 $lang['blog_search_page_title'] = '%s Search Results';
 
 /*
@@ -67,7 +69,20 @@ $lang['form_label_formatting'] = 'Formatting';
 $lang['form_label_author'] = 'Author';
 $lang['form_label_sticky'] = 'Sticky';
 $lang['form_label_allow_comments'] = 'Allow Comments';
-$lang['form_label_categories'] = 'Categories';
+$lang['form_label_category'] = 'Category';
+$lang['form_label_tags'] = 'Tags';
+$lang['form_label_main_image'] = 'Main image';
+$lang['form_label_list_image'] = 'List image';
+$lang['form_label_thumbnail_image'] = 'Thumbnail image';
+$lang['form_label_page_title'] = 'Page title';
+$lang['form_label_meta_description'] = 'Meta description';
+$lang['form_label_meta_keywords'] = 'Meta keywords';
+$lang['form_label_publish_date'] = 'Publish date';
+$lang['form_label_related_posts'] = 'Related posts';
+$lang['form_label_blocks'] = 'Blocks';
+
+$lang['form_category_comment'] = 'Categories must have context value of "blog" OR be empty in order to be used by the Blog module.';
+$lang['form_tags_comment'] = 'Tags must belong to a category that has the context of "blog" or is empty in order to be used by the Blog module.';
 
 
 /*
@@ -129,3 +144,34 @@ $lang['form_label_cache_ttl'] = 'Cache Time to Live';
 $lang['form_label_asset_upload_path'] = 'Asset Upload Path';
 $lang['form_label_per_page'] = 'Per Page';
 $lang['form_label_page_title_separator'] = 'Page Title Separator';
+$lang['form_label_email_notify_comment_reply'] = 'E-mail notifications on comment replies';
+
+
+/*
+|--------------------------------------------------------------------------
+| Front-end
+|--------------------------------------------------------------------------
+*/
+$lang['blog_blog'] = 'Block';
+$lang['blog_archives'] = 'Archives';
+$lang['blog_categories'] = 'Categories';
+$lang['blog_category_posts'] = '%1s Posts';
+$lang['blog_tags'] = 'Tags';
+$lang['blog_tags_posts'] = '%1s Posts';
+$lang['blog_publish_date_format'] = 'F d, Y';
+$lang['blog_post_published'] = 'Published';
+$lang['blog_post_published_by'] = 'by';
+$lang['blog_post_read_more'] = 'Read More';
+$lang['blog_search'] = '%1s Search Result(s) Returned for “%2s”';
+$lang['blog_pagination_all'] = 'Back to All Posts';
+$lang['blog_pagination_next'] = 'Next';
+$lang['blog_pagination_prev'] = 'Previous';
+$lang['blog_comment_heading'] = 'Comment';
+$lang['blog_leave_comment_heading'] = 'Leave a Comment';
+$lang['blog_comments_off'] = 'Comments have been turned off for this post.';
+$lang['blog_comment_thanks'] = 'Thanks for the comment';
+$lang['blog_comments_monitored'] = 'Comments for this posting are being monitored and will be published upon the author\'s approval.';
+$lang['blog_share'] = 'Share this post';
+$lang['blog_related_posts'] = 'Related Posts';
+$lang['blog_links'] = 'Featured Links';
+$lang['blog_about_author'] = 'About Author';

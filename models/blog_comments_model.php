@@ -58,16 +58,16 @@ class Blog_comments_model extends Base_module_model {
 		return $return;
 	}
 	
-	function form_fields($values = array())
+	function form_fields($values = array(), $related = array())
 	{
-		$fields = parent::form_fields();
+		$fields = parent::form_fields($values, $related);
 		$CI =& get_instance();
 		$CI->load->module_model(BLOG_FOLDER, 'blog_users_model');
 		$CI->load->module_model(BLOG_FOLDER, 'blog_posts_model');
 		
 		$post_title = '';
 
-		$post_options = $CI->blog_posts_model->options_list('id', 'title', array(), 'post_date desc');
+		$post_options = $CI->blog_posts_model->options_list('id', 'title', array(), 'publish_date desc');
 		if (empty($post_options))
 		{
 			$fields = array();
@@ -116,11 +116,15 @@ class Blog_comments_model extends Base_module_model {
 			}
 			$fields['replies'] = array('displayonly' => TRUE, 'value' => implode('<br /><br />', $reply_arr));
 			
+			// don't show the form if the email_notify_comment_reply setting is off
+			// on_after_save checks if reply_notify has been posted before sending an email, so this will also stop the email from firing because of that
 			if (isset($post->id) AND $post->author_id == $CI->fuel->auth->user_data('id') OR $CI->fuel->auth->is_super_admin())
 			{
 				$fields['reply'] = array('type' => 'textarea');
-				$notify_options = array('Commentor' => lang('blog_comment_notify_option2'), 'All' => lang('blog_comment_notify_option1'), 'None' => lang('blog_comment_notify_option3'));
-				$fields['reply_notify'] = array('type' => 'enum', 'options' => $notify_options);
+				if($CI->fuel->blog->config('email_notify_comment_reply')) {
+					$notify_options = array('Commentor' => lang('blog_comment_notify_option2'), 'All' => lang('blog_comment_notify_option1'), 'None' => lang('blog_comment_notify_option3'));
+					$fields['reply_notify'] = array('type' => 'enum', 'options' => $notify_options);
+				}
 			}
 			
 			// hidden
@@ -211,12 +215,12 @@ class Blog_comments_model extends Base_module_model {
 		return $values;
 	}
 	
-	function _common_query()
+	function _common_query($display_unpublished_if_logged_in = NULL)
 	{
 		$this->db->select($this->_tables['blog_comments'].'.*, '.$this->_tables['blog_posts'].'.id as post_id, 
 		'.$this->_tables['blog_posts'].'.title as title, '.$this->_tables['blog_posts'].'.slug as slug,
 		'.$this->_tables['blog_posts'].'.published AS post_published', FALSE);
-		$this->db->select('YEAR('.$this->_tables['blog_posts'].'.post_date) as year, DATE_FORMAT('.$this->_tables['blog_posts'].'.post_date, "%m") as month, DATE_FORMAT('.$this->_tables['blog_posts'].'.post_date, "%d") as day,', FALSE);
+		$this->db->select('YEAR('.$this->_tables['blog_posts'].'.publish_date) as year, DATE_FORMAT('.$this->_tables['blog_posts'].'.publish_date, "%m") as month, DATE_FORMAT('.$this->_tables['blog_posts'].'.publish_date, "%d") as day,', FALSE);
 		$this->db->join($this->_tables['blog_posts'], $this->_tables['blog_comments'].'.post_id = '.$this->_tables['blog_posts'].'.id', 'inner');
 	}
 
@@ -226,6 +230,7 @@ class Blog_comment_model extends Base_module_record {
 
 	public $title;
 	public $slug;
+	public $spam_checked = FALSE;
 
 	// not using filtered fields because we don't want any PHP function translation'
 	function get_content_formatted()
@@ -237,7 +242,8 @@ class Blog_comment_model extends Base_module_record {
 	
 	function get_post()
 	{
-		return $this->lazy_load('post_id', array(BLOG_FOLDER => 'blog_posts_model'));
+		$model = $this->_CI->fuel->blog->model('blog_posts');
+		return $model->find_by_key($this->post_id);
 	}
 	
 	function is_duplicate()
@@ -275,6 +281,43 @@ class Blog_comment_model extends Base_module_record {
 	{
 		return date($format, strtotime($this->date_added));
 	}	
+
+	function is_spam()
+	{
+		if (!$this->spam_checked)
+		{
+			$this->check_is_spam();
+		}
+		return is_true_val($this->_fields['is_spam']);
+	}
+
+	function check_is_spam()
+	{
+		$this->is_spam = ($this->_CI->fuel->blog->is_spam($this)) ? 'yes' : 'no';
+		$this->spam_checked = TRUE;
+		return $this->is_spam;
+	}
+
+	function is_savable()
+	{
+		if (!isset($this->_CI->stopforumspam))
+		{
+			$this->_CI->load->module_library(BLOG_FOLDER, 'stopforumspam');
+		}
+
+		// if this has not been spam checked, we do so
+		if (!$this->spam_checked)
+		{
+			$this->check_is_spam();
+		}
+
+		if ($this->_CI->stopforumspam->is_ignorable())
+		{
+			return FALSE;
+		}
+
+		return !$this->is_spam() OR ($this->is_spam() AND $this->_CI->fuel->blog->config('save_spam'));
+	}
 	
 }
 ?>

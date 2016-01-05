@@ -6,38 +6,45 @@ $config['modules']['blog_posts'] = array(
 	'model_location' => 'blog',
 	'display_field' => 'title',
 	'preview_path' => 'blog/{year}/{month}/{day}/{slug}',
-	'permission' => 'blog_posts',
+	'permission' => array('blog_posts', 'create' => 'blog_posts/create', 'edit' => 'blog_posts/edit', 'publish' => 'blog_posts/publish', 'delete' => 'blog_posts/delete'),
 	'instructions' => lang('module_instructions_default', 'blog posts'),
 	'archivable' => TRUE,
 	'configuration' => array('blog' => 'blog'),
 	'nav_selected' => 'blog/posts',
 //	'language' => array('blog' => 'blog'),
-	'default_col' => 'post_date',
+	'default_col' => 'publish_date',
 	'default_order' => 'desc',
-	'sanitize_input' => array('template','php')
+	'sanitize_input' => array('template','php'),
+	'filters' => array(
+		'category_id' => array('label' => lang('form_label_category'), 'type' => 'select', 'model' => array(FUEL_FOLDER => 'fuel_categories_model'), 'first_option' => lang('label_select_one')),
+		'author_id' => array('label' => lang('form_label_author'), 'type' => 'select', 'model' => array(BLOG_FOLDER => 'blog_users_model'), 'first_option' => lang('label_select_one'))
+
+		),
+	'advanced_search' => TRUE
 );
 
-$config['modules']['blog_categories'] = array(
-	'module_name' => 'Categories',
-	'module_uri' => 'blog/categories',
-	'model_name' => 'blog_categories_model',
-	'model_location' => 'blog',
-	'table_headers' => array(
-		'id', 
-		'name', 
-		'precedence', 
-		'published', 
-	),
-	'display_field' => 'name',
-	'preview_path' => 'blog/categories/{slug}',
-	'permission' => 'blog_categories',
-	'instructions' => lang('module_instructions_default', 'blog categories'),
-	'archivable' => TRUE,
-	'configuration' => array('blog' => 'blog'),
-	'nav_selected' => 'blog/categories',
-//	'language' => array('blog' => 'blog')
+// $config['modules']['blog_categories'] = array(
+// 	'module_name' => 'Categories',
+// 	'module_uri' => 'blog/categories',
+// 	'model_name' => 'blog_categories_model',
+// 	'model_location' => 'blog',
+// 	// 'table_headers' => array(
+// 	// 	'id', 
+// 	// 	'name', 
+// 	// 	'precedence', 
+// 	// 	'published', 
+// 	// ),
+// 	'display_field' => 'name',
+// 	'preview_path' => 'blog/categories/{slug}',
+// 	'permission' => 'blog_categories',
+// 	'instructions' => lang('module_instructions_default', 'blog categories'),
+// 	'archivable' => TRUE,
+// 	'configuration' => array('blog' => 'blog'),
+// 	'nav_selected' => 'blog/categories',
+// //	'language' => array('blog' => 'blog')
+// 	'hidden' => TRUE,
 	
-);
+// );
 
 $config['modules']['blog_comments'] = array(
 	'module_name' => 'Comments',
@@ -57,7 +64,7 @@ $config['modules']['blog_comments'] = array(
 	'default_col' => 'date_submitted',
 	'default_order' => 'desc',
 	'preview_path' => 'blog/{year}/{month}/{day}/{slug}',
-	'permission' => 'blog_comments',
+	'permission' => array('blog_comments', 'create' => 'blog_comments/create', 'edit' => 'blog_comments/edit', 'publish' => 'blog_comments/publish', 'delete' => 'blog_comments/delete'),
 	'instructions' => lang('module_instructions_default', 'blog comments'),
 	'archivable' => TRUE,
 	'configuration' => array('blog' => 'blog'),
@@ -73,7 +80,7 @@ $config['modules']['blog_links'] = array(
 	'display_field' => 'url',
 	'default_col' => 'name',
 	'preview_path' => '',
-	'permission' => 'blog_links',
+	'permission' => array('blog_links', 'create' => 'blog_links/create', 'edit' => 'blog_links/edit', 'publish' => 'blog_links/publish', 'delete' => 'blog_links/delete'),
 	'instructions' => lang('module_instructions_default', 'blog links'),
 	'archivable' => TRUE,
 	'configuration' => array('blog' => 'blog'),
@@ -95,7 +102,7 @@ $config['modules']['blog_users'] = array(
 	
 	'display_field' => 'display_name',
 	'preview_path' => 'blog/authors/{fuel_user_id}',
-	'permission' => 'blog_users',
+	'permission' => array('blog_users', 'create' => 'blog_users/create', 'edit' => 'blog_users/edit', 'publish' => 'blog_users/publish', 'delete' => 'blog_users/delete'),
 	'instructions' => lang('module_instructions_default', 'blog authors'),
 	'archivable' => TRUE,
 	'configuration' => array('blog' => 'blog'),
