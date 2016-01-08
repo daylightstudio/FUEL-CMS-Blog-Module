@@ -22,10 +22,10 @@ class Blog_posts_model extends Base_module_model {
 			//'where' => 'fuel_categories.context = "blog"', // added in constructor so that the the table name isn't hard coded in query
 			),
 		'related_posts' => array(
-			'model' => array(BLOG_FOLDER => 'blog_posts')
+			'model' => array(BLOG_FOLDER => 'blog_posts_model')
 			), 
 		'blocks' => array(
-			'model' => array(FUEL_FOLDER => 'fuel_blocks')
+			'model' => array(FUEL_FOLDER => 'fuel_blocks_model')
 			)
 		);
 
