@@ -51,9 +51,28 @@ class Tags extends Blog_base_controller {
 				$this->fuel->blog->run_hook('before_posts_by_tag', $hook_params);
 				
 				$vars = array_merge($vars, $hook_params);
-				$vars['posts'] = $this->fuel->blog->get_tag_posts_by_date($tag, $year, $month, $day);
 
-				$vars['page_title'] = array($tag_obj->name, lang('blog_tags_page_title'));
+				$limit = $this->fuel->blog->config('per_page');
+				$offset = (((int)$this->input->get('page') - 1) * $limit);
+				$offset = ($offset < 0 ? 0 : $offset);
+				
+				if (!empty($offset))
+				{
+					$vars['page_title'] = array($tag_obj->name, lang('blog_tags_num_title', $offset, $offset + $limit));
+				}
+				else
+				{
+					$vars['page_title'] = array($tag_obj->name, lang('blog_tags_page_title'));
+				}
+
+				$vars['offset'] = $offset;
+				$vars['limit'] = $limit;
+				$vars['posts'] = $this->fuel->blog->get_tag_posts_by_date($tag, $year, $month, $day, $limit, $offset);
+				$vars['post_count'] = count($this->fuel->blog->get_tag_posts_by_date($tag, $year, $month, $day));
+
+				// create pagination
+				$base_url = 'tags/' . $tag . '/'. implode('/', array_filter(array($year, sprintf("%02d", $month), sprintf("%02d", $day))));
+				$vars['pagination'] = $this->fuel->blog->pagination($vars['post_count'], $base_url);
 				$output = $this->_render('tag', $vars, TRUE);
 			}
 			else

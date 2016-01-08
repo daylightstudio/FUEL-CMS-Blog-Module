@@ -40,7 +40,6 @@ class Categories extends Blog_base_controller {
 			}
 			else if (!empty($category) AND $category != 'index')
 			{
-
 				$year = (int) $this->fuel->blog->uri_segment(4);
 				$month = (int) $this->fuel->blog->uri_segment(5);
 				$day = (int) $this->fuel->blog->uri_segment(6);
@@ -53,9 +52,29 @@ class Categories extends Blog_base_controller {
 				$this->fuel->blog->run_hook('before_posts_by_category', $hook_params);
 				
 				$vars = array_merge($vars, $hook_params);
-				$vars['posts'] = $this->fuel->blog->get_category_posts_by_date($category, $year, $month, $day);
+				
+				
+				$limit = $this->fuel->blog->config('per_page');
+				$offset = (((int)$this->input->get('page') - 1) * $limit);
+				$offset = ($offset < 0 ? 0 : $offset);
+				
+				if (!empty($offset))
+				{
+					$vars['page_title'] = array($category_obj->name, lang('blog_categories_num_title', $offset, $offset + $limit));
+				}
+				else
+				{
+					$vars['page_title'] = array($category_obj->name, lang('blog_categories_page_title'));
+				}
 
-				$vars['page_title'] = array($category_obj->name, lang('blog_categories_page_title'));
+				$vars['offset'] = $offset;
+				$vars['limit'] = $limit;
+				$vars['posts'] = $this->fuel->blog->get_category_posts_by_date($category, $year, $month, $day, $limit, $offset);
+				$vars['post_count'] = count($this->fuel->blog->get_category_posts_by_date($category, $year, $month, $day));
+
+				// create pagination
+				$base_url = 'categories/' . $category . '/'.implode('/', array_filter(array($year, sprintf("%02d", $month), sprintf("%02d", $day))));
+				$vars['pagination'] = $this->fuel->blog->pagination($vars['post_count'], $base_url);
 				$output = $this->_render('category', $vars, TRUE);
 			}
 			else

@@ -15,12 +15,10 @@ class Blog extends Blog_base_controller {
 		$day = (int) $this->fuel->blog->uri_segment(4);
 		$slug = $this->fuel->blog->uri_segment(5);
 
-		$limit = (int) $this->fuel->blog->config('per_page');
-
 		$view_by = 'page';
 
 		// we empty out year variable if it is page because we won't be querying on year'
-		if (preg_match('#\d{4}#', $year) && !empty($year) && empty($slug))
+		if (empty($slug))
 		{
 			$view_by = 'date';
 		}
@@ -62,7 +60,7 @@ class Blog extends Blog_base_controller {
 
 			if ($view_by == 'slug')
 			{
-				return $this->post($slug);
+				return $this->post($slug, $year, $month, $day);
 			}
 			else if ($view_by == 'date')
 			{
@@ -72,59 +70,36 @@ class Blog extends Blog_base_controller {
 				if (!empty($month)) $page_title_arr[] = date('M', $posts_date);
 				if (!empty($year)) $page_title_arr[] = $year;
 				
+				$limit = $this->fuel->blog->config('per_page');
+				$offset = (((int)$this->input->get('page') - 1) * $limit);
+				$offset = ($offset < 0 ? 0 : $offset);
+				
+				if (!empty($offset))
+				{
+					$page_title_arr[] = lang('blog_page_num_title', $offset, $offset + $limit);
+				}
+
 				// run before_posts_by_date hook
 				$hook_params = array('year' => $year, 'month' => $month, 'day' => $day, 'slug' => $slug, 'limit' => $limit);
 				$this->fuel->blog->run_hook('before_posts_by_date', $hook_params);
 				
 				$vars = array_merge($vars, $hook_params);
 				$vars['page_title'] = $page_title_arr;
-				$vars['posts'] = $this->fuel->blog->get_posts_by_date($year, (int) $month, $day, $slug);
-				$vars['pagination'] = '';
+				$vars['posts'] = $this->fuel->blog->get_posts_by_date($year, (int) $month, $day, $slug, $limit, $offset);
 				$vars['year'] = $year;
 				$vars['month'] = $month;
 				$vars['day'] = $day;
-			}
-			else
-			{
-				$limit = $this->fuel->blog->config('per_page');
-				$this->load->library('pagination');
-
-				$config = $this->fuel->blog->config('pagination');
-				$config['uri_segment'] = count(explode('/', uri_path(FALSE, 0 , FALSE)));
-				$offset = ((uri_segment(3, 1, TRUE) - 1) * $limit);
-
-				$this->config->set_item('enable_query_strings', FALSE);
-				$config['base_url'] = $this->fuel->blog->url('page/');
-				$config['page_query_string'] = FALSE;
-				$config['per_page'] = $limit;
-				$config['num_links'] = 2;
-				$config['use_page_numbers'] = TRUE;
-				
-				if (!empty($offset))
-				{
-					$vars['page_title'] = lang('blog_page_num_title', $offset, $offset + $limit);
-				}
-				else
-				{
-					$vars['page_title'] = '';
-				}
-				
-				// run before_posts_by_date hook
-				$hook_params = array('offset' => $offset, 'limit' => $limit, 'type' => 'posts');
-				$this->fuel->blog->run_hook('before_posts_by_page', $hook_params);
-
 				$vars['offset'] = $offset;
 				$vars['limit'] = $limit;
-				$vars['posts'] = $this->fuel->blog->get_posts_by_page($limit, $offset);
 
 				// run hook again to get the proper count
 				$hook_params['type'] = 'count';
-				$this->fuel->blog->run_hook('before_posts_by_page', $hook_params);
-				$config['total_rows'] = $this->fuel->blog->get_posts_count();
+				$this->fuel->blog->run_hook('before_posts_by_date', $hook_params);
+				$vars['post_count'] = $this->fuel->blog->get_posts_by_date_count($year, (int) $month, $day, $slug);
 				
 				// create pagination
-				$this->pagination->initialize($config); 
-				$vars['pagination'] = $this->pagination->create_links();
+				$base_url = implode('/', array_filter(array($year, sprintf("%02d", $month), sprintf("%02d", $day))));
+				$vars['pagination'] = $this->fuel->blog->pagination($vars['post_count'], $base_url);
 			}
 
 			// show the index page if the page doesn't have any uri_segment(3)'
@@ -136,7 +111,7 @@ class Blog extends Blog_base_controller {
 		$this->output->set_output($output);
 	}
 	
-	function post($slug = null)
+	function post($slug = null, $year = null, $month = null, $day = null)
 	{
 		if (empty($slug))
 		{
@@ -150,7 +125,7 @@ class Blog extends Blog_base_controller {
 		$hook_params = array('slug' => $slug);
 		$this->fuel->blog->run_hook('before_post', $hook_params);
 		
-		$post = $this->fuel->blog->get_post($slug);
+		$post = $this->fuel->blog->get_post_by_date_slug($slug, $year, $month, $day);
 
 		if (isset($post->id))
 		{

@@ -641,6 +641,53 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	public function get_posts_by_date($year = NULL, $month = NULL, $day = NULL, $slug = NULL, $limit = NULL, $offset = NULL, $order_by = 'sticky, publish_date desc', $return_method = NULL, $assoc_key = NULL)
 	{
+		$model = $this->_get_posts_by_date($year, $month, $day, $slug, $limit, $offset, $order_by, $return_method, $assoc_key);
+		$return_arr = (!empty($slug)) ? FALSE : TRUE;
+		$posts = $model->get($return_arr)->result();
+		return $posts;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns posts count by providing a given date
+	 *
+	 * @access	public
+	 * @param	int
+	 * @param	int
+	 * @param	int
+	 * @param	string
+	 * @param	int
+	 * @param	int
+	 * @param	string
+	 * @param	string
+	 * @return	int
+	 */
+	public function get_posts_by_date_count($year = NULL, $month = NULL, $day = NULL, $slug = NULL, $limit = NULL, $offset = NULL, $order_by = 'sticky, publish_date desc', $return_method = NULL, $assoc_key = NULL)
+	{
+		$model = $this->_get_posts_by_date($year, $month, $day, $slug, $limit, $offset, $order_by, $return_method, $assoc_key);
+		$count = $model->record_count();
+		return $count;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Helper function for getting posts by date
+	 *
+	 * @access	public
+	 * @param	int
+	 * @param	int
+	 * @param	int
+	 * @param	string
+	 * @param	int
+	 * @param	int
+	 * @param	string
+	 * @param	string
+	 * @return	array
+	 */
+	protected function _get_posts_by_date($year = NULL, $month = NULL, $day = NULL, $slug = NULL, $limit = NULL, $offset = NULL, $order_by = 'sticky, publish_date desc', $return_method = NULL, $assoc_key = NULL)
+	{
 		$model = $this->model('blog_posts');
 		$model->readonly = TRUE;
 		$tables = $this->_tables();
@@ -648,17 +695,14 @@ class Fuel_blog extends Fuel_advanced_module {
 		if (!empty($month)) $model->db()->where('MONTH('.$tables['blog_posts'].'.publish_date) = '.$month);
 		if (!empty($day)) $model->db()->where('DAY('.$tables['blog_posts'].'.publish_date) = '.$day);
 		if (!empty($slug)) $model->db()->where($tables['blog_posts'].'.slug = "'.$slug.'"');
-		$return_arr = (!empty($slug)) ? FALSE : TRUE;
 		if (!empty($limit))
 		{
 			$model->db()->limit($limit);
 		}
 		$model->db()->offset($offset);
 		$model->db()->order_by($order_by);
-		$posts = $model->get($return_arr)->result();
-		return $posts;
+		return $model;
 	}
-
 	// --------------------------------------------------------------------
 
 	/**
@@ -764,26 +808,63 @@ class Fuel_blog extends Fuel_advanced_module {
 	 * @param	mixed	can be id or slug
 	 * @param	string
 	 * @param	string
+	 * @param	string
+	 * @param	string
+	 * @param	string
 	 * @return	object
 	 */
-	public function get_post($post, $order_by = NULL, $return_method = NULL)
+	public function get_post_by_date_slug($slug, $year = NULL, $month = NULL, $day = NULL, $order_by = NULL, $return_method = NULL)
 	{
 		$model = $this->model('blog_posts');
 		$model->readonly = TRUE;
 		$tables = $this->_tables();
-		if (is_int($post))
+		if (is_int($slug))
 		{
-			$where[$tables['blog_posts'].'.id'] = $post;
+			$where[$tables['blog_posts'].'.id'] = $slug;
 		}
 		else
 		{
-			$where[$tables['blog_posts'].'.slug'] = $post;
+			$where[$tables['blog_posts'].'.slug'] = $slug;
 		}
+		if (!empty($year)) $model->db()->where('YEAR('.$tables['blog_posts'].'.publish_date) = '.$year);
+		if (!empty($month)) $model->db()->where('MONTH('.$tables['blog_posts'].'.publish_date) = '.$month);
+		if (!empty($day)) $model->db()->where('DAY('.$tables['blog_posts'].'.publish_date) = '.$day);
+
 		$post = $model->find_one($where, $order_by, $return_method);
 		$this->_current_post = $post;
 		return $post;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns a single post
+	 *
+	 * @access	public
+	 * @param	mixed	can be id or slug
+	 * @param	string
+	 * @param	string
+	 * @return	object
+	 */
+	public function get_post($slug, $order_by = NULL, $return_method = NULL)
+	{
+		$model = $this->model('blog_posts');
+		$model->readonly = TRUE;
+		$tables = $this->_tables();
+		if (is_int($slug))
+		{
+			$where[$tables['blog_posts'].'.id'] = $slug;
+		}
+		else
+		{
+			$where[$tables['blog_posts'].'.slug'] = $slug;
+		}
+
+		$post = $model->find_one($where, $order_by, $return_method);
+		$this->_current_post = $post;
+		return $post;
+	}
+	
 	// --------------------------------------------------------------------
 
 	/**
@@ -1121,6 +1202,36 @@ class Fuel_blog extends Fuel_advanced_module {
 	{
 		$this->CI->load->module_library(FUEL_FOLDER, 'fuel_auth');
 		return $this->CI->fuel->auth->is_logged_in();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns pagination stuff
+	 *
+	 * @access	public
+	 * @return	string
+	 */
+	public function pagination($post_count, $base_url = '')
+	{
+		$limit = $this->config('per_page');
+		$this->CI->load->library('pagination');
+
+		$config = $this->config('pagination');
+		$offset = (((int)$this->CI->input->get('page') - 1) * $limit);
+		$offset = ($offset < 0 ? 0 : $offset);
+
+		$config['base_url'] = $this->url($base_url.'?');
+		$config['page_query_string'] = TRUE;
+		$config['query_string_segment'] = 'page';
+		$config['per_page'] = $limit;
+		$config['num_links'] = 2;
+		$config['use_page_numbers'] = TRUE;
+		$config['total_rows'] = $post_count;
+		
+		// create pagination
+		$this->CI->pagination->initialize($config); 
+		return $this->CI->pagination->create_links();
 	}
 	
 	// --------------------------------------------------------------------
