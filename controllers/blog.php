@@ -86,9 +86,9 @@ class Blog extends Blog_base_controller {
 				$vars = array_merge($vars, $hook_params);
 				$vars['page_title'] = $page_title_arr;
 				$vars['posts'] = $this->fuel->blog->get_posts_by_date($year, (int) $month, $day, $slug, $limit, $offset);
-				$vars['year'] = $year;
-				$vars['month'] = $month;
-				$vars['day'] = $day;
+				$vars['year'] = (!empty($year)) ? $year : NULL;
+				$vars['month'] = (!empty($month)) ? $month : NULL;
+				$vars['day'] = (!empty($day)) ? $day : NULL;
 				$vars['offset'] = $offset;
 				$vars['limit'] = $limit;
 
