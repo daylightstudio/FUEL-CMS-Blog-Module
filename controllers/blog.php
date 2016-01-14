@@ -172,7 +172,7 @@ class Blog extends Blog_base_controller {
 			else
 			{
 				$vars['thanks'] = ($this->session->flashdata('thanks')) ? blog_block('comment_thanks', $vars, TRUE) : '';
-				$vars['comment_form'] = $this->fuel->blog->comment_form($post, NULL, $field_values, $blog_config['comment_form'], FALSE);
+				$vars['comment_form'] = $this->fuel->blog->comment_form($post, NULL, $field_values, $blog_config['comment_form']);
 				
 				$output = $this->_render('post', $vars, TRUE);
 				

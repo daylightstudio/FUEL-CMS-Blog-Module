@@ -1568,7 +1568,7 @@ class Fuel_blog extends Fuel_advanced_module {
 		{
 			$this->CI->load->module_model(BLOG_FOLDER, 'blog_comments_model');
 
-			if (empty($form_builder_params))
+			if (empty($form_params))
 			{
 				$form_params = $blog_config['comment_form'];
 			}
