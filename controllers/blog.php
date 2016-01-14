@@ -196,6 +196,7 @@ class Blog extends Blog_base_controller {
 
 	function comment_reply($comment_id)
 	{
+		$this->load->library('session');
 		$this->load->module_model(BLOG_FOLDER, 'blog_comments_model');
 		$this->load->helper('ajax');
 
