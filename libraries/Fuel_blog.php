@@ -1616,7 +1616,8 @@ class Fuel_blog extends Fuel_advanced_module {
 				$this->CI->form_builder->set_fields($fields);
 				$this->CI->form_builder->set_field_values($values);
 				$this->CI->form_builder->set_validator($this->CI->blog_comments_model->get_validation());
-				$form = $this->CI->form_builder->render();
+				$vars['form'] = $this->CI->form_builder->render();
+				$form = $this->block('comment_form', $vars, TRUE);
 				return $form;
 			}
 			else
@@ -1625,6 +1626,7 @@ class Fuel_blog extends Fuel_advanced_module {
 			}
 
 		}
+
 		return $form;
 	}
 
