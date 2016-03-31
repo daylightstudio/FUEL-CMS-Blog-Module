@@ -63,7 +63,7 @@ CREATE TABLE `fuel_blog_posts` (
   `og_title` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `og_description` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `og_image` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `category_id` int(11) unsigned NOT NULL,
+  `category_id` int(10) unsigned NOT NULL,
   `date_added` datetime DEFAULT NULL,
   `last_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `published` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'yes',

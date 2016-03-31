@@ -8,6 +8,7 @@ ALTER TABLE `fuel_blog_posts` ADD `canonical` VARCHAR(255)  NOT NULL  DEFAULT ''
 ALTER TABLE `fuel_blog_posts` ADD `og_title` VARCHAR(255)  NOT NULL  DEFAULT ''  AFTER `canonical`;
 ALTER TABLE `fuel_blog_posts` ADD `og_description` VARCHAR(255)  NOT NULL  DEFAULT ''  AFTER `og_title`;
 ALTER TABLE `fuel_blog_posts` ADD `og_image` VARCHAR(255)  NOT NULL  DEFAULT ''  AFTER `og_description`;
+ALTER TABLE `fuel_blog_posts` ADD `category_id` INT(10) UNSIGNED NOT NULL  AFTER `og_image`;
 
 ALTER TABLE `fuel_blog_users` CHANGE `twitter` `social_media_links` TEXT  CHARACTER SET utf8  COLLATE utf8_general_ci  NOT NULL;
 ALTER TABLE `fuel_blog_posts` CHANGE `post_date` `publish_date` DATETIME NOT NULL;
