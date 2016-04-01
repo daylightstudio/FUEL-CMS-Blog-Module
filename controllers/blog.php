@@ -98,7 +98,11 @@ class Blog extends Blog_base_controller {
 				$vars['post_count'] = $this->fuel->blog->get_posts_by_date_count($year, (int) $month, $day, $slug);
 				
 				// create pagination
-				$base_url = implode('/', array_filter(array($year, sprintf("%02d", $month), sprintf("%02d", $day))));
+				$url_segs = array();
+				if (!empty($year)) $url_segs[] = $year;
+				if (!empty($month)) $url_segs[] = sprintf("%02d", $month);
+				if (!empty($day)) $url_segs[] = sprintf("%02d", $day);
+				$base_url = implode('/', $url_segs);
 				$vars['pagination'] = $this->fuel->blog->pagination($vars['post_count'], $base_url);
 			}
 
