@@ -440,6 +440,12 @@ class Fuel_blog extends Fuel_advanced_module {
 		{
 			$model = 'blog_'.strtolower($model);
 		}
+
+		if ($sub = $this->submodules($model))
+		{
+			return $sub->model();
+		}
+
 		return parent::model($model);
 	}
 	
