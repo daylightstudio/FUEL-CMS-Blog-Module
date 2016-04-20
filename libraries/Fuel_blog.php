@@ -672,6 +672,7 @@ class Fuel_blog extends Fuel_advanced_module {
 	public function get_posts_by_date_count($year = NULL, $month = NULL, $day = NULL, $slug = NULL, $limit = NULL, $offset = NULL, $order_by = 'sticky, publish_date desc', $return_method = NULL, $assoc_key = NULL)
 	{
 		$model = $this->_get_posts_by_date($year, $month, $day, $slug, $limit, $offset, $order_by, $return_method, $assoc_key);
+		$model->_common_query();
 		$count = $model->record_count();
 		return $count;
 	}
