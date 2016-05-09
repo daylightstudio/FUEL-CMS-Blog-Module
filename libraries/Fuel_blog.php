@@ -1312,7 +1312,7 @@ class Fuel_blog extends Fuel_advanced_module {
 			}
 
 			// save to cache
-			$this->CI->cache->save($cache_id, $output, $cache_group, $ttl);
+			$this->CI->cache->save($cache_id, $data, $cache_group, $ttl);
 		}
 	}
 
