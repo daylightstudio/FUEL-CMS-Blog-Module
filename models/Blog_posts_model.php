@@ -36,7 +36,7 @@ class Blog_posts_model extends Base_module_model {
 
 		if ($CI->fuel->blog->config('multiple_authors'))
 		{
-			$authors = array('authors' => array('model' => array(BLOG_FOLDER => 'blog_users')));
+			$authors = array('authors' => array('model' => array(BLOG_FOLDER => 'blog_users_model')));
 			$this->has_many = array_merge($authors, $this->has_many);
 		}
 		$this->has_many['tags']['where'] = '(FIND_IN_SET("blog", '.$this->_tables['fuel_tags'].'.context) OR '.$this->_tables['fuel_tags'].'.context="")';
