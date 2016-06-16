@@ -73,7 +73,12 @@ class Categories extends Blog_base_controller {
 				$vars['post_count'] = count($this->fuel->blog->get_category_posts_by_date($category, $year, $month, $day));
 
 				// create pagination
-				$base_url = 'categories/' . $category . '/'.implode('/', array_filter(array($year, sprintf("%02d", $month), sprintf("%02d", $day))));
+				$url_segs = array();
+				if (!empty($year)) $url_segs[] = $year;
+				if (!empty($month)) $url_segs[] = sprintf("%02d", $month);
+				if (!empty($day)) $url_segs[] = sprintf("%02d", $day);
+				$base_url = 'categories/' . $category . '/'.implode('/', $url_segs);
+
 				$vars['pagination'] = $this->fuel->blog->pagination($vars['post_count'], $base_url);
 				$output = $this->_render('category', $vars, TRUE);
 			}

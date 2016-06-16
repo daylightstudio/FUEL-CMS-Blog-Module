@@ -71,7 +71,12 @@ class Tags extends Blog_base_controller {
 				$vars['post_count'] = count($this->fuel->blog->get_tag_posts_by_date($tag, $year, $month, $day));
 
 				// create pagination
-				$base_url = 'tags/' . $tag . '/'. implode('/', array_filter(array($year, sprintf("%02d", $month), sprintf("%02d", $day))));
+				$url_segs = array();
+				if (!empty($year)) $url_segs[] = $year;
+				if (!empty($month)) $url_segs[] = sprintf("%02d", $month);
+				if (!empty($day)) $url_segs[] = sprintf("%02d", $day);
+				$base_url = 'tags/' . $tag . '/'.implode('/', $url_segs);
+
 				$vars['pagination'] = $this->fuel->blog->pagination($vars['post_count'], $base_url);
 				$output = $this->_render('tag', $vars, TRUE);
 			}
