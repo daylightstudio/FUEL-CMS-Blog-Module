@@ -1,6 +1,6 @@
 <?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-require_once(FUEL_PATH.'models/'.((FUEL_VERSION < 1.4) ? 'b' : 'B').'ase_module_model.php');
+require_once(FUEL_PATH.'models/'.(( version_compare(FUEL_VERSION, '1.4', '<') ) ? 'b' : 'B').'ase_module_model.php');
 
 class Blog_users_model extends Base_module_model {
 
