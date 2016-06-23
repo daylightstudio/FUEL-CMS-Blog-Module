@@ -96,6 +96,7 @@ class Blog_posts_model extends Base_module_model {
 		$author_comment = $fields['author_id']['comment'];
 
 		$fields['author_id'] = array('label' => 'Author', 'type' => 'select', 'options' => $user_options, 'first_option' => 'Select an author...', 'value' => $user_value, 'comment' => $author_comment);
+		
 		if (!isset($values['allow_comments']))
 		{
 			$fields['allow_comments']['value'] = ($CI->fuel->blog->config('allow_comments')) ? 'yes' : 'no';
@@ -254,6 +255,7 @@ class Blog_posts_model extends Base_module_model {
 						'formatting',
 						'excerpt',
 						'author_id',
+						'authors',
 						'published',
 						'Images',
 						'Settings',
@@ -276,7 +278,7 @@ class Blog_posts_model extends Base_module_model {
 						'blocks',
 						);
 		//insert thumbnails into order array
-		$i = 10;
+		$i = 11;
 		foreach($images as $image)
 		{
 			array_splice($order, $i, 0, $image);
@@ -284,7 +286,10 @@ class Blog_posts_model extends Base_module_model {
 		}
 		foreach($order as $key => $val)
 		{
-			$fields[$val]['order'] = $key + 1;
+			if (isset($fields[$val]))
+			{
+				$fields[$val]['order'] = $key + 1;	
+			}
 		}
 		return $fields;
 	}
