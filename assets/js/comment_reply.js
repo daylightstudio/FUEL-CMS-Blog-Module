@@ -10,7 +10,8 @@ $(function(){
 	}
 
 	// setup handler for reply to comments
-	$('.comment_reply_form').on('click', 'form:first .submit', function(){
+	$('.comment_reply_form').on('click', 'form .submit', function(){
+
 		var $formHolder = $(this).closest('.comment_reply_form');
 
 		$form = $(this).closest('form');

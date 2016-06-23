@@ -1,5 +1,6 @@
 <?php
 require_once(MODULES_PATH.'/blog/libraries/Blog_base_controller.php');
+
 class Blog extends Blog_base_controller {
 	
 	function __construct()
@@ -17,17 +18,13 @@ class Blog extends Blog_base_controller {
 
 		$view_by = 'page';
 
-		// we empty out year variable if it is page because we won't be querying on year'
-		if (empty($slug))
-		{
-			$view_by = 'date';
-		}
 		// if the first segment is id then treat the second segment as the id
-		else if ($this->fuel->blog->uri_segment(2) === 'id' && $this->fuel->blog->uri_segment(3))
+		if ($this->fuel->blog->uri_segment(2) === 'id' && $this->fuel->blog->uri_segment(3))
 		{
 			$view_by = 'slug';
-			$slug = $this->fuel->blog->uri_segment(3);
+			$slug = (int) $this->fuel->blog->uri_segment(3);
 			$post = $this->fuel->blog->get_post($slug);
+
 			if (isset($post->id))
 			{
 				redirect($post->url);
@@ -41,9 +38,16 @@ class Blog extends Blog_base_controller {
 			return;
 		}
 
+		// check if the slug segment is there and then view by slug
 		else if (!empty($slug))
 		{
 			$view_by = 'slug';
+		}
+
+		// we empty out year variable if it is page because we won't be querying on year
+		else if (empty($slug))
+		{
+			$view_by = 'date';
 		}
 
 		// set this to false so that we can use segments for the limit
