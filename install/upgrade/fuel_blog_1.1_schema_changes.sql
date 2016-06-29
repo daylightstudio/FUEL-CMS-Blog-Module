@@ -18,6 +18,8 @@ ALTER TABLE `fuel_blog_categories` DROP INDEX `name`;
 ALTER TABLE `fuel_blog_categories` ADD UNIQUE INDEX (`name`, `language`);
 ALTER TABLE `fuel_blog_categories` ADD UNIQUE INDEX (`slug`, `language`);
 
+ALTER TABLE `fuel_blog_users` ADD `about_excerpt` TEXT  NOT NULL  AFTER `about`;
+
 
 # Uncomment these if you don't want those fields in the Admin anymore since they've been rolled into the social_media_links field
 #ALTER TABLE `fuel_blog_users` DROP `facebook`;

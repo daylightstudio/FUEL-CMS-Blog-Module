@@ -158,4 +158,16 @@ class Blog_user_model extends Base_module_record {
 		return '';
 	}
 
+	function get_about_excerpt()
+	{
+		$content = (empty($this->_fields['about_excerpt'])) ? $this->_fields['about'] : $this->_fields['about_excerpt'];
+		$content = $this->_parse($content);
+		return $content;
+	}
+
+	function get_about_excerpt_formatted()
+	{
+		$this->_CI->load->helper('typography');
+		return auto_typography($this->get_about_excerpt());
+	}
 }
