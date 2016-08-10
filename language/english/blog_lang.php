@@ -176,3 +176,4 @@ $lang['blog_share'] = 'Share this post';
 $lang['blog_related_posts'] = 'Related Posts';
 $lang['blog_links'] = 'Featured Links';
 $lang['blog_about_author'] = 'About Author';
+$lang['blog_post_date_format'] = 'F j, Y';
