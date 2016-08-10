@@ -23,6 +23,7 @@ $lang['blog_error_comment_site_submit'] = 'Comments must be submitted through th
 $lang['blog_error_comment_already_submitted'] = 'This comment has already been submitted.';
 $lang['blog_error_consecutive_comments'] = 'Please wait to post consecutive comments.';
 $lang['blog_error_delete_uncategorized'] = 'You cannot delete the Uncategorized category.';
+$lang['blog_comment_does_not_exist'] = 'The request blog comment does not exist.';
 
 /*
 |--------------------------------------------------------------------------
