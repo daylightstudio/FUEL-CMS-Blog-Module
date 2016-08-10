@@ -23,7 +23,7 @@ $config['blog_use_db_table_settings'] = TRUE;
 
 // set as defaults 
 $config['blog'] = array();
-$config['blog']['title'] = '';
+$config['blog']['title'] = 'Blog';
 $config['blog']['description'] = '';
 $config['blog']['uri'] = 'blog';
 $config['blog']['theme_path'] = 'themes/default';
