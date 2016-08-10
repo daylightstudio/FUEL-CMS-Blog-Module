@@ -9,7 +9,7 @@ if (isset($current_post) AND !$is_home)
 	if ($post->has_meta_keywords()) fuel_set_var('meta_keywords', $post->meta_keywords);	
 }
 ?>
-<?php $this->load->view('_blocks/header')?>
+<?php $this->load->module_view('app', '_blocks/header')?>
 	
 	<div id="right">
 		<?php echo $this->fuel->blog->sidemenu(array('search', 'authors', 'tags', 'categories', 'links', 'archives'))?>
@@ -21,4 +21,4 @@ if (isset($current_post) AND !$is_home)
 	
 	<div class="clear"></div>
 	
-<?php $this->load->view('_blocks/footer')?>
+<?php $this->load->module_view('app', '_blocks/footer')?>
