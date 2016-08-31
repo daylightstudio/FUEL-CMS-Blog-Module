@@ -86,9 +86,6 @@ class Blog extends Blog_base_controller {
 				// run before_posts_by_date hook
 				$hook_params = array('year' => $year, 'month' => $month, 'day' => $day, 'slug' => $slug, 'limit' => $limit);
 				$this->fuel->blog->run_hook('before_posts_by_date', $hook_params);
-				echo '<pre>';
-				print_r($page_title_arr);
-				echo '</pre>';
 				$vars = array_merge($vars, $hook_params);
 				$vars['page_title'] = $page_title_arr;
 				$vars['posts'] = $this->fuel->blog->get_posts_by_date($year, (int) $month, $day, $slug, $limit, $offset);
