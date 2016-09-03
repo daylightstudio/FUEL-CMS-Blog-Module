@@ -47,7 +47,7 @@ class Blog_base_controller extends CI_Controller {
 		$in_app_folder = ($theme_module == 'app' OR $theme_module == 'application');
 		$view_path = ($in_app_folder) ? 
 								APPPATH.'views/'.$view_folder.$view.'.php' 
-								: MODULES_PATH.$this->fuel->blog->config('theme_module').'/views/'.$view_folder.$view;
+								: MODULES_PATH.$this->fuel->blog->config('theme_module').'/views/'.$view_folder.$view.'.php';
 
 		// check that a view file exists and if not, do one last check that it exists in the default theme folder and if not, redirect it
 		if (!file_exists($view_path))
