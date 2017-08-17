@@ -434,7 +434,7 @@ class Fuel_blog extends Fuel_advanced_module {
 	 * @param	string
 	 * @return	object
 	 */
-	public function &model($model = NULL)
+	public function model($model = NULL)
 	{
 		if (strncmp('blog_', $model, 5) !== 0)
 		{
