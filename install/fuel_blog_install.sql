@@ -88,3 +88,8 @@ CREATE TABLE `fuel_blog_users` (
   `active` enum('yes','no') NOT NULL DEFAULT 'yes',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+# Needed for Dashboard
+# ------------------------------------------------------------
+INSERT INTO `fuel_permissions` (`id`, `description`, `name`, `active`) VALUES (NULL, 'Blog', 'blog', 'yes');
+
