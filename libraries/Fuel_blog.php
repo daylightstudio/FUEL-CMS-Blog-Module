@@ -179,8 +179,9 @@ class Fuel_blog extends Fuel_advanced_module {
 	 */
 	function uri_segment($n, $default = FALSE, $rerouted = TRUE, $strip_lang = TRUE)
 	{
-		$segs = explode('/', $this->config('uri'));
+		$segs = explode('/', trim($this->config('uri'), '/'));
 		$index = count($segs) - 1 + $n;
+
 		return uri_segment($index, $default, $rerouted, $strip_lang);
 	}
 
