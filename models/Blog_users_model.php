@@ -88,7 +88,7 @@ class Blog_users_model extends Base_module_model {
 		parent::_common_query($display_unpublished_if_logged_in);
 		$this->db->select($this->_tables['blog_users'].'.*, CONCAT(first_name, " ", last_name) as name, '.$this->_tables['fuel_users'].'.first_name, '.$this->_tables['fuel_users'].'.last_name, '.$this->_tables['fuel_users'].'.email, '.$this->_tables['fuel_users'].'.user_name, '.$this->_tables['fuel_users'].'.active as users_active', FALSE);
 		$this->db->select('posts_count'); // for temp table to get posts count
-		$this->db->group_by($this->_tables['fuel_users'].'.id, '.$this->_tables['blog_users'].'.id');
+		$this->db->group_by($this->_tables['fuel_users'].'.id, '.$this->_tables['blog_users'].'.id, temp.posts_count');
 	}
 
 	function _common_joins()
