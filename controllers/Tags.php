@@ -44,7 +44,7 @@ class Tags extends Blog_base_controller {
 				$day = (int) $this->fuel->blog->uri_segment(6);
 
 				$tag_obj = $this->fuel->blog->get_tag($tag);
-				if (!isset($tag_obj->id)) show_404();
+				if (!isset($tag_obj->id)) redirect_404();
 
 				// run before_posts_by_date hook
 				$hook_params = array('tag' => $tag_obj, 'tag_slug' => $tag);

@@ -45,7 +45,7 @@ class Categories extends Blog_base_controller {
 				$day = (int) $this->fuel->blog->uri_segment(6);
 
 				$category_obj = $this->fuel->blog->get_category($category);
-				if (!isset($category_obj->id)) show_404();
+				if (!isset($category_obj->id)) redirect_404();
 
 				// run before_posts_by_date hook
 				$hook_params = array('category' => $category_obj, 'category_slug' => $category);

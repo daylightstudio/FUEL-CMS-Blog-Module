@@ -27,7 +27,7 @@ class Authors extends Blog_base_controller {
 				$author_id = (int) $this->fuel->blog->uri_segment(3);
 				
 				$author = $this->fuel->blog->get_user($author_id);
-				if (empty($author)) show_404();
+				if (empty($author)) redirect_404();
 				$where['author_id'] = $author_id;
 				
 				// run before_posts_by_date hook
@@ -41,7 +41,7 @@ class Authors extends Blog_base_controller {
 			else if (!empty($id) && $id != 'index')
 			{
 				$author = $this->fuel->blog->get_user($id);
-				if (empty($author)) show_404();
+				if (empty($author)) redirect_404();
 				$vars['author'] = $author;
 				$vars['page_title'] = $author->name;
 				$output = $this->_render('author', $vars, TRUE);
