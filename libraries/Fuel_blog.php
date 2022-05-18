@@ -1012,8 +1012,8 @@ class Fuel_blog extends Fuel_advanced_module {
 		$model->readonly = TRUE;
 		$tables = $this->_tables();
 		$where = $tables['blog_tags'].'.slug = "'.$category.'" OR '.$tables['blog_tags'].'.name = "'.$category.'"';
-		$tags = $model->find_one($where, $order_by, $return_method);
-		return $tags;
+		$tag = $model->find_one($where, $order_by, $return_method);
+		return $tag;
 	}
 
 	// --------------------------------------------------------------------
