@@ -60,7 +60,7 @@ class Blog_categories_model extends Base_module_model {
 		}
 	}
 
-	function form_fields($values = array())
+	function form_fields($values = array(), $related = array())
 	{
 		$fields = parent::form_fields($values);
 
